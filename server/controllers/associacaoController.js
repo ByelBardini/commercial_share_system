@@ -71,3 +71,20 @@ export const putAssociacao = (req, res) => {
         res.json({ message: "Associação atualizada com sucesso!" });
     });
 }
+
+export const deleteAssociacao = (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ error: "ID da associação é obrigatório." });
+    }
+
+    const sql = `DELETE FROM associacoes WHERE associacao_id = ?`;
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error("Erro ao deletar associação:", err);
+            return res.status(500).json({ error: "Erro ao deletar associação" });
+        }
+        res.json({ message: "Associação deletada com sucesso!" });
+    });
+}
