@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import authRoutes from "./routes/authRoutes.js";
 import cidadeRoutes from "./routes/cidadeRoutes.js";
+import associacaoRoutes from "./routes/associacaoRoutes.js";
 
 dotenv.config({path: '../.env'});
 
@@ -30,5 +31,6 @@ app.use(cors());
 
 app.use(authRoutes);
 app.use(cidadeRoutes);
+app.use(associacaoRoutes);
 
 export default app;
