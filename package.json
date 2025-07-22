@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ByelBardini/commercial_share_system#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
