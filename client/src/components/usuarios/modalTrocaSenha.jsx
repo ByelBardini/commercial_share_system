@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { trocaSenhaUsuario } from "../../services/auth/usuarioService.js";
+import { trocaSenhaUsuario } from "../../services/api/usuarioService.js";
 import ModalAviso from "../default/ModalAviso.jsx"
 
-function ModalTrocaSenha({ aparecer, setNovaSenha }) {
+function ModalTrocaSenha({ aparecer, setNovaSenha, setCarregando }) {
 
     const [senha, setSenha] = useState("");
     const [confirmaSenha, setConfirmaSenha] = useState("");
@@ -15,8 +15,10 @@ function ModalTrocaSenha({ aparecer, setNovaSenha }) {
         if( senha != confirmaSenha){
             setErro(true);
         }else{
+            setCarregando(true);
             const data = await trocaSenhaUsuario(senha);
             if(data){
+                setCarregando(false);
                 setSucesso(true);
                 setTimeout(() => {
                     setSucesso(false);
@@ -24,6 +26,7 @@ function ModalTrocaSenha({ aparecer, setNovaSenha }) {
                     localStorage.setItem("usuario_troca_senha", 0);
                 }, 500);
             }
+            setCarregando(false);
         }
     }
 
