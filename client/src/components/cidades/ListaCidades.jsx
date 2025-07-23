@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { buscarCidades } from "../../services/api/cidadeService.js"
 import CampoCidade from "./CampoCidade.jsx";
 
-function ListaCidades({pesquisa, setUfs}){
+function ListaCidades({pesquisa, setUfs, navegaCidade}){
     
     const [cidades, setCidades] = useState([]);
     
@@ -24,7 +24,7 @@ function ListaCidades({pesquisa, setUfs}){
 
     return(
         <div className="bg-white flex flex-col h-full w-full gap-2">
-            <CampoCidade cidades= {cidades} />
+            <CampoCidade cidades= {cidades} navegaCidade={navegaCidade} />
         </div>
     )
 }

@@ -25,7 +25,13 @@ function Main() {
     await logout();
     setCarregando(false);
     localStorage.clear();
-    navigate("/");
+    navigate("/index");
+  }
+
+  function navegaCidade(id_cidade, nome_cidade){
+    localStorage.setItem("id_cidade",id_cidade);
+    localStorage.setItem("nome_cidade", nome_cidade)
+    navigate("/cidade");
   }
 
   return (
@@ -80,7 +86,7 @@ function Main() {
         </div>
       </div>
       <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl">
-        <ListaCidades pesquisa={pesquisa} setUfs={setUfs} />
+        <ListaCidades pesquisa={pesquisa} setUfs={setUfs} navegaCidade={navegaCidade} />
       </div>
     </div>
   );
