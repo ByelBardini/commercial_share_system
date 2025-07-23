@@ -1,4 +1,4 @@
-import { getCidades, postCidade, putCidade, deleteCidade } from "../controllers/authController.js";
+import { getCidades, postCidade, putCidade, deleteCidade } from "../controllers/cidadeController.js";
 import verificaToken from "../middlewares/verificaToken.js";
 import express from "express";
 
