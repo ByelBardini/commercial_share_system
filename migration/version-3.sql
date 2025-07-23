@@ -1,7 +1,7 @@
 ALTER TABLE `share_comercial`.`associacoes` 
 ADD COLUMN `associacao_data_contato` DATE NULL AFTER `associacao_cnpj`,
-ADD COLUMN `associcacao_data_fechamento` DATE NULL AFTER `associacao_data_contato`,
-ADD COLUMN `associacao_observacao` TEXT NULL AFTER `associcacao_data_fechamento`,
+ADD COLUMN `associacao_data_fechamento` DATE NULL AFTER `associacao_data_contato`,
+ADD COLUMN `associacao_observacao` TEXT NULL AFTER `associacao_data_fechamento`,
 ADD COLUMN `associacao_cliente` TINYINT NOT NULL AFTER `associacao_observacao`;
 
 CHANGE COLUMN `associacao_nome_fantasia` `associacao_nome_fantasia` VARCHAR(100) NULL ;
