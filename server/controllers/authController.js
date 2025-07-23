@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+dotenv.config();
 
 const CHAVE = process.env.SECRET_KEY_LOGIN;
 
