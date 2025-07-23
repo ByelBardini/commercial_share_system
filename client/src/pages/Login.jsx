@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth/authService.js";
-import ModalAviso from "../components/modalAviso.jsx";
+import ModalAviso from "../components/default/ModalAviso.jsx";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [usuario_login, setLogin] = useState("");
   const [usuario_senha, setSenha] = useState("");
   const [logado, setLogado] = useState(false);
@@ -15,10 +18,16 @@ function Login() {
     }
     const data = await login(usuario_login, usuario_senha);
     if(data) {
-      localStorage.setItem("usuario_nome", data);
+      console.log(data)
+      const { usuario_nome, usuario_troca_senha} = data;
+      localStorage.setItem("usuario_nome", usuario_nome);
+      if(usuario_troca_senha !=0){
+        localStorage.setItem("usuario_troca_senha", usuario_troca_senha);
+      }
       setLogado(true);
       setTimeout(() => {
         setLogado(false);
+        navigate("/home");
       }, 500);
     }
   }
