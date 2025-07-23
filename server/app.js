@@ -1,13 +1,14 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import authRoutes from "./routes/authRoutes.js";
 import cidadeRoutes from "./routes/cidadeRoutes.js";
 import associacaoRoutes from "./routes/associacaoRoutes.js";
+import usuarioRoutes from "./routes/usuarioRoutes.js";
 
-dotenv.config({path: '../.env'});
+dotenv.config();
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use(cors());
 app.use(authRoutes);
 app.use(cidadeRoutes);
 app.use(associacaoRoutes);
+app.use(usuarioRoutes);
 
 export default app;
