@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from './pages/Login.jsx'
 import Main from './pages/Main.jsx'
 import Cidade from './pages/Cidade.jsx'
+import Associacao from './pages/Associcacao.jsx'; 
 import './style.css'
 
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
     path:"/cidade",
     element: <Cidade />
   },
+  {
+    path:"/associacao",
+    element: <Associacao />
+  }
 ]);
 
 createRoot(document.getElementById("root")).render(

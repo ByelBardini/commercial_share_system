@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { SquarePen, Eye } from "lucide-react";
 
-function CampoAssociacao({ associacoes }) {
+function CampoAssociacao({ associacoes, navigate }) {
   return (
     <div className="w-full">
       {associacoes.map((associacao) => (
@@ -15,10 +15,29 @@ function CampoAssociacao({ associacoes }) {
           <h1 className="text-xl font-bold p-1">
             {associacao.associacao_nome_fantasia}
           </h1>
-          <div className="flex gap-4 items-center">
-            <h1 className={`font-bold text-xl text-white bg-green-600 rounded-xl p-2 ${associacao.associacao_cliente ? "" : "hidden"}`}>CLIENTE</h1>
-            <Eye size={30} />
-            <SquarePen size={30} />
+          <div className="flex gap-6 items-center">
+            <h1
+              className={`font-bold text-xl text-white bg-green-600 rounded-xl p-2 ${
+                associacao.associacao_cliente ? "" : "hidden"
+              }`}
+            >
+              CLIENTE
+            </h1>
+            <motion.button
+              layout
+              whileHover={{ scale: 1.15 }}
+              className="cursor-pointer"
+              onClick={() => navigate("/associacao")}
+            >
+              <Eye size={34} />
+            </motion.button>
+            <motion.button
+              layout
+              whileHover={{ scale: 1.15 }}
+              className="cursor-pointer mr-4"
+            >
+              <SquarePen size={30} />
+            </motion.button>
           </div>
         </motion.div>
       ))}

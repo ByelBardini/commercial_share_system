@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { getAssociacoesPorCidade } from "../../services/api/associacaoService.js";
 import CampoAssociacao from "./CampoAssociacao.jsx"
 
-function ListaAssociacoes({ pesquisa, filtroAtivo, setCarregando, associacoesRoot, setAssociacoesRoot }) {
+function ListaAssociacoes({ pesquisa, filtroAtivo, setCarregando, associacoesRoot, setAssociacoesRoot, navigate }) {
   const [associacoes, setAssociacoes] = useState([]);
+
 
   const puxaAssociacoes = async () => {
     setCarregando(true)
@@ -39,7 +40,7 @@ function ListaAssociacoes({ pesquisa, filtroAtivo, setCarregando, associacoesRoo
   }, [pesquisa, filtroAtivo]);
 
   return <div className="bg-white flex flex-col h-full w-full gap-2">
-    <CampoAssociacao associacoes={associacoes} />
+    <CampoAssociacao associacoes={associacoes} navigate={navigate} />
   </div>;
 }
 

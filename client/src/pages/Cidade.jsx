@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { Search, Funnel, ArrowDownAZ, ArrowUpZA } from "lucide-react";
+import { Search, Funnel } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
 import Loading from "../components/default/Loading.jsx";
 import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
@@ -16,7 +16,6 @@ function Cidade() {
 
   const [pesquisa, setPesquisa] = useState("");
   const [filtro, setFiltro] = useState("");
-  const [filtroZA, setFilroZA] = useState(true);
 
   const navigate = useNavigate();
 
@@ -49,7 +48,7 @@ function Cidade() {
         )}`}</h1>
       </div>
       <motion.button
-        className="bg-green-400 p-2 h-16 rounded-md mt-18 shadow-xl text-white font-bold text-2xl cursor-pointer"
+        className="bg-green-400 p-2 h-16 rounded-md mt-18 shadow-xl text-white font-bold text-2xl cursor-pointer hover:bg-green-500 transition"
         layout
         whileHover={{ scale: 1.05 }}
         onClick={() => setCadastro(true)}
@@ -89,6 +88,7 @@ function Cidade() {
           setCarregando={setCarregando}
           associacoesRoot={associacoesRoot}
           setAssociacoesRoot={setAssociacoesRoot}
+          navigate={navigate}
         />
       </div>
     </div>
