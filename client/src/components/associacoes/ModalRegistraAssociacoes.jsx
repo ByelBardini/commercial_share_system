@@ -42,9 +42,11 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
         setTimeout(() => {
           setConcluido(false);
           setCadastro(false);
+          window.location.reload();
         }, 500);
       }else{
         setCarregando(false);
+        window.location.reload();
       }
     }
   }

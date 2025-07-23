@@ -10,7 +10,7 @@ export async function getAssociacoesPorCidade(id_cidade){
             credentials: "include",
         });
 
-        const data = await response.json;
+        const data = await response.json();
         return data;
     } catch(err){
         console.error("Erro ao buscar associação:", err);

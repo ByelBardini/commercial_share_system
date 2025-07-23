@@ -1,24 +1,22 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from "react";
-import { Search, Funnel } from "lucide-react";
+import { useState } from "react";
+import { Search, Funnel, ArrowDownAZ, ArrowUpZA } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { getAssociacoesPorCidade } from "../services/api/associacaoService.js"
+import { motion, AnimatePresence } from "framer-motion";
+import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
 import Loading from "../components/default/Loading.jsx";
-import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx"
+import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
+import ListaAssociacoes from "../components/associacoes/ListaAssociacoes.jsx";
 
 function Cidade() {
   const [cadastro, setCadastro] = useState(false);
   const [carregando, setCarregando] = useState(false);
-  const [pesquisa, setPesquisa] = useState("");
 
-  useEffect(() => {
-    setCarregando(true);
-    const associacoes = getAssociacoesPorCidade;
-    console.log(associacoes);
-    setCarregando(false);
-    console.log(localStorage.getItem("id_cidade"));
-  }, []);
+  const [associacoesRoot, setAssociacoesRoot] = useState([]);
+
+  const [pesquisa, setPesquisa] = useState("");
+  const [filtro, setFiltro] = useState("");
+  const [filtroZA, setFilroZA] = useState(true);
 
   const navigate = useNavigate();
 
@@ -34,7 +32,11 @@ function Cidade() {
         "
     >
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-      <ModalRegistraAssociacoes aparecer={`${cadastro ? "" : "hidden"}`} setCadastro={setCadastro} />
+      <ModalRegistraAssociacoes
+        aparecer={`${cadastro ? "" : "hidden"}`}
+        setCadastro={setCadastro}
+        getAssociacoesPorCidade={getAssociacoesPorCidade}
+      />
       <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
         <button
           className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white cursor-pointer hover:bg-red-500 transition shadow-2xl"
@@ -67,14 +69,28 @@ function Cidade() {
         </div>
         <div className="bg-gray-100 rounded-md h-16 w-1/8 flex items-center px-4 shadow mr-2">
           <Funnel size={28} color="#c0c0c0" className="mr-3" />
-          <select className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400">
+          <select
+            className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400"
+            onChange={(event) => setFiltro(event.target.value)}
+          >
             <option value="" disabled selected hidden>
-              Ativo
+              Filtrar
             </option>
+            <option value={1}>Ativos</option>
+            <option value={0}>Inativos</option>
+            <option value={""}>Ambos</option>
           </select>
         </div>
       </div>
-      <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl"></div>
+      <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl">
+        <ListaAssociacoes
+          pesquisa={pesquisa}
+          filtroAtivo={filtro}
+          setCarregando={setCarregando}
+          associacoesRoot={associacoesRoot}
+          setAssociacoesRoot={setAssociacoesRoot}
+        />
+      </div>
     </div>
   );
 }
