@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth/authService.js";
 import ModalAviso from "../components/default/ModalAviso.jsx";
+import Loading from "../components/default/Loading.jsx"
 
 function Login() {
   const navigate = useNavigate();
@@ -10,12 +11,14 @@ function Login() {
   const [usuario_senha, setSenha] = useState("");
   const [logado, setLogado] = useState(false);
   const [erro, setErro] = useState(false);
+  const [carregando, setCarregando] = useState(false);
 
   async function logar(){
     if(!usuario_login || !usuario_senha) {
       setErro(true);
       return;
     }
+    setCarregando(true);
     const data = await login(usuario_login, usuario_senha);
     if(data) {
       console.log(data)
@@ -24,16 +27,19 @@ function Login() {
       if(usuario_troca_senha !=0){
         localStorage.setItem("usuario_troca_senha", usuario_troca_senha);
       }
+      setCarregando(false);
       setLogado(true);
       setTimeout(() => {
         setLogado(false);
         navigate("/home");
       }, 500);
     }
+    setCarregando(false);
   }
 
   return (
     <div className="bg-blue-700 min-h-screen w-screen flex justify-center items-center p-6">
+      <Loading aparecer={`${carregando ? "" : "hidden"}`} />
       <ModalAviso texto="Necessário Login e Senha!" className="bg-red-600" aparecer={`${erro ? "" : "hidden"}`} onClick={()=> setErro(false)} />
       <ModalAviso texto="Login realizado com sucesso!" className="bg-green-600" aparecer={`${logado ? "" : "hidden"}`} botao={"hidden"} />
       <div className="bg-white w-1/3 max-h-[90vh] rounded-lg shadow-lg gap-2 overflow-auto p-2">
