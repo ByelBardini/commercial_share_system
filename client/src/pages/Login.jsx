@@ -1,6 +1,32 @@
+import { useState } from "react";
+import { login } from "../services/auth/authService.js";
+import ModalAviso from "../components/modalAviso.jsx";
+
 function Login() {
+  const [usuario_login, setLogin] = useState("");
+  const [usuario_senha, setSenha] = useState("");
+  const [logado, setLogado] = useState(false);
+  const [erro, setErro] = useState(false);
+
+  async function logar(){
+    if(!usuario_login || !usuario_senha) {
+      setErro(true);
+      return;
+    }
+    const data = await login(usuario_login, usuario_senha);
+    if(data) {
+      localStorage.setItem("usuario_nome", data);
+      setLogado(true);
+      setTimeout(() => {
+        setLogado(false);
+      }, 500);
+    }
+  }
+
   return (
     <div className="bg-blue-700 min-h-screen w-screen flex justify-center items-center p-6">
+      <ModalAviso texto="Necessário Login e Senha!" className="bg-red-600" aparecer={`${erro ? "" : "hidden"}`} onClick={()=> setErro(false)} />
+      <ModalAviso texto="Login realizado com sucesso!" className="bg-green-600" aparecer={`${logado ? "" : "hidden"}`} botao={"hidden"} />
       <div className="bg-white w-1/3 max-h-[90vh] rounded-lg shadow-lg gap-2 overflow-auto p-2">
         <img
           src="./src/assets/empresa-logo.png"
@@ -14,6 +40,7 @@ function Login() {
             placeholder="Usuário"
             id="usuario_login"
             className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
+            onChange={(event) => setLogin(event.target.value)}
           />
           <h1 className="text-2xl font-bold mb-4">Senha</h1>
           <input
@@ -21,10 +48,11 @@ function Login() {
             placeholder="Senha"
             id="usuario-senha"
             className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
+            onChange={(event) => setSenha(event.target.value)}
           />
           <button
             className="bg-blue-700 text-white font-bold px-6 py-2 rounded-md text-xl hover:bg-blue-900 transition duration-300 ease-in-out"
-            onClick={() => alert("Botão Clicado")}
+            onClick={logar}
           >
             Login
           </button>

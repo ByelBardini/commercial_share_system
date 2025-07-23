@@ -7,21 +7,21 @@ dotenv.config();
 const CHAVE = process.env.SECRET_KEY_LOGIN;
 
 export const login = (req, res) => {
-  const { login_usuario, senha_usuario } = req.body;
+  const { usuario_login, usuario_senha } = req.body;
 
-  if (!login_usuario || !senha_usuario) {
+  if (!usuario_login || !usuario_senha) {
     return res.status(400).json({ error: "Login e senha são obrigatórios." });
   }
 
   const sql = `SELECT * FROM usuarios WHERE usuario_login = ?`;
-  db.query(sql, [login_usuario], (err, results) => {
+  db.query(sql, [usuario_login], (err, results) => {
     if (err) {
       console.error("Erro na consulta:", err);
       return res.status(500).json({ error: "Erro ao validar usuário" });
     }
 
     if (results.length > 0) {
-      bcrypt.compare(senha_usuario, results[0].usuario_senha, (err, match) => {
+      bcrypt.compare(usuario_senha, results[0].usuario_senha, (err, match) => {
         if (err) {
           console.error("Erro ao comparar senhas:", err);
           return res.status(500).json({ error: "Erro ao validar senha" });
@@ -36,13 +36,16 @@ export const login = (req, res) => {
           const userSession = { usuario_id: results[0].usuario_id };
 
           req.session.user = userSession
-          res.cookie("token", token, {
+          res
+          .status(200)
+          .cookie("token", token, {
             httpOnly: true,
             sameSite: "Lax",
             secure: false,
             path: "/",
             maxAge: 2 * 60 * 60 * 1000,
-          });
+          })
+          .json(results[0].usuario_nome);
         } else {
           res.status(401).json({ error: "Usuário ou senha inválidos." });
         }
