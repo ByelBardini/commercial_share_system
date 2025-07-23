@@ -1,26 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/auth/authService.js";
-import { buscarCidades } from "../services/api/cidadeService.js"
 import ModalTrocaSenha from "../components/usuarios/modalTrocaSenha.jsx";
-import ListaCidades from "../components/cidades/ListaCidades.jsx"
-import Loading from "../components/default/Loading.jsx"
+import ListaCidades from "../components/cidades/ListaCidades.jsx";
+import Loading from "../components/default/Loading.jsx";
 
 function Main(){
     const navigate = useNavigate();
 
     const [novaSenha, setNovaSenha] = useState(false);
     const [carregando, setCarregando] = useState(false);
-    const [cidades, setCidades] = useState();
-
-    const puxaCidades = async () => {
-        const cidades = await buscarCidades();
-        setCidades(cidades);
-        console.log(cidades);
-    }
 
     useEffect(() =>{
-        puxaCidades();
         if(localStorage.getItem("usuario_troca_senha") == 1){
             setNovaSenha(true);
         }
@@ -46,8 +37,8 @@ function Main(){
             <div className="w-9/10 h-16 rounded-xl bg-white mt-18 shadow-2xl">
 
             </div>
-            <div className="bg-white w-9/10 h-[90vh] mt-10 rounded-2xl p-5 shadow-2xl">
-             <ListaCidades cidades={cidades} />
+            <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl">
+             <ListaCidades />
             </div>
         </div>
     )
