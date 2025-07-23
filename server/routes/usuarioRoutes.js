@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get("/usuario", verificaToken, getUsuarios);
 router.post("/usuario", verificaToken, registrarUsuario);
-router.put("/usuario/:id", verificaToken, trocaSenhaUsuario);
+router.put("/usuario/trocasenha", verificaToken, trocaSenhaUsuario);
 router.put("/usuario/resetasenha/:id", verificaToken, resetaSenhaUsuario);
 router.put("/usuario/inativa/:id", verificaToken, inativaUsuario);
 

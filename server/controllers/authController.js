@@ -29,23 +29,30 @@ export const login = (req, res) => {
 
         if (match) {
           const payload = {
-            usuario_nome: results[0].usuario_nome
+            usuario_nome: results[0].usuario_nome,
+          };
+          const userSession = {
+            usuario_id: results[0].usuario_id,
+            usuario_role: results[0].usuario_role,
+          };
+          const resposta = {
+            usuario_nome: results[0].usuario_nome,
+            usuario_troca_senha: results[0].usuario_troca_senha,
           };
 
           const token = jwt.sign(payload, CHAVE, { expiresIn: "2h" });
-          const userSession = { usuario_id: results[0].usuario_id };
 
-          req.session.user = userSession
+          req.session.user = userSession;
           res
-          .status(200)
-          .cookie("token", token, {
-            httpOnly: true,
-            sameSite: "Lax",
-            secure: false,
-            path: "/",
-            maxAge: 2 * 60 * 60 * 1000,
-          })
-          .json(results[0].usuario_nome);
+            .status(200)
+            .cookie("token", token, {
+              httpOnly: true,
+              sameSite: "Lax",
+              secure: false,
+              path: "/",
+              maxAge: 2 * 60 * 60 * 1000,
+            })
+            .json(resposta);
         } else {
           res.status(401).json({ error: "Usuário ou senha inválidos." });
         }
@@ -57,7 +64,7 @@ export const login = (req, res) => {
 };
 
 export const logout = (req, res) => {
-    req.session.destroy((err) => {
+  req.session.destroy((err) => {
     if (err) {
       console.log("Erro ao destruir sessão:", err);
       return res.status(500).json({ error: "Erro ao realizar logout" });

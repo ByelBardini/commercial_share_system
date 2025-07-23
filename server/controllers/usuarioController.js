@@ -34,17 +34,19 @@ export const resetaSenhaUsuario = (req, res) =>{
 }
 
 export const trocaSenhaUsuario = (req, res) => {
-    const { id } = req.params;
+    const { usuario_id } = req.session.user;
     const { nova_senha } = req.body;
 
-    if (!nova_senha) {
+    console.log(usuario_id, nova_senha);
+
+    if (!nova_senha || !usuario_id) {
         return res.status(400).json({ error: "Nova senha é obrigatória." });
     }
 
     const senhaHash = bcrypt.hashSync(nova_senha, 10);
     const sql = `UPDATE usuarios SET usuario_senha = ?, usuario_troca_senha = 0 WHERE usuario_id = ?`;
     
-    db.query(sql, [senhaHash, id], (err, results) => {
+    db.query(sql, [senhaHash, usuario_id], (err, results) => {
         if (err) {
             console.error("Erro ao trocar senha:", err);
             return res.status(500).json({ error: "Erro ao trocar senha" });
