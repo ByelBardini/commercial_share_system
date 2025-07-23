@@ -1,6 +1,6 @@
 ALTER TABLE `share_comercial`.`usuarios` 
 ADD COLUMN `usuario_role` ENUM('adm', 'usuario') NOT NULL AFTER `usuario_senha`,
-ADD COLUMN `usuario_troca_senha` TINYINT NOT NULL AFTER `usuario_role`;
+ADD COLUMN `usuario_troca_senha` TINYINT NOT NULL DEFAULT 1 AFTER `usuario_role`;
 
 CREATE TABLE `share_comercial`.`logs` (
   `log_id` INT NOT NULL AUTO_INCREMENT,
