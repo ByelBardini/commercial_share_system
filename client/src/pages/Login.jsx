@@ -66,7 +66,7 @@ function Login() {
             onChange={(event) => setSenha(event.target.value)}
           />
           <button
-            className="bg-blue-700 text-white font-bold px-6 py-2 rounded-md text-xl hover:bg-blue-900 transition duration-300 ease-in-out"
+            className="cursor-pointer bg-blue-700 text-white font-bold px-6 py-2 rounded-md text-xl hover:bg-blue-900 transition duration-300 ease-in-out"
             onClick={logar}
           >
             Login

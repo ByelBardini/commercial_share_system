@@ -38,14 +38,14 @@ export const getAssociacaoFull = (req, res) => {
 }
 
 export const postAssociacao = (req, res) => {
-    const { associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_cidade_id } = req.body;
+    const { associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente } = req.body;
 
-    if (!associacao_nome || !associacao_nome_fantasia || !associacao_cnpj || !associacao_cidade_id) {
-        return res.status(400).json({ error: "Todos os campos são obrigatórios." });
+    if (!associacao_nome || !associacao_nome_fantasia || !associacao_cidade_id || !associacao_cliente) {
+        return res.status(400).json({ error: "Os campos são obrigatórios." });
     }
 
-    const sql = `INSERT INTO associacoes (associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_cidade_id) VALUES (?, ?, ?, ?)`;
-    db.query(sql, [associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_cidade_id], (err, results) => {
+    const sql = `INSERT INTO associacoes (associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    db.query(sql, [associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente], (err, results) => {
         if (err) {
             console.error("Erro ao cadastrar associação:", err);
             return res.status(500).json({ error: "Erro ao cadastrar associação" });

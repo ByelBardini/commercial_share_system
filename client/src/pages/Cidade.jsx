@@ -3,13 +3,20 @@ import { useState, useEffect } from "react";
 import { Search, Funnel } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getAssociacoesPorCidade } from "../services/api/associacaoService.js"
 import Loading from "../components/default/Loading.jsx";
+import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx"
 
 function Cidade() {
+  const [cadastro, setCadastro] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [pesquisa, setPesquisa] = useState("");
 
   useEffect(() => {
+    setCarregando(true);
+    const associacoes = getAssociacoesPorCidade;
+    console.log(associacoes);
+    setCarregando(false);
     console.log(localStorage.getItem("id_cidade"));
   }, []);
 
@@ -17,6 +24,7 @@ function Cidade() {
 
   async function sair() {
     localStorage.setItem("id_cidade", null);
+    localStorage.setItem("nome_cidade", null);
     navigate("/home");
   }
 
@@ -26,9 +34,10 @@ function Cidade() {
         "
     >
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
+      <ModalRegistraAssociacoes aparecer={`${cadastro ? "" : "hidden"}`} setCadastro={setCadastro} />
       <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
         <button
-          className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white hover:bg-red-500 transition shadow-2xl"
+          className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white cursor-pointer hover:bg-red-500 transition shadow-2xl"
           onClick={sair}
         >
           Voltar
@@ -41,6 +50,7 @@ function Cidade() {
         className="bg-green-400 p-2 h-16 rounded-md mt-18 shadow-xl text-white font-bold text-2xl cursor-pointer"
         layout
         whileHover={{ scale: 1.05 }}
+        onClick={() => setCadastro(true)}
       >
         ADICIONAR ASSOCIAÇÃO
       </motion.button>

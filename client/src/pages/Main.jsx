@@ -47,7 +47,7 @@ function Main() {
       />
       <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
         <button
-          className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white hover:bg-red-500 transition shadow-2xl"
+          className="cursor-pointer bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white hover:bg-red-500 transition shadow-2xl"
           onClick={sair}
         >
           Sair

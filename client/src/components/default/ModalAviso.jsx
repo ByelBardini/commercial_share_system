@@ -15,7 +15,7 @@ function ModalAviso({ aparecer, texto, className, botao, onClick }) {
         <h1 className="text-center text-white text-2xl font-bold mb-4">
           {texto}
         </h1>
-        <button className={`mt-4 bg-red-300 text-red-700 font-bold py-2 px-6 rounded shadow-md hover:bg-red-400 transition duration-200 ${botao}`} onClick={onClick}>
+        <button className={`cursor-pointer mt-4 bg-red-300 text-red-700 font-bold py-2 px-6 rounded shadow-md hover:bg-red-400 transition duration-200 ${botao}`} onClick={onClick}>
           OK
         </button>
       </div>
