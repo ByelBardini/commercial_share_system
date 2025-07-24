@@ -21,7 +21,6 @@ function Login() {
     setCarregando(true);
     const data = await login(usuario_login, usuario_senha);
     if(data) {
-      console.log(data)
       const { usuario_nome, usuario_troca_senha} = data;
       localStorage.setItem("usuario_nome", usuario_nome);
       if(usuario_troca_senha !=0){
@@ -38,45 +37,57 @@ function Login() {
   }
 
   return (
-    <div className="bg-blue-700 min-h-screen w-screen flex justify-center items-center p-6">
+    <div className="relative min-h-screen w-screen flex justify-center items-center p-6 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <div className="absolute -top-36 -left-32 w-[450px] h-[450px] rounded-full bg-blue-500 opacity-40 blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-[220px] h-[220px] rounded-full bg-cyan-400 opacity-30 blur-2xl animate-pulse delay-500" />
+        <div className="absolute -bottom-24 right-0 w-[420px] h-[420px] rounded-full bg-blue-900 opacity-30 blur-3xl animate-pulse" />
+        <div className="absolute top-16 right-36 w-[180px] h-[180px] rounded-full bg-indigo-500 opacity-20 blur-2xl animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-700/90 via-blue-500/60 to-blue-300/80 z-0" />
+      </div>
+
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
       <ModalAviso texto="Necessário Login e Senha!" className="bg-red-600" aparecer={`${erro ? "" : "hidden"}`} onClick={()=> setErro(false)} />
       <ModalAviso texto="Login realizado com sucesso!" className="bg-green-600" aparecer={`${logado ? "" : "hidden"}`} botao={"hidden"} />
-      <div className="bg-white w-1/3 max-h-[90vh] rounded-lg shadow-lg gap-2 overflow-auto p-2">
+
+      <div className="relative z-10 bg-white/70 backdrop-blur-2xl w-full max-w-md rounded-3xl shadow-2xl flex flex-col gap-3 p-10 items-center border border-blue-200">
         <img
           src="./src/assets/empresa-logo.png"
           alt="Logo"
-          className=" w-1/2 mx-auto mt-4 rounded-lg shadow-lg bg-transparent p-2 transition duration-300 ease-in-out hover:scale-105"
+          className="w-42 h-26 object-contain mx-auto mt-2 rounded-full shadow-lg"
         />
-        <div className="flex flex-col items-center justify-center h-full p-2">
-          <h1 className="text-2xl font-bold mb-4">Login</h1>
+        <h1 className="text-4xl font-extrabold text-blue-800 mb-7 mt-2 tracking-tight drop-shadow-sm">
+          Login
+        </h1>
+        <div className="flex flex-col w-full gap-2">
           <input
             type="text"
             placeholder="Usuário"
             id="usuario_login"
-            className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
+            className="border border-blue-100 bg-white/60 focus:bg-white transition rounded-xl text-gray-800 px-4 py-3 text-lg font-semibold focus:outline-blue-400 shadow-sm mb-2"
             onChange={(event) => setLogin(event.target.value)}
+            autoFocus
           />
-          <h1 className="text-2xl font-bold mb-4">Senha</h1>
           <input
             type="password"
             placeholder="Senha"
             id="usuario-senha"
-            className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
+            className="border border-blue-100 bg-white/60 focus:bg-white transition rounded-xl text-gray-800 px-4 py-3 text-lg font-semibold focus:outline-blue-400 shadow-sm mb-3"
             onChange={(event) => setSenha(event.target.value)}
           />
-          <button
-            className="cursor-pointer bg-blue-700 text-white font-bold px-6 py-2 rounded-md text-xl hover:bg-blue-900 transition duration-300 ease-in-out"
-            onClick={logar}
-          >
-            Login
-          </button>
-          <h1 className="text-sm font-bold mb-4 text-center px-2">
-            Para conseguir seu login e senha, entre em contato com o setor de TI
-          </h1>
         </div>
+        <button
+          className="w-full cursor-pointer bg-blue-700 text-white font-extrabold px-6 py-3 rounded-xl text-xl shadow-lg hover:bg-blue-900 active:scale-95 transition duration-200"
+          onClick={logar}
+        >
+          Entrar
+        </button>
+        <p className="text-xs font-semibold text-gray-500 mt-3 text-center px-2">
+          Para conseguir seu login e senha, entre em contato com o setor de TI.
+        </p>
       </div>
     </div>
   );
 }
+
 export default Login;
