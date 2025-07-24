@@ -83,8 +83,8 @@ export async function putAssociacao(
   associacao_nome,
   associacao_nome_fantasia,
   associacao_cnpj,
-  associacao_data_contato,
-  associacao_data_fechamento,
+  associacao_data_contato = null,
+  associacao_data_fechamento = null,
   associacao_observacao,
   associacao_cliente,
   id

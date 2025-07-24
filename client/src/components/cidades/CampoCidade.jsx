@@ -8,24 +8,29 @@ function CampoCidade({ cidades, navegaCidade }) {
       {cidades.map((cidade) => (
         <motion.div
           layout
-          whileHover={{ scale: 1.03, y: -2 }}
+          whileHover={{ scale: 1.025, y: -2 }}
           key={cidade.cidade_id}
-          className="bg-white/90 border border-slate-200 rounded-xl p-4 my-2 flex justify-between items-center shadow-sm hover:shadow-lg transition"
+          className="bg-white/90 border border-blue-100 rounded-2xl px-6 py-4 my-3 flex justify-between items-center shadow-lg hover:shadow-xl transition group"
         >
-          <span className="text-lg font-semibold text-slate-700 tracking-tight">
-            {cidade.cidade_nome} <span className="text-blue-400 font-normal">- {cidade.cidade_uf}</span>
+          <span className="text-xl font-bold text-blue-700 tracking-tight drop-shadow-sm select-none">
+            {cidade.cidade_nome}
+            <span className="ml-2 text-lg font-semibold text-blue-400 drop-shadow-none">
+              - {cidade.cidade_uf}
+            </span>
           </span>
           <motion.button
-            whileHover={{ scale: 1.15 }}
-            className="rounded-full bg-blue-100 hover:bg-blue-300 transition px-2 py-2 shadow"
+            whileHover={{ scale: 1.15, rotate: 6 }}
+            whileTap={{ scale: 0.98, rotate: -4 }}
+            className="rounded-full bg-blue-100 group-hover:bg-blue-200 hover:bg-blue-300 transition-all px-3 py-2 shadow-md border border-blue-300 active:scale-95 active:bg-blue-400"
             onClick={() => navegaCidade(cidade.cidade_id, cidade.cidade_nome)}
             title="Acessar cidade"
           >
-            <ExternalLink size={22} className="text-blue-600" />
+            <ExternalLink size={24} className="text-blue-600" />
           </motion.button>
         </motion.div>
       ))}
     </div>
   );
 }
+
 export default CampoCidade;

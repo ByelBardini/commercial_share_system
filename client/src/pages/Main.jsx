@@ -42,7 +42,7 @@ function Main() {
         setCarregando={setCarregando}
       />
 
-      <div className="bg-blue-600/50  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
+      <div className="bg-blue-600/65  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <div />
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
           Bem-vindo(a), <span className="text-blue-300">{localStorage.getItem("usuario_nome")}</span>

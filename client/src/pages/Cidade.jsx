@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { Search, Funnel } from "lucide-react";
+import { Search, Funnel, Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
@@ -29,51 +29,67 @@ function Cidade() {
   }
 
   return (
-    <div
-      className="bg-gray-300 min-h-screen max-w-screen flex flex-col items-center p-6
-        "
-    >
+    <div className="relative min-h-screen w-screen flex flex-col items-center p-6 overflow-x-hidden">
+
+
+      <div className="animated-gradient" />
+
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
       <ModalRegistraAssociacoes
         aparecer={`${cadastro ? "" : "hidden"}`}
         setCadastro={setCadastro}
         getAssociacoesPorCidade={getAssociacoesPorCidade}
       />
-      <ModalVisualizaAssociacao aparecer={`${visualiza ? "" : "hidden"}`} setVisualiza={setVisualiza} dadosAssociacao={dadosAssociacao} navigate={navigate} setCarregando={setCarregando} />
-      <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
+      <ModalVisualizaAssociacao
+        aparecer={`${visualiza ? "" : "hidden"}`}
+        setVisualiza={setVisualiza}
+        dadosAssociacao={dadosAssociacao}
+        navigate={navigate}
+        setCarregando={setCarregando}
+      />
+
+
+      <div className="bg-blue-600/50  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <button
-          className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white cursor-pointer hover:bg-red-500 transition shadow-2xl"
+          className="flex gap-2 items-center text-gray-200 hover:text-red-500 transition px-2 py-1 rounded-lg hover:bg-red-100 font-bold"
           onClick={sair}
+          title="Voltar"
         >
-          Voltar
+          <LogOut size={22} />
+          <span className="text-base font-bold">Voltar</span>
         </button>
-        <h1 className="text-white text-2xl font-bold text-center w-full rounded shadow-2xl">{`Associações de ${localStorage.getItem(
-          "nome_cidade"
-        )}`}</h1>
+        <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
+          Associações de <span className="text-blue-300">{localStorage.getItem("nome_cidade")}</span>
+        </h1>
+        <div className="w-[70px]" />
       </div>
+
+
       <motion.button
-        className="bg-green-400 p-2 h-16 rounded-md mt-18 shadow-xl text-white font-bold text-2xl cursor-pointer hover:bg-green-500 transition"
+        className="bg-green-500 p-3 h-16 rounded-2xl mt-32 shadow-xl text-white font-bold text-lg flex items-center gap-2 hover:bg-green-600 transition border-2 border-white"
         layout
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.06, y: -2 }}
         onClick={() => setCadastro(true)}
       >
-        ADICIONAR ASSOCIAÇÃO
+        <Plus size={24} /> ADICIONAR ASSOCIAÇÃO
       </motion.button>
-      <div className="w-9/10 p-2 h-24 rounded-xl bg-white mt-10 shadow-2xl items-center  flex gap-4">
-        <div className="bg-gray-100 rounded-md h-16 w-7/8 flex items-center px-4 shadow ml-2">
-          <Search size={28} color="#c0c0c0" className="mr-3" />
+
+
+      <div className="w-full max-w-2xl mt-10 p-2 rounded-2xl bg-white/80 shadow-lg border flex items-center gap-3 glass">
+        <div className="flex items-center bg-white/90 rounded-xl flex-1 px-4 shadow-inner border mr-1">
+          <Search size={22} className="text-blue-400 mr-2" />
           <input
             type="text"
-            placeholder="Pesquise o nome da cidade..."
-            id="pesquisa-cidade"
-            className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400"
+            placeholder="Pesquisar associação..."
+            id="pesquisa-associacao"
+            className="w-full bg-transparent p-3 rounded-md text-lg outline-none border-none placeholder-gray-400"
             onChange={(event) => setPesquisa(event.target.value)}
-          ></input>
+          />
         </div>
-        <div className="bg-gray-100 rounded-md h-16 w-1/8 flex items-center px-4 shadow mr-2">
-          <Funnel size={28} color="#c0c0c0" className="mr-3" />
+        <div className="flex items-center bg-white/90 rounded-xl px-4 shadow-inner border ml-1">
+          <Funnel size={20} className="text-blue-400 mr-2" />
           <select
-            className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400"
+            className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[90px]"
             onChange={(event) => setFiltro(event.target.value)}
           >
             <option value="" disabled selected hidden>
@@ -85,7 +101,9 @@ function Cidade() {
           </select>
         </div>
       </div>
-      <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl">
+
+
+      <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
         <ListaAssociacoes
           pesquisa={pesquisa}
           filtroAtivo={filtro}
@@ -100,5 +118,4 @@ function Cidade() {
     </div>
   );
 }
-
 export default Cidade;
