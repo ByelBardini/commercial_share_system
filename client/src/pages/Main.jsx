@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/auth/authService.js";
-import { Search, Funnel } from "lucide-react";
+import { Search, Funnel, LogOut } from "lucide-react";
 import ModalTrocaSenha from "../components/usuarios/modalTrocaSenha.jsx";
 import ListaCidades from "../components/cidades/ListaCidades.jsx";
 import Loading from "../components/default/Loading.jsx";
 
 function Main() {
   const navigate = useNavigate();
-
   const [novaSenha, setNovaSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [pesquisa, setPesquisa] = useState("");
   const [ufs, setUfs] = useState([]);
 
   useEffect(() => {
-    if (localStorage.getItem("usuario_troca_senha") == 1) {
-      setNovaSenha(true);
-    }
+    if (localStorage.getItem("usuario_troca_senha") == 1) setNovaSenha(true);
   }, []);
 
   async function sair() {
@@ -28,49 +25,53 @@ function Main() {
     navigate("/index");
   }
 
-  function navegaCidade(id_cidade, nome_cidade){
-    localStorage.setItem("id_cidade",id_cidade);
-    localStorage.setItem("nome_cidade", nome_cidade)
+  function navegaCidade(id_cidade, nome_cidade) {
+    localStorage.setItem("id_cidade", id_cidade);
+    localStorage.setItem("nome_cidade", nome_cidade);
     navigate("/cidade");
   }
 
   return (
-    <div
-      className="bg-gray-300 min-h-screen max-w-screen flex flex-col justify-center items-center p-6
-        "
-    >
+    <div className="relative min-h-screen w-screen flex flex-col justify-center items-center p-6 overflow-x-hidden">
+      <div className="animated-gradient" />
+
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
       <ModalTrocaSenha
         aparecer={`${novaSenha ? "" : "hidden"}`}
         setNovaSenha={setNovaSenha}
         setCarregando={setCarregando}
       />
-      <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
+
+      <div className="bg-blue-600/50  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
+        <div />
+        <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
+          Bem-vindo(a), <span className="text-blue-300">{localStorage.getItem("usuario_nome")}</span>
+        </h1>
         <button
-          className="cursor-pointer bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white hover:bg-red-500 transition shadow-2xl"
+          className="flex gap-2 items-center text-gray-200 hover:text-red-500 transition px-2 py-1 rounded-lg hover:bg-red-100"
           onClick={sair}
+          title="Sair"
         >
-          Sair
+          <LogOut size={22} />
+          <span className="text-base font-bold">Sair</span>
         </button>
-        <h1 className="text-white text-2xl font-bold text-center w-full rounded shadow-2xl">{`Bem-vindo(a) ${localStorage.getItem(
-          "usuario_nome"
-        )}`}</h1>
       </div>
-      <div className="w-9/10 p-2 h-24 rounded-xl bg-white mt-18 shadow-2xl items-center  flex gap-4">
-        <div className="bg-gray-100 rounded-md h-16 w-7/8 flex items-center px-4 shadow ml-2">
-          <Search size={28} color="#c0c0c0" className="mr-3" />
+      
+      <div className="w-full max-w-2xl mt-32 p-2 rounded-2xl bg-white/80 shadow-lg border flex items-center gap-3 glass">
+        <div className="flex items-center bg-white/90 rounded-xl flex-1 px-4 shadow-inner border mr-1">
+          <Search size={22} className="text-blue-400 mr-2" />
           <input
             type="text"
-            placeholder="Pesquise o nome da cidade..."
+            placeholder="Pesquisar cidade..."
             id="pesquisa-cidade"
-            className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400"
+            className="w-full bg-transparent p-3 rounded-md text-lg outline-none border-none placeholder-gray-400"
             onChange={(event) => setPesquisa(event.target.value)}
-          ></input>
+          />
         </div>
-        <div className="bg-gray-100 rounded-md h-16 w-1/8 flex items-center px-4 shadow mr-2">
-          <Funnel size={28} color="#c0c0c0" className="mr-3" />
+        <div className="flex items-center bg-white/90 rounded-xl px-4 shadow-inner border ml-1">
+          <Funnel size={20} className="text-blue-400 mr-2" />
           <select
-            className="w-full bg-gray-100 p-3 focus:bg-gray-50 rounded-md text-xl outline-none border-none placeholder-gray-400"
+            className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[70px]"
             value={ufs}
             onChange={(e) => setUfs(e.target.value)}
           >
@@ -78,18 +79,16 @@ function Main() {
               UF
             </option>
             {ufs.map((uf) => (
-              <option key={uf} value={uf}>
-                {uf}
-              </option>
+              <option key={uf} value={uf}>{uf}</option>
             ))}
           </select>
         </div>
       </div>
-      <div className="bg-white w-9/10 mt-10 rounded-2xl p-5 shadow-2xl">
+
+      <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
         <ListaCidades pesquisa={pesquisa} setUfs={setUfs} navegaCidade={navegaCidade} />
       </div>
     </div>
   );
 }
-
 export default Main;

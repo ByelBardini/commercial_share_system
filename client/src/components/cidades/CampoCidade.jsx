@@ -3,28 +3,29 @@ import { ExternalLink } from 'lucide-react';
 import { motion } from "framer-motion";
 
 function CampoCidade({ cidades, navegaCidade }) {
-
   return (
     <div className="w-full">
       {cidades.map((cidade) => (
         <motion.div
           layout
-          whileHover={{ scale: 1.01 }}
+          whileHover={{ scale: 1.03, y: -2 }}
           key={cidade.cidade_id}
-          className="bg-gray-100 rounded-md p-3 m-2 shadow-md flex justify-between items-center"
+          className="bg-white/90 border border-slate-200 rounded-xl p-4 my-2 flex justify-between items-center shadow-sm hover:shadow-lg transition"
         >
-          <h1 className="text-xl font-bold p-1">{cidade.cidade_nome} - {cidade.cidade_uf}</h1>
-          <motion.button 
-          layout
-          whileHover={{ scale: 1.15 }}
-          className='rounded-full cursor-pointer'
-          onClick={() => navegaCidade(cidade.cidade_id, cidade.cidade_nome)}>
-            <ExternalLink size={30} className='mr-2' />
+          <span className="text-lg font-semibold text-slate-700 tracking-tight">
+            {cidade.cidade_nome} <span className="text-blue-400 font-normal">- {cidade.cidade_uf}</span>
+          </span>
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            className="rounded-full bg-blue-100 hover:bg-blue-300 transition px-2 py-2 shadow"
+            onClick={() => navegaCidade(cidade.cidade_id, cidade.cidade_nome)}
+            title="Acessar cidade"
+          >
+            <ExternalLink size={22} className="text-blue-600" />
           </motion.button>
         </motion.div>
       ))}
     </div>
   );
 }
-
 export default CampoCidade;

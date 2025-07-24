@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+body, html {
+  overflow-x: hidden !important;
+}
+
+/* Gradiente animado tipo aurora/onda */
+.animated-gradient {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -10;
+  background: linear-gradient(120deg, #0095ff, #456aff 40%, #008cff 100%);
+  background-size: 400% 400%;
+  animation: bgMove 14s ease-in-out infinite;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 60%; }
+  50% { background-position: 100% 40%; }
+  100% { background-position: 0% 60%; }
+}

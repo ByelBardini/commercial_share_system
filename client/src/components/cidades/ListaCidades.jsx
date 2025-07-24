@@ -23,7 +23,7 @@ function ListaCidades({pesquisa, setUfs, navegaCidade}){
     }, [pesquisa]);
 
     return(
-        <div className="bg-white flex flex-col h-full w-full gap-2">
+        <div className="flex flex-col h-full w-full gap-2">
             <CampoCidade cidades= {cidades} navegaCidade={navegaCidade} />
         </div>
     )
