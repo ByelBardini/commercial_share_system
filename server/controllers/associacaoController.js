@@ -88,27 +88,40 @@ export const putAssociacao = (req, res) => {
   const {
     associacao_nome,
     associacao_nome_fantasia,
-    associacao_cnpj,
-    associacao_cidade_id,
+    associacao_cnpj = null,
+    associacao_data_contato = null,
+    associacao_data_fechamento = null,
+    associacao_observacao = null,
+    associacao_cliente,
   } = req.body;
+  console.log(req.body)
 
   if (
     !associacao_nome ||
     !associacao_nome_fantasia ||
-    !associacao_cnpj ||
-    !associacao_cidade_id
+    (associacao_cliente !== 0 && associacao_cliente !== 1)
   ) {
-    return res.status(400).json({ error: "Todos os campos são obrigatórios." });
+    return res.status(400).json({ error: "Os campos são obrigatórios." });
   }
 
-  const sql = `UPDATE associacoes SET associacao_nome = ?, associacao_nome_fantasia = ?, associacao_cnpj = ?, associacao_cidade_id = ? WHERE associacao_id = ?`;
+  const sql = `UPDATE associacoes SET associacao_nome = ?,
+    associacao_nome_fantasia = ?,
+    associacao_cnpj = ?,
+    associacao_data_contato = ?,
+    associacao_data_fechamento = ?,
+    associacao_observacao = ?,
+    associacao_cliente = ?
+    WHERE associacao_id = ?`;
   db.query(
     sql,
     [
-      associacao_nome,
-      associacao_nome_fantasia,
-      associacao_cnpj,
-      associacao_cidade_id,
+    associacao_nome,
+    associacao_nome_fantasia,
+    associacao_cnpj,
+    associacao_data_contato,
+    associacao_data_fechamento,
+    associacao_observacao,
+    associacao_cliente,
       id,
     ],
     (err, results) => {
@@ -123,7 +136,7 @@ export const putAssociacao = (req, res) => {
 
 export const deleteAssociacao = (req, res) => {
   const { id } = req.params;
-
+  
   if (!id) {
     return res.status(400).json({ error: "ID da associação é obrigatório." });
   }
@@ -134,6 +147,6 @@ export const deleteAssociacao = (req, res) => {
       console.error("Erro ao deletar associação:", err);
       return res.status(500).json({ error: "Erro ao deletar associação" });
     }
-    res.json({ message: "Associação deletada com sucesso!" });
+    res.status(200).json({ message: "Associação deletada com sucesso!" });
   });
 };

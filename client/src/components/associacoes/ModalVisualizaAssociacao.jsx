@@ -1,22 +1,38 @@
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 import { Pencil, X, Phone } from "lucide-react";
+import ModalContatos from "../contatos/ModalContatos.jsx";
+import { useState } from "react";
 
 function ModalVisualizaAssociacao({
   aparecer,
   setVisualiza,
   dadosAssociacao,
-  onEditar,
-  onContatos,
+  navigate,
+  setCarregando,
 }) {
+  const [vendoContatos, setVendoContatos] = useState(false);
+  const [contatos, setContatos] = useState([]);
+
+  function modificaAssociacao(id) {
+    localStorage.setItem("associacao_id", id);
+    navigate("/associacao");
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center ${aparecer}`}
-      onClick={() => setVisualiza(false)}
     >
+      <ModalContatos
+        aparecer={`${vendoContatos ? "" : "hidden"}`}
+        setVendoContatos={setVendoContatos}
+        setCarregando={setCarregando}
+        contatos={contatos}
+        setContatos={setContatos}
+      />
       <div
         className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
@@ -100,7 +116,13 @@ function ModalVisualizaAssociacao({
                 type="text"
                 readOnly
                 className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
-                value={dadosAssociacao.associacao_data_contato ? new Date(dadosAssociacao.associacao_data_contato).toLocaleDateString('pt-BR') : "N/A"}
+                value={
+                  dadosAssociacao.associacao_data_contato
+                    ? new Date(
+                        dadosAssociacao.associacao_data_contato
+                      ).toLocaleDateString("pt-BR")
+                    : "N/A"
+                }
               />
             </div>
             <div className="flex-1">
@@ -111,7 +133,13 @@ function ModalVisualizaAssociacao({
                 type="text"
                 readOnly
                 className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
-                value={dadosAssociacao.associacao_data_fechamento ? new Date(dadosAssociacao.associacao_data_fechamento).toLocaleDateString('pt-BR') : "N/A"}
+                value={
+                  dadosAssociacao.associacao_data_fechamento
+                    ? new Date(
+                        dadosAssociacao.associacao_data_fechamento
+                      ).toLocaleDateString("pt-BR")
+                    : "N/A"
+                }
               />
             </div>
           </div>
@@ -120,13 +148,13 @@ function ModalVisualizaAssociacao({
         <div className="flex gap-4 mt-8">
           <button
             className="cursor-pointer flex-1 flex justify-center items-center bg-green-500 hover:bg-green-600 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
-            onClick={onContatos}
+            onClick={() => setVendoContatos(true)}
           >
             <Phone className="mr-2" /> Contatos
           </button>
           <button
             className="cursor-pointer flex-1 flex justify-center items-center bg-yellow-500 hover:bg-yellow-600 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
-            onClick={onEditar}
+            onClick={() => modificaAssociacao(dadosAssociacao.associacao_id)}
           >
             <Pencil className="mr-2" /> Editar
           </button>

@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import cidadeRoutes from "./routes/cidadeRoutes.js";
 import associacaoRoutes from "./routes/associacaoRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
+import contatoRoutes from "./routes/contatoRoutes.js"
 
 dotenv.config();
 
@@ -37,5 +38,6 @@ app.use(authRoutes);
 app.use(cidadeRoutes);
 app.use(associacaoRoutes);
 app.use(usuarioRoutes);
+app.use(contatoRoutes);
 
 export default app;

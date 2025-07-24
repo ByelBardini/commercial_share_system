@@ -1,53 +1,136 @@
-const URL = `http://localhost:3000/associacao`
+const URL = `http://localhost:3000/associacao`;
 
-export async function getAssociacoesPorCidade(id_cidade){
-    try{
-        const response = await fetch(`${URL}/cidade/${id_cidade}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        });
-
-        const data = await response.json();
-        return data;
-    } catch(err){
-        console.error("Erro ao buscar associação:", err);
+export async function getAssociacoesPorCidade(id_cidade) {
+  try {
+    const response = await fetch(`${URL}/cidade/${id_cidade}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao buscar associações");
     }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Erro ao buscar associação:", err);
+  }
 }
 
-export async function postAssociacao(associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente) {
-    try{
-        const response = fetch(`${URL}`, {
-            method: "POST",
-            headers:{
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente}),
-        });
-
-        const data = (await response).json();
-        return data;
-    }catch(err){
-        console.error("Erro ao buscar associação:", err);
+export async function postAssociacao(
+  associacao_cidade_id,
+  associacao_nome,
+  associacao_nome_fantasia,
+  associacao_cnpj,
+  associacao_data_contato,
+  associacao_data_fechamento,
+  associacao_observacao,
+  associacao_cliente
+) {
+  try {
+    const response = fetch(`${URL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        associacao_cidade_id,
+        associacao_nome,
+        associacao_nome_fantasia,
+        associacao_cnpj,
+        associacao_data_contato,
+        associacao_data_fechamento,
+        associacao_observacao,
+        associacao_cliente,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao cadastrar contatos");
     }
+
+    const data = (await response).json();
+    return data;
+  } catch (err) {
+    console.error("Erro ao cadastrar associação:", err);
+  }
 }
 
-export async function getAssociacaoFull(associacao_id){
-    try{
-        const response = await fetch(`${URL}/${associacao_id}`,{
-            method: "GET",
-            headers:{
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-        });
-
-        const dados = (await response).json();
-        return dados;
-    }catch(err){
-        console.error("Erro ao buscar associação:", err);
+export async function getAssociacaoFull(associacao_id) {
+  try {
+    const response = await fetch(`${URL}/${associacao_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao buscar associação");
     }
+
+    const dados = (await response).json();
+    return dados;
+  } catch (err) {
+    console.error("Erro ao buscar associação:", err);
+  }
+}
+
+export async function putAssociacao(
+  associacao_nome,
+  associacao_nome_fantasia,
+  associacao_cnpj,
+  associacao_data_contato,
+  associacao_data_fechamento,
+  associacao_observacao,
+  associacao_cliente,
+  id
+) {
+  try {
+    const response = await fetch(`${URL}/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        associacao_nome,
+        associacao_nome_fantasia,
+        associacao_cnpj,
+        associacao_data_contato,
+        associacao_data_fechamento,
+        associacao_observacao,
+        associacao_cliente,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao buscar associação");
+    }
+
+    await response;
+  } catch (err) {
+    console.error("Erro ao editar associação:", err);
+  }
+}
+
+export async function deletaAssociacao(id) {
+  try {
+    const response = await fetch(`${URL}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao deletar associação");
+    }
+
+    await response;
+  } catch (err) {
+    console.error("Erro ao buscar associação:", err);
+  }
 }

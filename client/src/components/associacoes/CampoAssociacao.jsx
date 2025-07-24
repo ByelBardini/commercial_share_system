@@ -5,10 +5,16 @@ import { getAssociacaoFull } from "../../services/api/associacaoService.js"
 
 function CampoAssociacao({ associacoes, setCarregando, setVisualiza, setDadosAssociacao, navigate }) {
 
+    function modificaAssociacao(id){
+        localStorage.setItem("associacao_id", id);
+        navigate("/associacao")
+    }
+
     async function visualizaAssociacao(id){
         console.log("clicado", id);
         setCarregando(true);
         const dados = await getAssociacaoFull(id);
+        localStorage.setItem("associacao_id", id)
         console.log(dados);
         setDadosAssociacao(dados);
         setCarregando(false);
@@ -47,6 +53,7 @@ function CampoAssociacao({ associacoes, setCarregando, setVisualiza, setDadosAss
               layout
               whileHover={{ scale: 1.15 }}
               className="cursor-pointer mr-4"
+              onClick={() => modificaAssociacao(associacao.associacao_id)}
             >
               <SquarePen size={30} />
             </motion.button>
