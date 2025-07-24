@@ -7,12 +7,15 @@ import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
 import Loading from "../components/default/Loading.jsx";
 import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
 import ListaAssociacoes from "../components/associacoes/ListaAssociacoes.jsx";
+import ModalVisualizaAssociacao from "../components/associacoes/ModalVisualizaAssociacao.jsx"
 
 function Cidade() {
   const [cadastro, setCadastro] = useState(false);
   const [carregando, setCarregando] = useState(false);
+  const [visualiza, setVisualiza] = useState(false);
 
   const [associacoesRoot, setAssociacoesRoot] = useState([]);
+  const [dadosAssociacao, setDadosAssociacao] = useState([]);
 
   const [pesquisa, setPesquisa] = useState("");
   const [filtro, setFiltro] = useState("");
@@ -36,6 +39,7 @@ function Cidade() {
         setCadastro={setCadastro}
         getAssociacoesPorCidade={getAssociacoesPorCidade}
       />
+      <ModalVisualizaAssociacao aparecer={`${visualiza ? "" : "hidden"}`} setVisualiza={setVisualiza} dadosAssociacao={dadosAssociacao} />
       <div className="w-screen h-16 bg-blue-800 fixed top-0 left-0 z-50 flex items-center justify-between px-4">
         <button
           className="bg-red-400 rounded-xl text-xl font-bold px-4 py-1 text-white cursor-pointer hover:bg-red-500 transition shadow-2xl"
@@ -75,8 +79,8 @@ function Cidade() {
             <option value="" disabled selected hidden>
               Filtrar
             </option>
-            <option value={1}>Ativos</option>
-            <option value={0}>Inativos</option>
+            <option value={1}>Clientes</option>
+            <option value={0}>Outros</option>
             <option value={""}>Ambos</option>
           </select>
         </div>
@@ -88,6 +92,8 @@ function Cidade() {
           setCarregando={setCarregando}
           associacoesRoot={associacoesRoot}
           setAssociacoesRoot={setAssociacoesRoot}
+          setDadosAssociacao={setDadosAssociacao}
+          setVisualiza={setVisualiza}
           navigate={navigate}
         />
       </div>

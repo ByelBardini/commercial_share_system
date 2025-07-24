@@ -34,3 +34,20 @@ export async function postAssociacao(associacao_cidade_id, associacao_nome, asso
         console.error("Erro ao buscar associação:", err);
     }
 }
+
+export async function getAssociacaoFull(associacao_id){
+    try{
+        const response = await fetch(`${URL}/${associacao_id}`,{
+            method: "GET",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        });
+
+        const dados = (await response).json();
+        return dados;
+    }catch(err){
+        console.error("Erro ao buscar associação:", err);
+    }
+}

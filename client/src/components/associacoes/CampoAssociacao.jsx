@@ -1,8 +1,20 @@
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 import { SquarePen, Eye } from "lucide-react";
+import { getAssociacaoFull } from "../../services/api/associacaoService.js"
 
-function CampoAssociacao({ associacoes, navigate }) {
+function CampoAssociacao({ associacoes, setCarregando, setVisualiza, setDadosAssociacao, navigate }) {
+
+    async function visualizaAssociacao(id){
+        console.log("clicado", id);
+        setCarregando(true);
+        const dados = await getAssociacaoFull(id);
+        console.log(dados);
+        setDadosAssociacao(dados);
+        setCarregando(false);
+        setVisualiza(true);
+    }
+
   return (
     <div className="w-full">
       {associacoes.map((associacao) => (
@@ -27,7 +39,7 @@ function CampoAssociacao({ associacoes, navigate }) {
               layout
               whileHover={{ scale: 1.15 }}
               className="cursor-pointer"
-              onClick={() => navigate("/associacao")}
+              onClick={() => visualizaAssociacao(associacao.associacao_id)}
             >
               <Eye size={34} />
             </motion.button>
