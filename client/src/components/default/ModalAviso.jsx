@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { AlertTriangle, Info, CheckCircle, XCircle } from "lucide-react";
+import { AlertTriangle, Info, CheckCircle } from "lucide-react";
 
 function getIcon(className) {
   if (className?.includes("red"))

@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { postAssociacao } from "../../services/api/associacaoService.js";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ModalAviso from "../default/ModalAviso";
 import Loading from "../default/Loading";
 
 function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
   const [erro, setErro] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState("");
+
   const [concluido, setConcluido] = useState(false);
   const [carregando, setCarregando] = useState(false);
 
@@ -18,10 +20,24 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
   const [dataContato, setDataContato] = useState("");
   const [dataFechamento, setDataFechamento] = useState("");
 
-  async function cadastra() {
+  function verificaDataValida(data) {
+    const hoje = new Date();
+    ("");
+    const hojeStr = hoje.toISOString().slice(0, 10);
 
+    if (data > hojeStr) {
+      setErroMensagem("A data não pode ser no futuro!");
+      setErro(true);
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  async function cadastra() {
     if (!nome.trim() || !cliente.trim()) {
       setErro(true);
+      setErroMensagem("Insira os dados Obrigatórios!");
       return;
     } else {
       setCarregando(true);
@@ -44,7 +60,7 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
           setCadastro(false);
           window.location.reload();
         }, 500);
-      }else{
+      } else {
         setCarregando(false);
         window.location.reload();
       }
@@ -64,18 +80,24 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
         onClick={(e) => e.stopPropagation()}
       >
         <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-        <ModalAviso
-          texto="Insira os dados Obrigatórios!"
-          className="bg-red-600"
-          aparecer={`${erro ? "" : "hidden"}`}
-          onClick={() => setErro(false)}
-        />
-        <ModalAviso
-          texto="Associação Cadastrada com Sucesso!"
-          className="bg-green-600"
-          aparecer={`${concluido ? "" : "hidden"}`}
-          botao={"hidden"}
-        />
+        <AnimatePresence>
+          {erro && (
+            <ModalAviso
+              texto={erroMensagem}
+              className="bg-red-600"
+              onClick={() => setErro(false)}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {concluido && (
+            <ModalAviso
+              texto="Associação Cadastrada com Sucesso!"
+              className="bg-green-600"
+              botao={"hidden"}
+            />
+          )}
+        </AnimatePresence>
         <button
           className="cursor-pointer absolute top-3 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold"
           onClick={() => setCadastro(false)}
@@ -162,7 +184,11 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
               <input
                 type="date"
                 className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
-                onChange={(event) => setDataContato(event.target.value)}
+                onChange={(event) => {
+                  if (verificaDataValida(event.target.value)) {
+                    setDataContato(event.target.value);
+                  }
+                }}
               />
             </div>
             <div className="flex-1">
@@ -172,7 +198,11 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
               <input
                 type="date"
                 className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
-                onChange={(event) => setDataFechamento(event.target.value)}
+                onChange={(event) => {
+                  if (verificaDataValida(event.target.value)) {
+                    setDataFechamento(event.target.value);
+                  }
+                }}
               />
             </div>
           </div>

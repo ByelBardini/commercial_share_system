@@ -16,6 +16,7 @@ import Loading from "../components/default/Loading.jsx";
 import ListaContatos from "../components/contatos/ListaContatos.jsx";
 import ModalAdicionaContato from "../components/contatos/ModalAdicionaContato.jsx";
 import ModalConfirmacao from "../components/default/ModalConfirmacao.jsx";
+import ModalAviso from "../components/default/ModalAviso.jsx";
 
 function formatarDataParaInput(data) {
   if (!data) return "";
@@ -58,6 +59,10 @@ function Associacao() {
   const [onSim, setOnSim] = useState();
   const [aviso, setAviso] = useState(false);
 
+  const [erro, setErro] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState("");
+  const [erroCor, setErroCor] = useState("");
+
   const [contatosOriginais, setContatosOriginais] = useState([]);
   const [contatoModificado, setContatoModificado] = useState([]);
   const [contatosModificados, setContatosModificados] = useState();
@@ -73,6 +78,20 @@ function Associacao() {
   const [precoPorPlaca, setPrecoPorPlaca] = useState("");
 
   const navigate = useNavigate();
+
+  function verificaDataValida(data) {
+    const hoje = new Date();
+    const hojeStr = hoje.toISOString().slice(0, 10);
+
+    if (data > hojeStr) {
+      setErroMensagem("A data não pode ser no futuro!");
+      setErroCor("red");
+      setErro(true);
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   function clicaExcluir() {
     setCorModal("amarela");
@@ -182,7 +201,15 @@ function Associacao() {
   return (
     <div className="relative min-h-screen w-screen flex flex-col items-center p-6 overflow-x-hidden">
       <div className="animated-gradient" />
-
+      <AnimatePresence>
+        {erro && (
+          <ModalAviso
+            texto={erroMensagem}
+            className={erroCor}
+            onClick={() => setErro(false)}
+          />
+        )}
+      </AnimatePresence>
       {carregando && <Loading />}
       <AnimatePresence>
         {modalAviso && (
@@ -296,7 +323,11 @@ function Associacao() {
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               value={formatarDataParaInput(dataContato)}
-              onChange={(event) => setDataContato(event.target.value)}
+              onChange={(event) => {
+                if (verificaDataValida(event.target.value)) {
+                  setDataContato(event.target.value);
+                }
+              }}
             />
           </div>
           <div className="w-1/3">
@@ -307,7 +338,11 @@ function Associacao() {
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               value={formatarDataParaInput(dataFechamento)}
-              onChange={(event) => setDataFechamento(event.target.value)}
+              onChange={(event) => {
+                if (verificaDataValida(event.target.value)) {
+                  setDataFechamento(event.target.value);
+                }
+              }}
             />
           </div>
         </div>
