@@ -79,13 +79,15 @@ function Associacao() {
 
   async function salvar() {
     const associacao_id = localStorage.getItem("associacao_id");
+    const dataContatoFormatada = formatarParaInput(dataContato) || null;
+    const dataFechamentoFormatada = formatarParaInput(dataFechamento) || null;
     await salvaContatos(contatosOriginais, contatosModificados, associacao_id);
     await putAssociacao(
       nome,
       fantasia,
       cnpj,
-      formatarParaInput(dataContato),
-      formatarParaInput(dataFechamento),
+      dataContatoFormatada,
+      dataFechamentoFormatada,
       obs,
       cliente,
       associacao_id
