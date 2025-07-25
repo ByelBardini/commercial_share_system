@@ -1,67 +1,73 @@
+import { Usuario } from "../models/index.js"
 import jwt from "jsonwebtoken";
-import db from "../config/db.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
 
 const CHAVE = process.env.SECRET_KEY_LOGIN;
 
-export const login = (req, res) => {
+export async function login(req, res) {
   const { usuario_login, usuario_senha } = req.body;
 
   if (!usuario_login || !usuario_senha) {
-    return res.status(400).json({ error: "Login e senha são obrigatórios." });
+    res
+      .status(400)
+      .json({ error: "Login e senha são obrigatórios." });
   }
 
-  const sql = `SELECT * FROM usuarios WHERE usuario_login = ?`;
-  db.query(sql, [usuario_login], (err, results) => {
-    if (err) {
-      console.error("Erro na consulta:", err);
-      return res.status(500).json({ error: "Erro ao validar usuário" });
+  try{
+
+    const usuario = await Usuario.findOne({where: {usuario_login:usuario_login}});
+    
+    if( usuario === null ){
+      res
+        .status(404)
+        .json({error: "Login Incorreto"})
     }
 
-    if (results.length > 0) {
-      bcrypt.compare(usuario_senha, results[0].usuario_senha, (err, match) => {
-        if (err) {
-          console.error("Erro ao comparar senhas:", err);
-          return res.status(500).json({ error: "Erro ao validar senha" });
-        }
+    bcrypt.compare(usuario_senha, usuario.usuario_senha, (err, match) => {
+      if (err) {
+        console.error("Erro ao comparar senhas:", err);
+        return res.status(500).json({ error: "Erro ao validar senha" });
+      }
 
-        if (match) {
-          const payload = {
-            usuario_nome: results[0].usuario_nome,
-          };
-          const userSession = {
-            usuario_id: results[0].usuario_id,
-            usuario_role: results[0].usuario_role,
-          };
-          const resposta = {
-            usuario_nome: results[0].usuario_nome,
-            usuario_troca_senha: results[0].usuario_troca_senha,
-          };
+      if (match) {
+        const payload = {
+          usuario_nome: usuario.usuario_nome,
+        };
+        const userSession = {
+          usuario_id: usuario.usuario_id,
+          usuario_role: usuario.usuario_role,
+        };
+        const resposta = {
+          usuario_nome: usuario.usuario_nome,
+          usuario_troca_senha: usuario.usuario_troca_senha,
+        };
 
-          const token = jwt.sign(payload, CHAVE, { expiresIn: "2h" });
+        const token = jwt.sign(payload, CHAVE, { expiresIn: "2h" });
 
-          req.session.user = userSession;
-          res
-            .status(200)
-            .cookie("token", token, {
-              httpOnly: true,
-              sameSite: "Lax",
-              secure: false,
-              path: "/",
-              maxAge: 2 * 60 * 60 * 1000,
-            })
-            .json(resposta);
-        } else {
-          res.status(401).json({ error: "Usuário ou senha inválidos." });
-        }
-      });
-    } else {
-      res.status(401).json({ error: "Usuário ou senha inválidos." });
-    }
-  });
-};
+        req.session.user = userSession;
+        res
+          .status(200)
+          .cookie("token", token, {
+            httpOnly: true,
+            sameSite: "Lax",
+            secure: false,
+            path: "/",
+            maxAge: 2 * 60 * 60 * 1000,
+          })
+          .json(resposta);
+      } else {
+        res.status(401).json({ error: "Usuário ou senha inválidos." });
+      }
+    });
+  }catch(err){
+    console.error("Erro na consulta:", err);
+    res
+      .status(500)
+      .json({ error: "Erro ao validar usuário" });
+  }
+}
 
 export const logout = (req, res) => {
   req.session.destroy((err) => {

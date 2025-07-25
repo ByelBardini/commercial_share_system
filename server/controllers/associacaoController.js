@@ -1,57 +1,63 @@
-import db from "../config/db.js";
+import { Associacao } from "../models/index.js";
 
-export const getAssociacoesPorCidade = (req, res) => {
+export async function getAssociacoesPorCidade(req, res) {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ error: "ID da cidade é obrigatório." });
+    res.status(400).json({ error: "ID da empresa é obrigatório." });
   }
 
-  const sql = `SELECT associacao_id, associacao_nome_fantasia, associacao_cliente, associacao_favorito FROM associacoes WHERE associacao_cidade_id = ? ORDER BY associacao_favorito = 0, associacao_nome_fantasia`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao buscar associações por cidade:", err);
-      return res
-        .status(500)
-        .json({
-          error: "Erro interno ao buscar empresas, tente novamente mais tarde.",
-        });
-    }
-    res.json(results);
-  });
-};
+  try {
+    const associacoes = await Associacao.findAll({
+      where: { associacao_cidade_id: id },
+      attributes: [
+        "associacao_id",
+        "associacao_nome_fantasia",
+        "associacao_cliente",
+        "associacao_favorito"
+      ],
+      order: [
+        ["associacao_favorito", "DESC"],
+        ["associacao_nome_fantasia", "ASC"]
+      ]
+    });
+    res.json(associacoes);
+  } catch (err) {
+    console.error("Erro ao buscar associações por cidade:", err);
+    res.status(500).json({
+      error: "Erro interno ao buscar empresas, tente novamente mais tarde.",
+    });
+  }
+}
 
-export const getAssociacaoFull = (req, res) => {
+export async function getAssociacaoFull(req, res){
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ error: "ID da empresa é obrigatório." });
+    res.status(400).json({ error: "ID da empresa é obrigatório." });
   }
 
-  const sql = `SELECT * FROM associacoes WHERE associacao_id = ?`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao buscar associação:", err);
-      return res
-        .status(500)
-        .json({
-          error:
-            "Erro interno ao buscar dados da empresa, tente novamente mais tadde.",
-        });
-    }
-    if (results.length === 0) {
-      return res
+  try{
+    const associacao = await Associacao.findByPk(id)
+    if (associacao.length === null){
+      res
         .status(404)
         .json({
           error:
             "Empresa não encontrada, verifique com um administrador do sistema.",
         });
+    }else{
+      res.status(200).json(associacao);
     }
-    res.json(results[0]);
-  });
+  } catch(err){
+    console.error("Erro ao buscar associação:", err);
+    res.status(500).json({
+      error: "Erro interno ao buscar empresas, tente novamente mais tarde.",
+    });
+  }
 };
 
-export const postAssociacao = (req, res) => {
+export async function postAssociacao(req, res){
   const {
     associacao_cidade_id,
     associacao_nome,
@@ -69,7 +75,7 @@ export const postAssociacao = (req, res) => {
     !associacao_cidade_id ||
     !associacao_cliente
   ) {
-    return res
+    res
       .status(400)
       .json({ error: "Todos os campos obrigatórios devem ser preenchidos." });
   }
@@ -78,55 +84,50 @@ export const postAssociacao = (req, res) => {
     associacao_nome.trim().length < 2 ||
     associacao_nome.trim().length > 100
   ) {
-    return res.status(400).json({ error: "Nome da empresa inválido." });
+    res.status(400).json({ error: "Nome da empresa inválido." });
   }
   if (
     typeof associacao_nome_fantasia !== "string" ||
     associacao_nome_fantasia.trim().length < 2 ||
     associacao_nome_fantasia.trim().length > 100
   ) {
-    return res.status(400).json({ error: "Nome fantasia da empresa inválido." });
+    res.status(400).json({ error: "Nome fantasia da empresa inválido." });
   }
   if (associacao_cnpj && associacao_cnpj.length > 30) {
-    return res.status(400).json({ error: "CNPJ muito longo." });
+    res.status(400).json({ error: "CNPJ muito longo." });
   }
   if (associacao_observacao && associacao_observacao.length > 200) {
-    return res.status(400).json({ error: "Observação muito longa." });
+    res.status(400).json({ error: "Observação muito longa." });
   }
 
-  const sql = `INSERT INTO associacoes (associacao_cidade_id, associacao_nome, associacao_nome_fantasia, associacao_cnpj, associacao_data_contato, associacao_data_fechamento, associacao_observacao,associacao_cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-  db.query(
-    sql,
-    [
-      associacao_cidade_id,
-      associacao_nome,
-      associacao_nome_fantasia,
-      associacao_cnpj,
-      associacao_data_contato,
-      associacao_data_fechamento,
-      associacao_observacao,
-      associacao_cliente,
-    ],
-    (err, results) => {
-      if (err) {
-        console.error("Erro ao cadastrar empresa:", err);
-        if (err.code === "ER_DUP_ENTRY") {
-          return res
-            .status(409)
-            .json({ error: "Empresa já cadastrada (CNPJ ou nome duplicado)." });
-        }
-        return res
-          .status(500)
-          .json({
-            error: "Erro do servidor ao cadastrar empresa, tente mais tarde.",
-          });
-      }
-      res.status(201).json({ message: "Empresa cadastrada com sucesso!" });
+  try{
+    await Associacao.create({
+      associacao_cidade_id:associacao_cidade_id, 
+      associacao_nome:associacao_nome, 
+      associacao_nome_fantasia:associacao_nome_fantasia,
+      associacao_cnpj:associacao_cnpj,
+      associacao_data_contato:associacao_data_contato,
+      associacao_data_fechamento:associacao_data_fechamento,
+      associacao_observacao:associacao_observacao,
+      associacao_cliente:associacao_cliente
+    })
+    res.status(201).json({ message: "Empresa cadastrada com sucesso!" });
+  }catch (err){
+    console.error("Erro ao cadastrar empresa:", err);
+    if (err.name === "SequelizeUniqueConstraintError") {
+      res
+        .status(409)
+        .json({ error: "Empresa já cadastrada (CNPJ ou nome duplicado)." });
     }
-  );
-};
+    res
+      .status(500)
+      .json({
+        error: "Erro do servidor ao cadastrar empresa, tente mais tarde.",
+    });
+  }
+}
 
-export const putAssociacao = (req, res) => {
+export async function putAssociacao(req, res) {
   const { id } = req.params;
   const {
     associacao_nome,
@@ -141,12 +142,17 @@ export const putAssociacao = (req, res) => {
   } = req.body;
   console.log(req.body);
 
+
+  if (!id) {
+    res.status(400).json({ error: "ID da empresa é obrigatório." });
+  }
+
   if (
     !associacao_nome ||
     !associacao_nome_fantasia ||
     (associacao_cliente !== 0 && associacao_cliente !== 1)
   ) {
-    return res
+    res
       .status(400)
       .json({ error: "Todos os campos obrigatórios devem ser preenchidos." });
   }
@@ -155,111 +161,117 @@ export const putAssociacao = (req, res) => {
     associacao_nome.trim().length < 2 ||
     associacao_nome.trim().length > 100
   ) {
-    return res.status(400).json({ error: "Nome da empresa inválido." });
+    res.status(400).json({ error: "Nome da empresa inválido." });
   }
   if (
     typeof associacao_nome_fantasia !== "string" ||
     associacao_nome_fantasia.trim().length < 2 ||
     associacao_nome_fantasia.trim().length > 100
   ) {
-    return res.status(400).json({ error: "Nome fantasia da empresa inválido." });
+    res.status(400).json({ error: "Nome fantasia da empresa inválido." });
   }
   if (associacao_cnpj && associacao_cnpj.length > 30) {
-    return res.status(400).json({ error: "CNPJ muito longo." });
+    res.status(400).json({ error: "CNPJ muito longo." });
   }
   if (associacao_observacao && associacao_observacao.length > 100) {
-    return res.status(400).json({ error: "Observação muito longa." });
+    res.status(400).json({ error: "Observação muito longa." });
   }
 
-  const sql = `UPDATE associacoes SET associacao_nome = ?,
-    associacao_nome_fantasia = ?,
-    associacao_cnpj = ?,
-    associacao_data_contato = ?,
-    associacao_data_fechamento = ?,
-    associacao_observacao = ?,
-    associacao_preco_placa = ?,
-    associacao_preco_instalacao = ?,
-    associacao_cliente = ?
-    WHERE associacao_id = ?`;
-  db.query(
-    sql,
-    [
-      associacao_nome,
-      associacao_nome_fantasia,
-      associacao_cnpj,
-      associacao_data_contato,
-      associacao_data_fechamento,
-      associacao_observacao,
-      associacao_preco_placa,
-      associacao_preco_instalacao,
-      associacao_cliente,
-      id,
-    ],
-    (err, results) => {
-      if (err) {
-        console.error("Erro ao editar empresa:", err);
-        if (err.code === "ER_DUP_ENTRY") {
-          return res
-            .status(409)
-            .json({ error: "Já existe uma empresa com esse nome ou CNPJ" });
-        }
-        return res
-          .status(500)
-          .json({
-            error: "Erro do servidor ao editar empresa, tente mais tarde.",
-          });
-      }
-      res.status(201).json({ message: "Empresa editada com sucesso!" });
-    }
-  );
-};
+  try{
 
-export const favoritarAssociacao = (req, res) => {
+    const [execucoes] = await Associacao.update({
+      associacao_nome:associacao_nome,
+      associacao_nome_fantasia:associacao_nome_fantasia,
+      associacao_cnpj:associacao_cnpj,
+      associacao_data_contato:associacao_data_contato,
+      associacao_data_fechamento:associacao_data_fechamento,
+      associacao_observacao:associacao_observacao,
+      associacao_preco_placa:associacao_preco_placa,
+      associacao_preco_instalacao:associacao_preco_instalacao,
+      associacao_cliente:associacao_cliente,
+    },
+    {
+      where:{
+        associacao_id:id,
+      },
+    })
+
+    res.status(201).json({ message: "Empresa editada com sucesso!" });
+  }catch(err){
+    if (err) {
+      console.error("Erro ao editar empresa:", err);
+      if (err.name === "SequelizeUniqueConstraintError") {
+        res
+          .status(409)
+          .json({ error: "Já existe uma empresa com esse nome ou CNPJ" });
+      }
+      res
+        .status(500)
+        .json({
+          error: "Erro do servidor ao editar empresa, tente mais tarde.",
+        });
+    }
+    
+  }
+}
+
+export async function favoritarAssociacao(req, res){
   const { id } = req.params
 
   if (!id) {
-    return res.status(400).json({ error: "ID da empresa é obrigatório." });
+    res.status(400).json({ error: "ID da empresa é obrigatório." });
   }
 
-  const sql = `UPDATE associacoes 
-                    SET associacao_favorito = 
-                        CASE
-                            WHEN associacao_favorito IS NULL OR associacao_favorito = 0 THEN 1
-                            WHEN associacao_favorito = 1 THEN 0
-                            ELSE associacao_favorito
-                        END
-                  WHERE associacao_id = ?`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao favoritar/desfavoritar empresa:", err);
-      return res
+  try{
+
+    const associacao = await Associacao.findByPk(id);
+    if (!associacao) {
+      res.status(404).json({ error: "Empresa não encontrada, fale com um administrador do sistema" });
+    }
+    associacao.associacao_favorito = (!associacao.associacao_favorito || associacao.associacao_favorito === 0) ? 1 : 0;
+    await associacao.save();
+
+    res.status(200).json({
+      message: associacao.associacao_favorito
+        ? "Empresa marcada como favorita."
+        : "Empresa removida dos favoritos."
+    });
+
+  }catch(err){
+    console.error("Erro ao favoritar/desfavoritar empresa:", err);
+      res
         .status(500)
         .json({
           error: "Erro interno ao ao favoritar/desfavoritar empresa, tente mais tarde",
         });
-    }
-    res.status(200).json({ message: "Empresa favoritada/desfavoritada com sucesso!" });
-  });
-};
+  }
+}
 
-
-export const deleteAssociacao = (req, res) => {
+export async function deleteAssociacao(req, res) {
   const { id } = req.params;
 
   if (!id) {
-    return res.status(400).json({ error: "ID da empresa é obrigatório." });
+    res.status(400).json({ error: "ID da empresa é obrigatório." });
   }
 
-  const sql = `DELETE FROM associacoes WHERE associacao_id = ?`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao deletar empresa:", err);
-      return res
-        .status(500)
-        .json({
-          error: "Erro interno ao ao deletar empresa, tente mais tarde",
-        });
+  try{
+
+    const [execucoes] = await Associacao.destroy({
+      where:{
+        associacao_id:id,
+      },
+    });
+
+    if (execucoes === 0) {
+      res.status(404).json({ error: "Empresa não encontrada para editar, fale com um administrador do sistema" });
     }
-    res.status(200).json({ message: "Empresa deletada com sucesso!" });
-  });
+
+  }catch(err){
+    console.error("Erro ao deletar empresa:", err);
+    res
+      .status(500)
+      .json({
+        error: "Erro interno ao ao deletar empresa, tente mais tarde",
+      });
+  }
 };

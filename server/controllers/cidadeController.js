@@ -1,86 +1,138 @@
-import db from "../config/db.js";
+import { Cidade } from "../models/index.js"
 
-export const getCidades = (req, res) => {
-  const sql = "SELECT * FROM cidades ORDER BY cidade_favorito = 0, cidade_nome";
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("Erro ao buscar cidades:", err);
-      return res.status(500).json({ error: "Erro ao buscar cidades" });
-    }
-    res.json(results);
-  });
-};
+export async function getCidades(req, res){
+  try{
 
-export const postCidade = (req, res) => {
+    const cidades = await Cidade.findAll({
+      order: [
+        ["cidade_favorito", "DESC"],
+        ["cidade_nome", "ASC"]
+      ]
+    });
+
+    res.status(200).json(cidades);
+
+  }catch(err){
+    console.error("Erro ao buscar cidades:", err);
+    res.status(500).json({ error: "Erro ao buscar cidades, fale com um administrador" });
+  }
+}
+
+export async function postCidade(req, res){
   const { cidade_nome, cidade_uf } = req.body;
 
   if (!cidade_nome || !cidade_uf) {
-    return res
+    res
       .status(400)
       .json({ error: "Nome e UF da cidade são obrigatórios." });
   }
 
-  const sql = `INSERT INTO cidades (cidade_nome, cidade_uf) VALUES (?, ?)`;
-  db.query(sql, [cidade_nome, cidade_uf], (err, results) => {
-    if (err) {
-      console.error("Erro ao cadastrar cidade:", err);
-      return res.status(500).json({ error: "Erro ao cadastrar cidade" });
-    }
+  try{
+
+    await Cidade.create({
+      cidade_nome:cidade_nome,
+      cidade_uf:cidade_uf,
+    })
+
     res.status(201).json({ message: "Cidade cadastrada com sucesso!" });
-  });
-};
 
-export const putCidade = (req, res) => {
+  }catch(err){
+    console.error("Erro ao cadastrar cidade:", err);
+    res.status(500).json({ error: "Erro ao cadastrar cidade" });
+  }
+}
+
+export async function putCidade(req, res) {
   const { id } = req.params;
   const { cidade_nome, cidade_uf } = req.body;
 
+  if (!id) {
+    res.status(400).json({ error: "ID da cidade é obrigatório." });
+  }
+
   if (!cidade_nome || !cidade_uf) {
-    return res
+    res
       .status(400)
       .json({ error: "Nome e UF da cidade são obrigatórios." });
   }
 
-  const sql = `UPDATE cidades SET cidade_nome = ?, cidade_uf = ? WHERE cidade_id = ?`;
-  db.query(sql, [cidade_nome, cidade_uf, id], (err, results) => {
-    if (err) {
-      console.error("Erro ao atualizar cidade:", err);
-      return res.status(500).json({ error: "Erro ao atualizar cidade" });
-    }
-    res.json({ message: "Cidade atualizada com sucesso!" });
-  });
-};
+  try{
 
-export const favoritaCidade = (req, res) => {
+    const [execucoes] = await Cidade.update({
+      cidade_nome:cidade_nome,
+      cidade_uf:cidade_uf,
+    },
+    {
+      where:{
+        cidade_id:id,
+      }
+    });
+    
+    res.status(201).json({ message: "Cidade atualizada com sucesso!" });
+
+  }catch(err){
+    console.error("Erro ao atualizar cidade:", err);
+    res.status(500).json({ error: "Erro ao atualizar cidade" });
+  }
+}
+
+export async function favoritaCidade(req, res) {
   const { id } = req.params;
 
-  const sql = `UPDATE cidades 
-                    SET cidade_favorito = 
-                        CASE
-                            WHEN cidade_favorito IS NULL OR cidade_favorito = 0 THEN 1
-                            WHEN cidade_favorito = 1 THEN 0
-                            ELSE cidade_favorito
-                        END
-                  WHERE cidade_id = ?`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao favoritar/desfavoritar cidade:", err);
-      return res
+  if (!id) {
+    res.status(400).json({ error: "ID da cidade é obrigatório." });
+  }
+
+  try{
+
+    const cidade = await Cidade.findByPk(id);
+    if (!cidade) {
+      res.status(404).json({ error: "Cidade não encontrada, fale com um administrador do sistema" });
+    }
+    cidade.cidade_favorito = (!cidade.cidade_favorito || cidade.cidade_favorito === 0) ? 1 : 0;
+    await cidade.save();
+
+    res.status(200).json({
+      message: associacao.cidade_favorito
+        ? "Cidade marcada como favorita."
+        : "Cidade removida dos favoritos."
+    });
+
+  }catch(err){
+    console.error("Erro ao favoritar/desfavoritar cidade:", err);
+      res
         .status(500)
         .json({ error: "Erro ao favoritar/desfavoritar cidade" });
-    }
-    res.json({ message: "Cidade favoritada/desfavoritada com sucesso!" });
-  });
-};
+  }
+}
 
 export const deleteCidade = (req, res) => {
   const { id } = req.params;
 
-  const sql = `DELETE FROM cidades WHERE cidade_id = ?`;
-  db.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error("Erro ao deletar cidade:", err);
-      return res.status(500).json({ error: "Erro ao deletar cidade" });
+  if (!id) {
+    res.status(400).json({ error: "ID da cidade é obrigatório." });
+  }
+
+  try{
+
+    const [execucoes] = Cidade.destroy({
+      where:{
+        cidade_id:id,
+      }
+    });
+
+    if (execucoes === 0) {
+      res.status(404).json({ error: "Cidade não encontrada para editar, fale com um administrador do sistema" });
     }
-    res.json({ message: "Cidade deletada com sucesso!" });
-  });
-};
+    
+    res
+      .status(202)
+      .json({ message: "Cidade deletada com sucesso!" });
+
+  }catch(err){
+    console.error("Erro ao deletar cidade:", err);
+    res
+      .status(500)
+      .json({ error: "Erro ao deletar cidade" });
+  }
+}
