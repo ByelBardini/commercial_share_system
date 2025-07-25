@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 import { Pencil, X, Phone } from "lucide-react";
-import ModalContatos from "../contatos/ModalContatos.jsx";
 import { useState } from "react";
+import { buscaContatos } from "../../services/api/contatoService.js";
+import ModalContatos from "../contatos/ModalContatos.jsx";
 
 function ModalVisualizaAssociacao({
   aparecer,
@@ -19,6 +20,19 @@ function ModalVisualizaAssociacao({
     navigate("/associacao");
   }
 
+  async function carregaContatos() {
+    setCarregando(true);
+    const contatos = await buscaContatos(localStorage.getItem("associacao_id"));
+    setContatos(contatos);
+    console.log(contatos);
+    setCarregando(false);
+  }
+
+  async function abreModalContatos() {
+    await carregaContatos();
+    setVendoContatos(true);
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -27,13 +41,14 @@ function ModalVisualizaAssociacao({
       className={`fixed top-0 left-0 w-full h-full z-[100] flex items-center justify-center bg-black/70 ${aparecer}`}
       style={{ overflowY: "auto" }}
     >
-      <ModalContatos
-        aparecer={`${vendoContatos ? "" : "hidden"}`}
-        setVendoContatos={setVendoContatos}
-        setCarregando={setCarregando}
-        contatos={contatos}
-        setContatos={setContatos}
-      />
+      {vendoContatos && (
+        <ModalContatos
+          contatos={contatos}
+          setContatos={setContatos}
+          setVendoContatos={setVendoContatos}
+        />
+      )}
+
       <div
         className="relative w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 bg-white/90 glass shadow-2xl border border-blue-200"
         onClick={(e) => e.stopPropagation()}
@@ -101,7 +116,7 @@ function ModalVisualizaAssociacao({
             <textarea
               readOnly
               className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
-              value={dadosAssociacao.associacao_observacao}
+              value={dadosAssociacao.associacao_observacao || ""}
             ></textarea>
           </div>
           <div className="flex gap-4">
@@ -145,7 +160,7 @@ function ModalVisualizaAssociacao({
         <div className="flex gap-4 mt-8">
           <button
             className="flex-1 flex justify-center items-center bg-green-500 hover:bg-green-600 transition text-white font-bold px-8 py-3 rounded-xl text-xl shadow"
-            onClick={() => setVendoContatos(true)}
+            onClick={abreModalContatos}
           >
             <Phone className="mr-2" /> Contatos
           </button>
