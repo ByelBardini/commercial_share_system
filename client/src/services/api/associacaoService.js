@@ -86,6 +86,8 @@ export async function putAssociacao(
   associacao_data_contato = null,
   associacao_data_fechamento = null,
   associacao_observacao,
+  associacao_preco_placa,
+  associacao_preco_instalacao,
   associacao_cliente,
   id
 ) {
@@ -103,7 +105,8 @@ export async function putAssociacao(
         associacao_data_contato,
         associacao_data_fechamento,
         associacao_observacao,
-        associacao_cliente,
+        associacao_cliente,associacao_preco_placa,
+        associacao_preco_instalacao,
       }),
     });
     if (!response.ok) {

@@ -111,6 +111,48 @@ function ModalVisualizaAssociacao({
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Preço Instalação
+            </label>
+            <input
+              type="text"
+              readOnly
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
+              value={`R$ ${
+                dadosAssociacao.associacao_preco_instalacao !== undefined &&
+                dadosAssociacao.associacao_preco_instalacao !== null
+                  ? Number(
+                      dadosAssociacao.associacao_preco_instalacao
+                    ).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  : ""
+              }`}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Preço por Placa
+            </label>
+            <input
+              type="text"
+              readOnly
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
+              value={`R$ ${
+                dadosAssociacao.associacao_preco_placa !== undefined &&
+                dadosAssociacao.associacao_preco_placa !== null
+                  ? Number(
+                      dadosAssociacao.associacao_preco_placa
+                    ).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  : ""
+              }`}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
               Observação
             </label>
             <textarea

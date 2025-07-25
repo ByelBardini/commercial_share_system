@@ -92,6 +92,8 @@ export const putAssociacao = (req, res) => {
     associacao_data_contato = null,
     associacao_data_fechamento = null,
     associacao_observacao = null,
+    associacao_preco_placa = null,
+    associacao_preco_instalacao = null,
     associacao_cliente,
   } = req.body;
   console.log(req.body)
@@ -110,6 +112,8 @@ export const putAssociacao = (req, res) => {
     associacao_data_contato = ?,
     associacao_data_fechamento = ?,
     associacao_observacao = ?,
+    associacao_preco_placa = ?,
+    associacao_preco_instalacao = ?,
     associacao_cliente = ?
     WHERE associacao_id = ?`;
   db.query(
@@ -121,6 +125,8 @@ export const putAssociacao = (req, res) => {
     associacao_data_contato,
     associacao_data_fechamento,
     associacao_observacao,
+    associacao_preco_placa,
+    associacao_preco_instalacao,
     associacao_cliente,
       id,
     ],

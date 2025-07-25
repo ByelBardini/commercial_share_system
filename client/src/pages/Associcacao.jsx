@@ -17,6 +17,36 @@ import ListaContatos from "../components/contatos/ListaContatos.jsx";
 import ModalAdicionaContato from "../components/contatos/ModalAdicionaContato.jsx";
 import ModalConfirmacao from "../components/default/ModalConfirmacao.jsx";
 
+function formatarDataParaInput(data) {
+  if (!data) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data;
+  const d = new Date(data);
+  if (isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
+
+function formatarValorBancoParaInput(valor) {
+  if (valor === null || valor === undefined) return "";
+  const valorCentavos = Math.round(Number(valor) * 100);
+  return (valorCentavos / 100).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+function formatarRealDinamico(valor) {
+  valor = valor.replace(/\D/g, "");
+  if (!valor) return "R$ 0,00";
+  valor = (parseInt(valor, 10) / 100).toFixed(2);
+  valor = valor.replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `R$ ${valor}`;
+}
+
+function limparRealParaDouble(valor) {
+  if (!valor) return 0;
+  return parseFloat(valor.replace(/\D/g, "").replace(/^0+/, "") || "0") / 100;
+}
+
 function Associacao() {
   const [carregando, setCarregando] = useState(false);
   const [deletando, setDeletando] = useState(false);
@@ -39,6 +69,8 @@ function Associacao() {
   const [obs, setObs] = useState("");
   const [dataContato, setDataContato] = useState("");
   const [dataFechamento, setDataFechamento] = useState("");
+  const [precoInstalacao, setPrecoInstalacao] = useState("");
+  const [precoPorPlaca, setPrecoPorPlaca] = useState("");
 
   const navigate = useNavigate();
 
@@ -79,8 +111,9 @@ function Associacao() {
 
   async function salvar() {
     const associacao_id = localStorage.getItem("associacao_id");
-    const dataContatoFormatada = formatarParaInput(dataContato) || null;
-    const dataFechamentoFormatada = formatarParaInput(dataFechamento) || null;
+    const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
+    const dataFechamentoFormatada =
+      formatarDataParaInput(dataFechamento) || null;
     await salvaContatos(contatosOriginais, contatosModificados, associacao_id);
     await putAssociacao(
       nome,
@@ -89,6 +122,8 @@ function Associacao() {
       dataContatoFormatada,
       dataFechamentoFormatada,
       obs,
+      limparRealParaDouble(precoPorPlaca),
+      limparRealParaDouble(precoInstalacao),
       cliente,
       associacao_id
     );
@@ -126,15 +161,17 @@ function Associacao() {
     setObs(associacao.associacao_observacao);
     setDataContato(associacao.associacao_data_contato);
     setDataFechamento(associacao.associacao_data_fechamento);
+    setPrecoInstalacao(
+      formatarRealDinamico(
+        formatarValorBancoParaInput(associacao.associacao_preco_instalacao)
+      )
+    );
+    setPrecoPorPlaca(
+      formatarRealDinamico(
+        formatarValorBancoParaInput(associacao.associacao_preco_placa)
+      )
+    );
     setCarregando(false);
-  }
-
-  function formatarParaInput(data) {
-    if (!data) return "";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data;
-    const d = new Date(data);
-    if (isNaN(d.getTime())) return "";
-    return d.toISOString().slice(0, 10);
   }
 
   useEffect(() => {
@@ -258,7 +295,7 @@ function Associacao() {
             <input
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
-              value={formatarParaInput(dataContato)}
+              value={formatarDataParaInput(dataContato)}
               onChange={(event) => setDataContato(event.target.value)}
             />
           </div>
@@ -269,8 +306,45 @@ function Associacao() {
             <input
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
-              value={formatarParaInput(dataFechamento)}
+              value={formatarDataParaInput(dataFechamento)}
               onChange={(event) => setDataFechamento(event.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-4 mt-4">
+          <div className="w-1/2">
+            <label className="block text-sm font-semibold text-blue-800 mb-1">
+              Preço Instalação
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+              placeholder="R$ 0,00"
+              value={precoInstalacao}
+              onChange={(e) => {
+                setPrecoInstalacao(formatarRealDinamico(e.target.value));
+              }}
+              maxLength={16}
+            />
+          </div>
+          <div className="w-1/2">
+            <label className="block text-sm font-semibold text-blue-800 mb-1">
+              Preço por Placa
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+              placeholder="R$ 0,00"
+              value={precoPorPlaca}
+              onChange={(e) => {
+                setPrecoPorPlaca(formatarRealDinamico(e.target.value));
+              }}
+              maxLength={16}
             />
           </div>
         </div>
