@@ -86,7 +86,7 @@ function Main() {
       </div>
 
       <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
-        <ListaCidades pesquisa={pesquisa} setUfs={setUfs} navegaCidade={navegaCidade} />
+        <ListaCidades pesquisa={pesquisa} setUfs={setUfs} navegaCidade={navegaCidade} setCarregando={setCarregando} />
       </div>
     </div>
   );

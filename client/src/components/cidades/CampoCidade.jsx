@@ -1,8 +1,17 @@
 /* eslint-disable no-unused-vars */
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Star } from "lucide-react";
+import { favoritarCidade } from "../../services/api/cidadeService.js";
 import { motion } from "framer-motion";
 
-function CampoCidade({ cidades, navegaCidade }) {
+function CampoCidade({ cidades, navegaCidade, setCarregando, puxaCidades }) {
+
+  async function favoritar(id){
+    setCarregando(true);
+    await favoritarCidade(id);
+    await puxaCidades();
+    setCarregando(false);
+  }
+
   return (
     <div className="w-full">
       {cidades.map((cidade) => (
@@ -18,15 +27,34 @@ function CampoCidade({ cidades, navegaCidade }) {
               - {cidade.cidade_uf}
             </span>
           </span>
-          <motion.button
-            whileHover={{ scale: 1.15, rotate: 6 }}
-            whileTap={{ scale: 0.98, rotate: -4 }}
-            className="rounded-full bg-blue-100 group-hover:bg-blue-200 hover:bg-blue-300 transition-all px-3 py-2 shadow-md border border-blue-300 active:scale-95 active:bg-blue-400"
-            onClick={() => navegaCidade(cidade.cidade_id, cidade.cidade_nome)}
-            title="Acessar cidade"
-          >
-            <ExternalLink size={24} className="text-blue-600" />
-          </motion.button>
+          <div className="flex gap-4 items-center">
+            <motion.button
+              whileHover={{ scale: 1.15, rotate: 6 }}
+              whileTap={{ scale: 0.98, rotate: -4 }}
+              className="rounded-full p-2 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 shadow transition group"
+              onClick={() => favoritar(cidade.cidade_id)}
+              title={cidade.cidade_favorito ? "Remover dos favoritos" : "Favoritar"}
+            >
+              <Star
+                size={26}
+                className={cidade.cidade_favorito
+                  ? "text-yellow-400 fill-yellow-300 drop-shadow"
+                  : "text-gray-300 group-hover:text-yellow-400"
+                }
+                fill={cidade.cidade_favorito ? "#fde047" : "none"}
+                strokeWidth={2}
+              />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.15, rotate: 6 }}
+              whileTap={{ scale: 0.98, rotate: -4 }}
+              className="rounded-full bg-blue-100 group-hover:bg-blue-200 hover:bg-blue-300 transition-all px-3 py-2 shadow-md border border-blue-300 active:scale-95 active:bg-blue-400"
+              onClick={() => navegaCidade(cidade.cidade_id, cidade.cidade_nome)}
+              title="Acessar cidade"
+            >
+              <ExternalLink size={24} className="text-blue-600" />
+            </motion.button>
+          </div>
         </motion.div>
       ))}
     </div>
