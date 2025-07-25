@@ -85,7 +85,7 @@ export const postAssociacao = (req, res) => {
     associacao_nome_fantasia.trim().length < 2 ||
     associacao_nome_fantasia.trim().length > 100
   ) {
-    return res.status(400).json({ error: "Nome da empresa inválido." });
+    return res.status(400).json({ error: "Nome fantasia da empresa inválido." });
   }
   if (associacao_cnpj && associacao_cnpj.length > 30) {
     return res.status(400).json({ error: "CNPJ muito longo." });
@@ -156,6 +156,13 @@ export const putAssociacao = (req, res) => {
     associacao_nome.trim().length > 100
   ) {
     return res.status(400).json({ error: "Nome da empresa inválido." });
+  }
+  if (
+    typeof associacao_nome_fantasia !== "string" ||
+    associacao_nome_fantasia.trim().length < 2 ||
+    associacao_nome_fantasia.trim().length > 100
+  ) {
+    return res.status(400).json({ error: "Nome fantasia da empresa inválido." });
   }
   if (associacao_cnpj && associacao_cnpj.length > 30) {
     return res.status(400).json({ error: "CNPJ muito longo." });
