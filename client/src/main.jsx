@@ -9,7 +9,7 @@ import './style.css'
 
 const router = createBrowserRouter([
   {
-    path: "/index",
+    path: "/",
     element: <Login />,
   },
   {

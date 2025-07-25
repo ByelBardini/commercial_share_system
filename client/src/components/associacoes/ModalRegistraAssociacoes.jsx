@@ -115,10 +115,15 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
 
         <div className="flex flex-col gap-3">
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Nome da Empresa
-              <span className="text-red-600 ml-1">*</span>
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-gray-700">
+                Nome da Empresa
+                <span className="text-red-600 ml-1">*</span>
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 100 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
@@ -128,9 +133,14 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Nome Fantasia
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-gray-700">
+                Nome Fantasia
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 100 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
@@ -140,9 +150,14 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              CNPJ
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-gray-700">
+                CNPJ
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 30 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
@@ -169,9 +184,14 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">
-              Observação
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-gray-700">
+                Observação
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 200 Caracteres)
+              </label>
+            </div>
             <textarea
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
               placeholder="Observações"

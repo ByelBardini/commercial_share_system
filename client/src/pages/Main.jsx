@@ -23,7 +23,7 @@ function Main() {
     await logout();
     setCarregando(false);
     localStorage.clear();
-    navigate("/index");
+    navigate("/");
   }
 
   function navegaCidade(id_cidade, nome_cidade) {

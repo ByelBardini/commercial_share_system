@@ -57,10 +57,12 @@ function Associacao() {
   const [modalAviso, setModalAviso] = useState("");
   const [corModal, setCorModal] = useState("");
   const [onSim, setOnSim] = useState();
-  const [aviso, setAviso] = useState(false);
+  const [avisoOpcoes, setAvisoOpcoes] = useState(false);
 
-  const [erro, setErro] = useState(false);
-  const [erroMensagem, setErroMensagem] = useState("");
+  const [aviso, setAviso] = useState(false);
+  const [avisoCor, setAvisoCor] = useState("");
+  const [avisoMensagem, setAvisoMensagem] = useState("");
+  const [botaoAviso, setBotaoAviso] = useState("");
 
   const [contatosOriginais, setContatosOriginais] = useState([]);
   const [contatoModificado, setContatoModificado] = useState([]);
@@ -83,8 +85,10 @@ function Associacao() {
     const hojeStr = hoje.toISOString().slice(0, 10);
 
     if (data > hojeStr) {
-      setErroMensagem("A data não pode ser no futuro!");
-      setErro(true);
+      setAvisoMensagem("A data não pode ser no futuro!");
+      setBotaoAviso("");
+      setAvisoCor("vermelho");
+      setAviso(true);
       return false;
     } else {
       return true;
@@ -94,7 +98,7 @@ function Associacao() {
   function clicaExcluir() {
     setCorModal("amarela");
     setModalAviso(true);
-    setAviso("Você tem certeza que deseja excluir esta empresa?");
+    setAvisoOpcoes("Você tem certeza que deseja excluir esta empresa?");
     setOnSim(() => onConfirmaExclusao);
   }
 
@@ -105,7 +109,7 @@ function Associacao() {
       setCarregando(false);
       setTimeout(() => {
         setCorModal("vermelha");
-        setAviso("Você realmente tem certeza? Essa ação é IRREVERSÍVEL");
+        setAvisoOpcoes("Você realmente tem certeza? Essa ação é IRREVERSÍVEL");
         setModalAviso(true);
       }, 400);
     }, 1000);
@@ -114,14 +118,14 @@ function Associacao() {
 
   async function confirmaSaida() {
     setModalAviso(true);
-    setAviso("Você tem certeza que quer sair sem salvar?");
+    setAvisoOpcoes("Você tem certeza que quer sair sem salvar?");
     setCorModal("amarela");
     setOnSim(() => sair);
   }
 
   async function confirmaSalvar() {
     setModalAviso(true);
-    setAviso("Deseja manter as alterações?");
+    setAvisoOpcoes("Deseja manter as alterações?");
     setCorModal("verde");
     setOnSim(() => salvar);
   }
@@ -142,10 +146,12 @@ function Associacao() {
 
     if (errosContatos && errosContatos.length > 0) {
       setCarregando(false);
-      setErro(true);
-      setErroMensagem(
-        "Erro ao salvar contatos: \n",
-        errosContatos.map((e) => e.mensagem).join("\n")
+      setAviso(true);
+      setAvisoCor("vermelho");
+      setBotaoAviso("");
+      setAvisoMensagem(
+        "Erro ao salvar contatos: \n" +
+          errosContatos.map((e) => e.mensagem).join("\n")
       );
       return;
     }
@@ -164,14 +170,23 @@ function Associacao() {
     );
     if (resultado.erro) {
       setCarregando(false);
-      setErro(true);
-      setErroMensagem(resultado.mensagem);
+      setAviso(true);
+      setAvisoCor("vermelho");
+      setBotaoAviso("");
+      setAvisoMensagem(resultado.mensagem);
       return;
     }
-
     setCarregando(false);
-    navigate("/cidade");
-    localStorage.setItem("associacao_id", null);
+
+    setAviso(true);
+    setAvisoMensagem("Empresa alterada com sucesso!");
+    setAvisoCor("verde");
+    setBotaoAviso("hidden");
+    setTimeout(() => {
+      setAviso(false);
+      localStorage.setItem("associacao_id", null);
+      navigate("/cidade");
+    }, 500);
   }
 
   async function sair() {
@@ -180,10 +195,20 @@ function Associacao() {
   }
 
   async function deletarAssociacao() {
+    setModalAviso(false);
     setCarregando(true);
     await deletaAssociacao(localStorage.getItem("associacao_id"));
     setCarregando(false);
-    navigate("/cidade");
+
+    setAviso(true);
+    setAvisoMensagem("Empresa Excluída com sucesso!");
+    setAvisoCor("verde");
+    setBotaoAviso("hidden");
+    setTimeout(() => {
+      setAviso(false);
+      localStorage.setItem("associacao_id", null);
+      navigate("/cidade");
+    }, 500);
   }
 
   async function carregaContatosOriginais() {
@@ -226,11 +251,12 @@ function Associacao() {
     <div className="relative min-h-screen w-screen flex flex-col items-center p-6 overflow-x-hidden">
       <div className="animated-gradient" />
       <AnimatePresence>
-        {erro && (
+        {aviso && (
           <ModalAviso
-            texto={erroMensagem}
-            cor={"vermelho"}
-            onClick={() => setErro(false)}
+            texto={avisoMensagem}
+            cor={avisoCor}
+            onClick={() => setAviso(false)}
+            botao={botaoAviso}
           />
         )}
       </AnimatePresence>
@@ -238,7 +264,7 @@ function Associacao() {
       <AnimatePresence>
         {modalAviso && (
           <ModalConfirmacao
-            texto={aviso}
+            texto={avisoOpcoes}
             onSim={onSim}
             onNao={() => setModalAviso(false)}
             cor={corModal}
@@ -274,9 +300,15 @@ function Associacao() {
       <div className="relative w-full max-w-3xl mt-32 rounded-2xl p-7 shadow-2xl border bg-white/90 glass">
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label className="block text-sm font-semibold text-blue-800 mb-1">
-              Nome da Empresa
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-blue-800">
+                Nome da Empresa
+                <span className="text-red-600 ml-1">*</span>
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 100 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
@@ -286,9 +318,14 @@ function Associacao() {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-semibold text-blue-800 mb-1">
-              Nome Fantasia
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-blue-800">
+                Nome Fantasia
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 100 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
@@ -301,9 +338,14 @@ function Associacao() {
 
         <div className="flex gap-4 mt-4">
           <div className="w-4/6">
-            <label className="block text-sm font-semibold text-blue-800 mb-1">
-              CNPJ
-            </label>
+            <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-blue-800">
+                CNPJ
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 30 Caracteres)
+              </label>
+            </div>
             <input
               type="text"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
@@ -330,9 +372,14 @@ function Associacao() {
         </div>
 
         <div className="mt-4">
-          <label className="block text-sm font-semibold text-blue-800 mb-1">
-            Observação
-          </label>
+          <div className="place-content-between flex">
+              <label className="block text-sm font-semibold text-blue-800">
+                Observação
+              </label>
+              <label className="block text-sm font-semibold text-gray-400">
+                (Máximo de 200 Caracteres)
+              </label>
+            </div>
           <textarea
             className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
             placeholder="Observações"
@@ -427,7 +474,7 @@ function Associacao() {
               setEditando={setEditando}
               setDeletando={setDeletando}
               setCorModal={setCorModal}
-              setAviso={setAviso}
+              setAviso={setAvisoOpcoes}
               setOnSim={setOnSim}
               setModalAviso={setModalAviso}
             />
@@ -485,6 +532,9 @@ function Associacao() {
         >
           <Trash2 size={32} className="text-blue-400" />
         </motion.button>
+        <p className="mt-4 text-sm text-gray-500">
+          <span className="text-red-600">*</span> Campos obrigatórios
+        </p>
       </div>
     </div>
   );
