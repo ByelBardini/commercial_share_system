@@ -87,7 +87,7 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
           {erro && (
             <ModalAviso
               texto={erroMensagem}
-              className="bg-red-600"
+              cor="vermelho"
               onClick={() => setErro(false)}
             />
           )}
@@ -96,7 +96,7 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
           {concluido && (
             <ModalAviso
               texto="Associação Cadastrada com Sucesso!"
-              className="bg-green-600"
+              cor="verde"
               botao={"hidden"}
             />
           )}

@@ -1,68 +1,84 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { trocaSenhaUsuario } from "../../services/api/usuarioService.js";
-import ModalAviso from "../default/ModalAviso.jsx"
+import ModalAviso from "../default/ModalAviso.jsx";
 
-function ModalTrocaSenha({ aparecer, setNovaSenha, setCarregando }) {
+function ModalTrocaSenha({ setNovaSenha, setCarregando }) {
+  const [senha, setSenha] = useState("");
+  const [confirmaSenha, setConfirmaSenha] = useState("");
+  const [erro, setErro] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
 
-    const [senha, setSenha] = useState("");
-    const [confirmaSenha, setConfirmaSenha] = useState("");
-    const [erro, setErro] = useState(false);
-    const [sucesso, setSucesso] = useState(false);
-
-    async function confirmaTroca() {
-        if( senha != confirmaSenha){
-            setErro(true);
-        }else{
-            setCarregando(true);
-            const data = await trocaSenhaUsuario(senha);
-            if(data){
-                setCarregando(false);
-                setSucesso(true);
-                setTimeout(() => {
-                    setSucesso(false);
-                    setNovaSenha(false);
-                    localStorage.setItem("usuario_troca_senha", 0);
-                }, 500);
-            }
-            setCarregando(false);
-        }
+  async function confirmaTroca() {
+    if (senha != confirmaSenha) {
+      setErro(true);
+    } else {
+      setCarregando(true);
+      const data = await trocaSenhaUsuario(senha);
+      if (data) {
+        setCarregando(false);
+        setSucesso(true);
+        setTimeout(() => {
+          setSucesso(false);
+          setNovaSenha(false);
+          localStorage.setItem("usuario_troca_senha", 0);
+        }, 500);
+      }
+      setCarregando(false);
     }
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-0 left-0 w-full h-full bg-black/80 z-100 flex flex-col items-center justify-center ${aparecer}`}
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/70"
     >
-    <ModalAviso texto="As duas senhas devem ser iguais!" className="bg-red-600" aparecer={`${erro ? "" : "hidden"}`} onClick={()=> setErro(false)}  />
-    <ModalAviso texto="Senha trocada com sucesso!" className="bg-green-600" aparecer={`${sucesso ? "" : "hidden"}`} botao="hidden" />
-        <div
-        className={`flex flex-col items-center justify-center p-6 rounded-lg shadow-lg w-1/3 h-2/3 overflow-auto bg-white`}
-      >
-        <h1 className="text-3xl font-bold">Insira a nova senha</h1>
-        <h1 className="text-2xl font-bold mt-10">Senha</h1>
-        <input
-          type="password"
-          placeholder="Nova Senha"
-          id="usuario_login"
-          className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
-          onChange={(event) => setSenha(event.target.value)}
-        />
-        <h1 className="text-2xl font-bold mt-5">Confirme sua Senha</h1>
-        <input
-          type="password"
-          placeholder="Confirme a Nova Senha"
-          id="usuario_login"
-          className=" border-gray-500 border-2 w-11/12 rounded-md text-gray-800 px-4 py-2 text-2xl active:bg-gray-100 focus:outline-none focus:ring-0 mb-6"
-          onChange={(event) => setConfirmaSenha(event.target.value)}
-        />
-
-        <button className="bg-blue-700 text-white font-bold px-6 py-2 rounded-md text-xl hover:bg-blue-900 transition duration-300 ease-in-out"
-        onClick={confirmaTroca}>
-          OK
+      <AnimatePresence>
+        {erro && (
+          <ModalAviso
+            texto="As duas senhas devem ser iguais!"
+            cor="vermelho"
+            onClick={() => setErro(false)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {sucesso && (
+          <ModalAviso
+            texto="Senha trocada com sucesso!"
+            cor="verde"
+            botao="hidden"
+          />
+        )}
+      </AnimatePresence>
+      <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 relative animate-fade-in">
+        <h1 className="text-3xl font-bold text-blue-800 mb-4">Nova senha</h1>
+        <div className="w-full flex flex-col gap-2">
+          <label className="text-lg font-semibold text-blue-800 mb-1">Senha</label>
+          <input
+            type="password"
+            placeholder="Nova senha"
+            className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+            onChange={(event) => setSenha(event.target.value)}
+          />
+        </div>
+        <div className="w-full flex flex-col gap-2 mt-2">
+          <label className="text-lg font-semibold text-blue-800 mb-1">Confirme a senha</label>
+          <input
+            type="password"
+            placeholder="Confirme a nova senha"
+            className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+            onChange={(event) => setConfirmaSenha(event.target.value)}
+          />
+        </div>
+        <button
+          className="mt-6 w-full bg-blue-700 hover:bg-blue-900 transition text-white font-bold py-3 rounded-xl text-xl shadow-lg"
+          onClick={confirmaTroca}
+        >
+          Trocar senha
         </button>
       </div>
     </motion.div>
