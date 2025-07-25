@@ -24,7 +24,8 @@ function ModalVisualizaAssociacao({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center ${aparecer}`}
+      className={`fixed top-0 left-0 w-full h-full z-[100] flex items-center justify-center bg-black/70 ${aparecer}`}
+      style={{ overflowY: "auto" }}
     >
       <ModalContatos
         aparecer={`${vendoContatos ? "" : "hidden"}`}
@@ -34,18 +35,18 @@ function ModalVisualizaAssociacao({
         setContatos={setContatos}
       />
       <div
-        className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"
+        className="relative w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 bg-white/90 glass shadow-2xl border border-blue-200"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="cursor-pointer absolute top-3 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold"
+          className="cursor-pointer absolute top-3 right-4 text-gray-500 hover:text-red-600 text-2xl font-bold bg-white/90 rounded-full p-2 transition shadow"
           onClick={() => setVisualiza(false)}
           title="Fechar"
         >
           <X />
         </button>
 
-        <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
+        <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center drop-shadow-sm select-none">
           Visualizar Associação
         </h2>
 
@@ -55,11 +56,11 @@ function ModalVisualizaAssociacao({
               Nome da Associação
             </label>
             <input
-              className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
               value={dadosAssociacao.associacao_nome || "N/A"}
+              readOnly
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Nome Fantasia
@@ -67,11 +68,10 @@ function ModalVisualizaAssociacao({
             <input
               type="text"
               readOnly
-              className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
               value={dadosAssociacao.associacao_nome_fantasia || "N/A"}
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               CNPJ
@@ -79,11 +79,10 @@ function ModalVisualizaAssociacao({
             <input
               type="text"
               readOnly
-              className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
               value={dadosAssociacao.associacao_cnpj || "N/A"}
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Cliente
@@ -91,22 +90,20 @@ function ModalVisualizaAssociacao({
             <input
               type="text"
               readOnly
-              className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
               value={dadosAssociacao.associacao_cliente === 1 ? "Sim" : "Não"}
             />
           </div>
-
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Observação
             </label>
             <textarea
               readOnly
-              className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
               value={dadosAssociacao.associacao_observacao}
             ></textarea>
           </div>
-
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -115,7 +112,7 @@ function ModalVisualizaAssociacao({
               <input
                 type="text"
                 readOnly
-                className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+                className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
                 value={
                   dadosAssociacao.associacao_data_contato
                     ? new Date(
@@ -132,7 +129,7 @@ function ModalVisualizaAssociacao({
               <input
                 type="text"
                 readOnly
-                className="cursor-default w-full bg-gray-100 rounded-lg p-2 border font-semibold text-lg text-gray-800"
+                className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
                 value={
                   dadosAssociacao.associacao_data_fechamento
                     ? new Date(
@@ -147,25 +144,34 @@ function ModalVisualizaAssociacao({
 
         <div className="flex gap-4 mt-8">
           <button
-            className="cursor-pointer flex-1 flex justify-center items-center bg-green-500 hover:bg-green-600 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
+            className="flex-1 flex justify-center items-center bg-green-500 hover:bg-green-600 transition text-white font-bold px-8 py-3 rounded-xl text-xl shadow"
             onClick={() => setVendoContatos(true)}
           >
             <Phone className="mr-2" /> Contatos
           </button>
           <button
-            className="cursor-pointer flex-1 flex justify-center items-center bg-yellow-500 hover:bg-yellow-600 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
+            className="flex-1 flex justify-center items-center bg-yellow-400 hover:bg-yellow-500 transition text-white font-bold px-8 py-3 rounded-xl text-xl shadow"
             onClick={() => modificaAssociacao(dadosAssociacao.associacao_id)}
           >
             <Pencil className="mr-2" /> Editar
           </button>
           <button
-            className="cursor-pointer flex-1 flex justify-center items-center bg-blue-700 hover:bg-blue-900 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
+            className="flex-1 flex justify-center items-center bg-blue-700 hover:bg-blue-900 transition text-white font-bold px-8 py-3 rounded-xl text-xl shadow"
             onClick={() => setVisualiza(false)}
           >
             OK
           </button>
         </div>
       </div>
+      {/* Mini glass utility (opcional, caso queira ainda mais blur no card) */}
+      <style>
+        {`
+        .glass {
+          backdrop-filter: blur(12px) saturate(120%);
+          -webkit-backdrop-filter: blur(12px) saturate(120%);
+        }
+        `}
+      </style>
     </motion.div>
   );
 }

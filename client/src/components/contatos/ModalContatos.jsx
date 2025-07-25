@@ -8,24 +8,36 @@ function ModalContatos({ aparecer, setCarregando, setVendoContatos, contatos, se
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center ${aparecer}`}
+      className={`fixed top-0 left-0 w-full h-full bg-black/70 z-[110] flex items-center justify-center ${aparecer}`}
+      style={{ overflowY: "auto" }}
     >
-      <div className="bg-white w-1/3 rounded-xl shadow-xl p-3">
-        <div className="flex justify-center">
-          <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
+      <div className="bg-white/90 glass w-full max-w-lg rounded-2xl border border-blue-200 shadow-2xl p-8">
+        <div className="flex justify-center mb-2">
+          <h2 className="text-2xl font-bold text-blue-800 text-center drop-shadow-sm select-none">
             Contatos
           </h2>
         </div>
-        <ListaContatos setCarregando={setCarregando} contatos={contatos} setContatos={setContatos} />
-        <div className="flex justify-center">
+        <div className="mb-2">
+          <ListaContatos setCarregando={setCarregando} contatos={contatos} setContatos={setContatos} />
+        </div>
+        <div className="flex justify-center mt-6">
           <button
-            className="mt-6 max-w-1/3 cursor-pointer flex-1 flex justify-center items-center bg-blue-700 hover:bg-blue-900 transition text-white font-bold px-8 py-3 rounded-lg text-xl shadow"
+            className="flex-1 max-w-[180px] cursor-pointer flex justify-center items-center bg-blue-700 hover:bg-blue-900 transition text-white font-bold px-8 py-3 rounded-xl text-xl shadow"
             onClick={() => setVendoContatos(false)}
           >
             OK
           </button>
         </div>
       </div>
+      {/* Glass effect utility */}
+      <style>
+        {`
+        .glass {
+          backdrop-filter: blur(12px) saturate(120%);
+          -webkit-backdrop-filter: blur(12px) saturate(120%);
+        }
+        `}
+      </style>
     </motion.div>
   );
 }

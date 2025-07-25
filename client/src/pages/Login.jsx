@@ -40,7 +40,7 @@ function Login() {
     <div className="relative min-h-screen w-screen flex justify-center items-center p-6 overflow-hidden">
       <div className="absolute inset-0 z-0">
         <div className="absolute -top-36 -left-32 w-[450px] h-[450px] rounded-full bg-blue-500 opacity-40 blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-[220px] h-[220px] rounded-full bg-cyan-400 opacity-30 blur-2xl animate-pulse delay-500" />
+        <div className="absolute bottom-0 left-0 w-[220px] h-[220px] rounded-full bg-cyan-600 opacity-30 blur-2xl animate-pulse delay-500" />
         <div className="absolute -bottom-24 right-0 w-[420px] h-[420px] rounded-full bg-blue-900 opacity-30 blur-3xl animate-pulse" />
         <div className="absolute top-16 right-36 w-[180px] h-[180px] rounded-full bg-indigo-500 opacity-20 blur-2xl animate-pulse" />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-700/90 via-blue-500/60 to-blue-300/80 z-0" />
