@@ -12,7 +12,7 @@ function CampoAssociacao({
 }) {
   function modificaAssociacao(id) {
     localStorage.setItem("associacao_id", id);
-    navigate("/associacao");
+    navigate("/empresa");
   }
 
   async function visualizaAssociacao(id) {

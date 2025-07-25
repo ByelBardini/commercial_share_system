@@ -11,14 +11,28 @@ export async function login(usuario_login, usuario_senha) {
       credentials: "include",
     });
 
-    if (!response.ok) {
-      throw new Error("Falha no login");
+    const data = await response.json();
+
+    if (response.status === 400) {
+      // Campos obrigatórios não enviados
+      throw new Error(data.error || "Preencha login e senha.");
+    } else if (response.status === 401) {
+      // Usuário/senha incorretos
+      throw new Error(data.error || "Usuário ou senha incorretos.");
+    } else if (response.status === 500) {
+      // Erro interno do servidor
+      throw new Error(
+        data.error || "Erro interno. Tente novamente mais tarde."
+      );
+    } else if (!response.ok) {
+      // Qualquer outro erro não esperado
+      throw new Error(data.error || "Erro desconhecido.");
     }
 
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Erro durante login:", error);
+    throw error;
   }
 }
 

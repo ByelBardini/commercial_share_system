@@ -1,7 +1,7 @@
 import db from "../config/db.js";
 
 export const getCidades = (req, res) => {
-  const sql = "SELECT * FROM cidades ORDER BY cidade_favorito = 0";
+  const sql = "SELECT * FROM cidades ORDER BY cidade_favorito = 0, cidade_nome";
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Erro ao buscar cidades:", err);

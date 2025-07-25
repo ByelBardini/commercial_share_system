@@ -2,28 +2,32 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth/authService.js";
 import ModalAviso from "../components/default/ModalAviso.jsx";
-import Loading from "../components/default/Loading.jsx"
+import Loading from "../components/default/Loading.jsx";
 
 function Login() {
   const navigate = useNavigate();
 
   const [usuario_login, setLogin] = useState("");
   const [usuario_senha, setSenha] = useState("");
+
   const [logado, setLogado] = useState(false);
   const [erro, setErro] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
 
-  async function logar(){
-    if(!usuario_login || !usuario_senha) {
+  async function logar() {
+    if (!usuario_login || !usuario_senha) {
+      setErroMensagem("Login e senha obrigatórios!");
       setErro(true);
       return;
     }
     setCarregando(true);
-    const data = await login(usuario_login, usuario_senha);
-    if(data) {
-      const { usuario_nome, usuario_troca_senha} = data;
+    try {
+      const data = await login(usuario_login, usuario_senha);
+
+      const { usuario_nome, usuario_troca_senha } = data;
       localStorage.setItem("usuario_nome", usuario_nome);
-      if(usuario_troca_senha !=0){
+      if (usuario_troca_senha != 0) {
         localStorage.setItem("usuario_troca_senha", usuario_troca_senha);
       }
       setCarregando(false);
@@ -32,8 +36,23 @@ function Login() {
         setLogado(false);
         navigate("/home");
       }, 500);
+    } catch (error) {
+      if (error.message.includes("obrigatórios")) {
+        setErroMensagem("Você precisa preencher todos os campos.");
+        setErro(true);
+      } else if (error.message.includes("incorretos")) {
+        setErroMensagem("Usuário ou senha inválidos.");
+        setErro(true);
+      } else if (error.message.includes("interno")) {
+        setErroMensagem("Ocorreu um erro no servidor. Tente mais tarde.");
+        setErro(true);
+      } else {
+        setErroMensagem(error.message);
+        setErro(true);
+      }
+    } finally {
+      setCarregando(false);
     }
-    setCarregando(false);
   }
 
   return (
@@ -47,8 +66,18 @@ function Login() {
       </div>
 
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-      <ModalAviso texto="Necessário Login e Senha!" className="bg-red-600" aparecer={`${erro ? "" : "hidden"}`} onClick={()=> setErro(false)} />
-      <ModalAviso texto="Login realizado com sucesso!" className="bg-green-600" aparecer={`${logado ? "" : "hidden"}`} botao={"hidden"} />
+      <ModalAviso
+        texto={erroMensagem}
+        className="bg-red-600"
+        aparecer={`${erro ? "" : "hidden"}`}
+        onClick={() => setErro(false)}
+      />
+      <ModalAviso
+        texto="Login realizado com sucesso!"
+        className="bg-green-600"
+        aparecer={`${logado ? "" : "hidden"}`}
+        botao={"hidden"}
+      />
 
       <div className="relative z-10 bg-white/70 backdrop-blur-2xl w-full max-w-md rounded-3xl shadow-2xl flex flex-col gap-3 p-10 items-center border border-blue-200">
         <img

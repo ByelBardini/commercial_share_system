@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     element: <Cidade />
   },
   {
-    path:"/associacao",
+    path:"/empresa",
     element: <Associacao />
   }
 ]);

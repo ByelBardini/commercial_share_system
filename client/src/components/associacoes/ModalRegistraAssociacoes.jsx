@@ -85,13 +85,13 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
         </button>
 
         <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
-          Registrar Associação
+          Registrar Empresa
         </h2>
 
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-sm font-semibold text-gray-700">
-              Nome da Associação
+              Nome da Empresa
               <span className="text-red-600 ml-1">*</span>
             </label>
             <input
@@ -157,7 +157,7 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="block text-sm font-semibold text-gray-700">
-                Data de Contato
+                Data do último Contato
               </label>
               <input
                 type="date"

@@ -45,7 +45,7 @@ function Associacao() {
   function clicaExcluir() {
     setCorModal("amarela");
     setModalAviso(true);
-    setAviso("Você tem certeza que deseja excluir esta associação?");
+    setAviso("Você tem certeza que deseja excluir esta empresa?");
     setOnSim(() => onConfirmaExclusao);
   }
 
@@ -163,7 +163,6 @@ function Associacao() {
         contatoAntigo={contatoModificado}
       />
 
-      {/* HEADER */}
       <div className="bg-blue-600/50 w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <button
           className="flex gap-2 items-center text-gray-200 hover:text-red-500 transition px-2 py-1 rounded-lg hover:bg-red-100"
@@ -174,7 +173,7 @@ function Associacao() {
           <span className="text-base font-bold">Voltar</span>
         </button>
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
-          Editando Associação
+          Editando Empresa
         </h1>
         <div />
       </div>
@@ -183,7 +182,7 @@ function Associacao() {
         <div className="flex gap-4">
           <div className="w-1/2">
             <label className="block text-sm font-semibold text-blue-800 mb-1">
-              Nome da Associação
+              Nome da Empresa
             </label>
             <input
               type="text"
@@ -252,7 +251,7 @@ function Associacao() {
         <div className="flex justify-center gap-4 mt-4">
           <div className="w-1/3">
             <label className="block text-sm font-semibold text-blue-800 mb-1">
-              Data de Contato
+              Data do Último Contato
             </label>
             <input
               type="date"

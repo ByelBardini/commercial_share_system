@@ -47,13 +47,13 @@ function ModalVisualizaAssociacao({
         </button>
 
         <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center drop-shadow-sm select-none">
-          Visualizar Associação
+          Visualizar Empresa
         </h2>
 
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Nome da Associação
+              Nome da Empresa
             </label>
             <input
               className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
@@ -107,7 +107,7 @@ function ModalVisualizaAssociacao({
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Data de Contato
+                Data do Último Contato
               </label>
               <input
                 type="text"

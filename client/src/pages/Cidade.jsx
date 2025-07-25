@@ -59,7 +59,7 @@ function Cidade() {
           <span className="text-base font-bold">Voltar</span>
         </button>
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
-          Associações de <span className="text-blue-300">{localStorage.getItem("nome_cidade")}</span>
+          Empresas de <span className="text-blue-300">{localStorage.getItem("nome_cidade")}</span>
         </h1>
         <div className="w-[70px]" />
       </div>
@@ -71,7 +71,7 @@ function Cidade() {
         whileHover={{ scale: 1.06, y: -2 }}
         onClick={() => setCadastro(true)}
       >
-        <Plus size={24} /> ADICIONAR ASSOCIAÇÃO
+        <Plus size={24} /> ADICIONAR EMPRESA
       </motion.button>
 
 
@@ -80,7 +80,7 @@ function Cidade() {
           <Search size={22} className="text-blue-400 mr-2" />
           <input
             type="text"
-            placeholder="Pesquisar associação..."
+            placeholder="Pesquisar empresa..."
             id="pesquisa-associacao"
             className="w-full bg-transparent p-3 rounded-md text-lg outline-none border-none placeholder-gray-400"
             onChange={(event) => setPesquisa(event.target.value)}
