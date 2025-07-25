@@ -19,12 +19,22 @@ function ListaContatos({
   setModalAviso = () => {},
 }) {
   async function carregaContatos() {
-    setCarregando(true);
+  setCarregando(true);
+  try {
     const contatos = await buscaContatos(localStorage.getItem("associacao_id"));
     setContatos(contatos);
     console.log(contatos);
+  } catch (err) {
+    setCarregando(false);
+    setAviso(true);
+    setModalAviso("Não foi possível carregar os contatos. Tente novamente mais tarde.");
+    setCorModal("red");
+    setContatos([]);
+    console.error("Erro ao carregar contatos:", err);
+  } finally {
     setCarregando(false);
   }
+}
 
   useEffect(() => {
     carregaContatos();

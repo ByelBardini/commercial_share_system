@@ -8,11 +8,15 @@ import Loading from "../components/default/Loading.jsx";
 import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
 import ListaAssociacoes from "../components/associacoes/ListaAssociacoes.jsx";
 import ModalVisualizaAssociacao from "../components/associacoes/ModalVisualizaAssociacao.jsx";
+import ModalAviso from "../components/default/ModalAviso.jsx";
 
 function Cidade() {
   const [cadastro, setCadastro] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [visualiza, setVisualiza] = useState(false);
+
+  const [erro, setErro] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState("");
 
   const [associacoesRoot, setAssociacoesRoot] = useState([]);
   const [dadosAssociacao, setDadosAssociacao] = useState([]);
@@ -31,24 +35,35 @@ function Cidade() {
   return (
     <div className="relative min-h-screen w-screen flex flex-col items-center p-6 overflow-x-hidden">
       <div className="animated-gradient" />
-
-      <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-      <AnimatePresence>
-        <ModalRegistraAssociacoes
-          aparecer={`${cadastro ? "" : "hidden"}`}
-          setCadastro={setCadastro}
-          getAssociacoesPorCidade={getAssociacoesPorCidade}
-          setCarregando={setCarregando}
+      {carregando && <Loading />}
+      {erro && (
+        <ModalAviso
+          texto={erroMensagem}
+          className="red"
+          onClick={() => setErro(false)}
         />
+      )}
+      <AnimatePresence>
+        {cadastro && (
+          <ModalRegistraAssociacoes
+            setCadastro={setCadastro}
+            getAssociacoesPorCidade={getAssociacoesPorCidade}
+            setCarregando={setCarregando}
+          />
+        )}
       </AnimatePresence>
       <AnimatePresence>
-        <ModalVisualizaAssociacao
-          aparecer={`${visualiza ? "" : "hidden"}`}
-          setVisualiza={setVisualiza}
-          dadosAssociacao={dadosAssociacao}
-          navigate={navigate}
-          setCarregando={setCarregando}
-        />
+        {visualiza && (
+          <ModalVisualizaAssociacao
+            aparecer={`${visualiza ? "" : "hidden"}`}
+            setVisualiza={setVisualiza}
+            dadosAssociacao={dadosAssociacao}
+            navigate={navigate}
+            setCarregando={setCarregando}
+            setErro={setErro}
+            setErroMensagem={setErroMensagem}
+          />
+        )}
       </AnimatePresence>
 
       <div className="bg-blue-600/50  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">

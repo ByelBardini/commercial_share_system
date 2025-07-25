@@ -12,12 +12,13 @@ export const getContatos = (req, res) => {
   db.query(sql, [id], (err, results) => {
     if (err) {
       console.error("Erro ao buscar contatos:", err);
-      return res.status(500).json({ error: "Erro interno do servidor" });
+      return res
+        .status(500)
+        .json({
+          error: "Erro interno do servidor, tente novamente mais tarde",
+        });
     }
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Contatos não encontrados." });
-    }
-    res.json(results);
+    return res.json(results || []);
   });
 };
 
@@ -44,11 +45,9 @@ export const postContatos = (req, res) => {
     (err, results) => {
       if (err) {
         console.error("Erro ao cadastrar contato:", err);
-        return res
-          .status(500)
-          .json({
-            error: "Erro interno do servidor, tente novamente mais tarde.",
-          });
+        return res.status(500).json({
+          error: "Erro interno do servidor, tente novamente mais tarde.",
+        });
       }
       res.status(201).json({ message: "Contato cadastrado com sucesso!" });
     }
@@ -79,11 +78,9 @@ export const putContato = (req, res) => {
     }
     if (err) {
       console.error("Erro ao modificar contato:", err);
-      return res
-        .status(500)
-        .json({
-          error: "Erro interno do servidor, tente novamente mais tarde.",
-        });
+      return res.status(500).json({
+        error: "Erro interno do servidor, tente novamente mais tarde.",
+      });
     }
     res.status(201).json({ message: "Contato modificado com sucesso!" });
   });
@@ -103,11 +100,9 @@ export const deleteContato = (req, res) => {
     }
     if (err) {
       console.error("Erro ao deletar contato:", err);
-      return res
-        .status(500)
-        .json({
-          error: "Erro interno do servidor, tente novamente mais tarde.",
-        });
+      return res.status(500).json({
+        error: "Erro interno do servidor, tente novamente mais tarde.",
+      });
     }
     res.status(201).json({ message: "Contato deletado com sucesso!" });
   });

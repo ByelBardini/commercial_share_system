@@ -15,14 +15,30 @@ export async function buscaContatos(id) {
       },
       credentials: "include",
     });
-    if (!response.ok) {
-      throw new Error("Falha ao buscar contatos");
+
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (jsonErr) {
+      console.warn("Erro ao converter resposta em JSON:", jsonErr);
+      data = {};
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      if (
+        response.status === 404 &&
+        (data?.error === "Contatos não encontrados." ||
+          data?.error === "Contatos não encontrados")
+      ) {
+        return [];
+      }
+      throw new Error(data?.error || "Falha ao buscar contatos");
+    }
+
     return data;
   } catch (err) {
     console.error("Erro ao buscar contatos:", err);
+    throw err;
   }
 }
 

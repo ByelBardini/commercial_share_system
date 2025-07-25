@@ -11,6 +11,8 @@ function ModalVisualizaAssociacao({
   dadosAssociacao,
   navigate,
   setCarregando,
+  setErro,
+  setErroMensagem,
 }) {
   const [vendoContatos, setVendoContatos] = useState(false);
   const [contatos, setContatos] = useState([]);
@@ -22,10 +24,23 @@ function ModalVisualizaAssociacao({
 
   async function carregaContatos() {
     setCarregando(true);
-    const contatos = await buscaContatos(localStorage.getItem("associacao_id"));
-    setContatos(contatos);
-    console.log(contatos);
-    setCarregando(false);
+    try {
+      const contatos = await buscaContatos(
+        localStorage.getItem("associacao_id")
+      );
+      setContatos(contatos); 
+      console.log(contatos);
+    } catch (err) {
+      setCarregando(false);
+      setErro(
+        "Não foi possível carregar os contatos. Tente novamente mais tarde."
+      );
+      setErroMensagem("Não foi possível carregar os contatos. Tente novamente mais tarde.");
+      setContatos([]);
+      console.error("Erro ao carregar contatos:", err);
+    } finally {
+      setCarregando(false);
+    }
   }
 
   async function abreModalContatos() {
