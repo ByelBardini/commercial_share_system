@@ -129,12 +129,31 @@ function Associacao() {
   }
 
   async function salvar() {
+    setModalAviso(false);
+    setCarregando(true);
     const associacao_id = localStorage.getItem("associacao_id");
     const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
     const dataFechamentoFormatada =
       formatarDataParaInput(dataFechamento) || null;
-    await salvaContatos(contatosOriginais, contatosModificados, associacao_id);
-    await putAssociacao(
+
+    const errosContatos = await salvaContatos(
+      contatosOriginais,
+      contatosModificados,
+      associacao_id
+    );
+
+    if (errosContatos && errosContatos.length > 0) {
+      setCarregando(false);
+      setErro(true);
+      setErroCor("red");
+      setErroMensagem(
+        "Erro ao salvar contatos: \n",
+        errosContatos.map((e) => e.mensagem).join("\n")
+      );
+      return;
+    }
+
+    const resultado = await putAssociacao(
       nome,
       fantasia,
       cnpj,
@@ -146,6 +165,15 @@ function Associacao() {
       cliente,
       associacao_id
     );
+    if (resultado.erro) {
+      setCarregando(false);
+      setErro(true);
+      setErroCor("red");
+      setErroMensagem(resultado.mensagem);
+      return;
+    }
+
+    setCarregando(false);
     navigate("/cidade");
     localStorage.setItem("associacao_id", null);
   }

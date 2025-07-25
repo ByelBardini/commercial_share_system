@@ -31,7 +31,7 @@ export async function postAssociacao(
   associacao_cliente
 ) {
   try {
-    const response = fetch(`${URL}`, {
+    const response = await fetch(`${URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,14 +48,28 @@ export async function postAssociacao(
         associacao_cliente,
       }),
     });
-    if (!response.ok) {
-      throw new Error("Falha ao cadastrar contatos");
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (jsonErr) {
+      console.warn("Erro ao converter resposta em JSON:", jsonErr);
+      data = {};
     }
 
-    const data = (await response).json();
-    return data;
+    if (!response.ok) {
+      return {
+        erro: true,
+        mensagem: data?.error || "Falha ao cadastrar empresa",
+      };
+    }
+
+    return {
+      erro: false,
+      mensagem: data?.message || "Empresa cadastrada com sucesso!",
+    };
   } catch (err) {
     console.error("Erro ao cadastrar associação:", err);
+    return { erro: true, mensagem: "Erro de conexão com o servidor" };
   }
 }
 
@@ -105,17 +119,30 @@ export async function putAssociacao(
         associacao_data_contato,
         associacao_data_fechamento,
         associacao_observacao,
-        associacao_cliente,associacao_preco_placa,
+        associacao_cliente,
+        associacao_preco_placa,
         associacao_preco_instalacao,
       }),
     });
-    if (!response.ok) {
-      throw new Error("Falha ao buscar associação");
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonErr) {
+      console.warn("Erro ao converter resposta em JSON:", jsonErr);
+      data = {};
     }
 
-    await response;
+    if (!response.ok) {
+      return { erro: true, mensagem: data?.error || "Falha ao editar empresa" };
+    }
+
+    return {
+      erro: false,
+      mensagem: data?.message || "Empresa editada com sucesso!",
+    };
   } catch (err) {
     console.error("Erro ao editar associação:", err);
+    return { erro: true, mensagem: "Erro de conexão com o servidor" };
   }
 }
 

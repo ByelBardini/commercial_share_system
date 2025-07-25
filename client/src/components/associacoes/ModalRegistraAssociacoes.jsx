@@ -3,14 +3,12 @@ import { postAssociacao } from "../../services/api/associacaoService.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ModalAviso from "../default/ModalAviso";
-import Loading from "../default/Loading";
 
-function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
+function ModalRegistraAssociacoes({ aparecer, setCadastro, setCarregando }) {
   const [erro, setErro] = useState(false);
   const [erroMensagem, setErroMensagem] = useState("");
 
   const [concluido, setConcluido] = useState(false);
-  const [carregando, setCarregando] = useState(false);
 
   const [nome, setNome] = useState("");
   const [fantasia, setFantasia] = useState("");
@@ -37,33 +35,39 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
   async function cadastra() {
     if (!nome.trim() || !cliente.trim()) {
       setErro(true);
-      setErroMensagem("Insira os dados Obrigatórios!");
+      setErroMensagem("Insira os dados obrigatórios!");
+      return;
+    }
+
+    setCarregando(true);
+    await new Promise((r) => setTimeout(r, 50));
+
+    const id_cidade = localStorage.getItem("id_cidade");
+
+    const resultado = await postAssociacao(
+      id_cidade,
+      nome,
+      fantasia !== "" ? fantasia : nome,
+      cnpj !== "" ? cnpj : null,
+      dataContato !== "" ? dataContato : null,
+      dataFechamento !== "" ? dataFechamento : null,
+      obs !== "" ? obs : null,
+      cliente
+    );
+
+    setCarregando(false);
+
+    if (resultado.erro) {
+      setErro(true);
+      setErroMensagem(resultado.mensagem);
       return;
     } else {
-      setCarregando(true);
-      const id_cidade = localStorage.getItem("id_cidade");
-      const data = await postAssociacao(
-        id_cidade,
-        nome,
-        fantasia !== "" ? fantasia : nome,
-        cnpj !== "" ? cnpj : null,
-        dataContato !== "" ? dataContato : null,
-        dataFechamento !== "" ? dataContato : null,
-        obs !== "" ? obs : null,
-        cliente
-      );
-      if (data) {
-        setCarregando(false);
-        setConcluido(true);
-        setTimeout(() => {
-          setConcluido(false);
-          setCadastro(false);
-          window.location.reload();
-        }, 500);
-      } else {
-        setCarregando(false);
+      setConcluido(true);
+      setTimeout(() => {
+        setConcluido(false);
+        setCadastro(false);
         window.location.reload();
-      }
+      }, 500);
     }
   }
 
@@ -79,7 +83,6 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro }) {
         className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <Loading aparecer={`${carregando ? "" : "hidden"}`} />
         <AnimatePresence>
           {erro && (
             <ModalAviso

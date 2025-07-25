@@ -126,7 +126,7 @@ function ModalVisualizaAssociacao({
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })
-                  : ""
+                  : "0,00"
               }`}
             />
           </div>
@@ -147,7 +147,7 @@ function ModalVisualizaAssociacao({
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })
-                  : ""
+                  : "0,00"
               }`}
             />
           </div>

@@ -2,12 +2,12 @@
 import { useState } from "react";
 import { Search, Funnel, Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
 import Loading from "../components/default/Loading.jsx";
 import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
 import ListaAssociacoes from "../components/associacoes/ListaAssociacoes.jsx";
-import ModalVisualizaAssociacao from "../components/associacoes/ModalVisualizaAssociacao.jsx"
+import ModalVisualizaAssociacao from "../components/associacoes/ModalVisualizaAssociacao.jsx";
 
 function Cidade() {
   const [cadastro, setCadastro] = useState(false);
@@ -30,24 +30,26 @@ function Cidade() {
 
   return (
     <div className="relative min-h-screen w-screen flex flex-col items-center p-6 overflow-x-hidden">
-
-
       <div className="animated-gradient" />
 
       <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-      <ModalRegistraAssociacoes
-        aparecer={`${cadastro ? "" : "hidden"}`}
-        setCadastro={setCadastro}
-        getAssociacoesPorCidade={getAssociacoesPorCidade}
-      />
-      <ModalVisualizaAssociacao
-        aparecer={`${visualiza ? "" : "hidden"}`}
-        setVisualiza={setVisualiza}
-        dadosAssociacao={dadosAssociacao}
-        navigate={navigate}
-        setCarregando={setCarregando}
-      />
-
+      <AnimatePresence>
+        <ModalRegistraAssociacoes
+          aparecer={`${cadastro ? "" : "hidden"}`}
+          setCadastro={setCadastro}
+          getAssociacoesPorCidade={getAssociacoesPorCidade}
+          setCarregando={setCarregando}
+        />
+      </AnimatePresence>
+      <AnimatePresence>
+        <ModalVisualizaAssociacao
+          aparecer={`${visualiza ? "" : "hidden"}`}
+          setVisualiza={setVisualiza}
+          dadosAssociacao={dadosAssociacao}
+          navigate={navigate}
+          setCarregando={setCarregando}
+        />
+      </AnimatePresence>
 
       <div className="bg-blue-600/50  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <button
@@ -59,11 +61,13 @@ function Cidade() {
           <span className="text-base font-bold">Voltar</span>
         </button>
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
-          Empresas de <span className="text-blue-300">{localStorage.getItem("nome_cidade")}</span>
+          Empresas de{" "}
+          <span className="text-blue-300">
+            {localStorage.getItem("nome_cidade")}
+          </span>
         </h1>
         <div className="w-[70px]" />
       </div>
-
 
       <motion.button
         className="bg-green-500 p-3 h-16 rounded-2xl mt-32 shadow-xl text-white font-bold text-lg flex items-center gap-2 hover:bg-green-600 transition border-2 border-white"
@@ -73,7 +77,6 @@ function Cidade() {
       >
         <Plus size={24} /> ADICIONAR EMPRESA
       </motion.button>
-
 
       <div className="w-full max-w-2xl mt-10 p-2 rounded-2xl bg-white/80 shadow-lg border flex items-center gap-3 glass">
         <div className="flex items-center bg-white/90 rounded-xl flex-1 px-4 shadow-inner border mr-1">
@@ -101,7 +104,6 @@ function Cidade() {
           </select>
         </div>
       </div>
-
 
       <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
         <ListaAssociacoes
