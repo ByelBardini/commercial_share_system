@@ -110,8 +110,7 @@ function Cidade() {
             className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[90px]"
             onChange={(event) => setFiltro(event.target.value)}
           >
-            <option value="" disabled selected hidden>
-              Filtrar
+            <option value="" disabled defaultValue={"Filtrar"} hidden>
             </option>
             <option value={1}>Clientes</option>
             <option value={0}>Outros</option>

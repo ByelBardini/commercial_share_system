@@ -82,7 +82,7 @@ function Main() {
             value={ufs}
             onChange={(e) => setUfs(e.target.value)}
           >
-            <option value="" disabled selected hidden>
+            <option value="" disabled defaultValue={"Filtrar"} hidden>
               UF
             </option>
             {ufs.map((uf) => (
