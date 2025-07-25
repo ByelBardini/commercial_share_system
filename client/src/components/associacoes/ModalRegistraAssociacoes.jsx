@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ModalAviso from "../default/ModalAviso";
 
-function ModalRegistraAssociacoes({ aparecer, setCadastro, setCarregando }) {
+function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
   const [erro, setErro] = useState(false);
   const [erroMensagem, setErroMensagem] = useState("");
 
@@ -77,7 +77,7 @@ function ModalRegistraAssociacoes({ aparecer, setCadastro, setCarregando }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={() => setCadastro(false)}
-      className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center ${aparecer}`}
+      className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center`}
     >
       <div
         className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"

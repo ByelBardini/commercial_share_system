@@ -39,7 +39,7 @@ function Cidade() {
       {erro && (
         <ModalAviso
           texto={erroMensagem}
-          className="red"
+          cor="vermelho"
           onClick={() => setErro(false)}
         />
       )}

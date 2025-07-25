@@ -61,7 +61,6 @@ function Associacao() {
 
   const [erro, setErro] = useState(false);
   const [erroMensagem, setErroMensagem] = useState("");
-  const [erroCor, setErroCor] = useState("");
 
   const [contatosOriginais, setContatosOriginais] = useState([]);
   const [contatoModificado, setContatoModificado] = useState([]);
@@ -85,7 +84,6 @@ function Associacao() {
 
     if (data > hojeStr) {
       setErroMensagem("A data não pode ser no futuro!");
-      setErroCor("red");
       setErro(true);
       return false;
     } else {
@@ -145,7 +143,6 @@ function Associacao() {
     if (errosContatos && errosContatos.length > 0) {
       setCarregando(false);
       setErro(true);
-      setErroCor("red");
       setErroMensagem(
         "Erro ao salvar contatos: \n",
         errosContatos.map((e) => e.mensagem).join("\n")
@@ -168,7 +165,6 @@ function Associacao() {
     if (resultado.erro) {
       setCarregando(false);
       setErro(true);
-      setErroCor("red");
       setErroMensagem(resultado.mensagem);
       return;
     }
@@ -233,7 +229,7 @@ function Associacao() {
         {erro && (
           <ModalAviso
             texto={erroMensagem}
-            className={erroCor}
+            cor={"vermelho"}
             onClick={() => setErro(false)}
           />
         )}
@@ -249,13 +245,16 @@ function Associacao() {
           />
         )}
       </AnimatePresence>
-      <ModalAdicionaContato
-        aparecer={`${adicionando ? "" : "hidden"}`}
-        contatosModificados={contatosModificados}
-        setContatosModificados={setContatosModificados}
-        setEditando={setAdicionando}
-        contatoAntigo={contatoModificado}
-      />
+      <AnimatePresence>
+        {adicionando && (
+          <ModalAdicionaContato
+            contatosModificados={contatosModificados}
+            setContatosModificados={setContatosModificados}
+            setEditando={setAdicionando}
+            contatoAntigo={contatoModificado}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="bg-blue-600/50 w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <button

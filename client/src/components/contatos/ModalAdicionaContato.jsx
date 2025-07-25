@@ -11,7 +11,6 @@ function formatarTelefone(valor) {
 }
 
 export default function ModalAdicionaContato({
-  aparecer,
   setEditando,
   setContatosModificados,
   contatosModificados = [],
@@ -87,7 +86,7 @@ export default function ModalAdicionaContato({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className={`fixed top-0 left-0 w-full h-full bg-black/60 z-[200] flex items-center justify-center ${aparecer}`}
+        className={`fixed top-0 left-0 w-full h-full bg-black/60 z-[200] flex items-center justify-center`}
       >
         <motion.div
           initial={{ scale: 0.95, y: 30, opacity: 0 }}

@@ -6,7 +6,6 @@ import { buscaContatos } from "../../services/api/contatoService.js";
 import ModalContatos from "../contatos/ModalContatos.jsx";
 
 function ModalVisualizaAssociacao({
-  aparecer,
   setVisualiza,
   dadosAssociacao,
   navigate,
@@ -53,7 +52,7 @@ function ModalVisualizaAssociacao({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className={`fixed top-0 left-0 w-full h-full z-[100] flex items-center justify-center bg-black/70 ${aparecer}`}
+      className={`fixed top-0 left-0 w-full h-full z-[100] flex items-center justify-center bg-black/70`}
       style={{ overflowY: "auto" }}
     >
       {vendoContatos && (

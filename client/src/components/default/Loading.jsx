@@ -1,4 +1,4 @@
-function Loading({ aparecer }) {
+function Loading() {
   return (
     <div
       className={`
@@ -6,7 +6,6 @@ function Loading({ aparecer }) {
         bg-gradient-to-br from-blue-200/50 via-blue-100/40 to-blue-50/60 
         backdrop-blur-sm bg-black/60
         flex flex-col items-center justify-center
-        ${aparecer}
       `}
     >
       <div className="relative">

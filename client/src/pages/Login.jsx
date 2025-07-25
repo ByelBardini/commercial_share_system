@@ -65,19 +65,21 @@ function Login() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-700/90 via-blue-500/60 to-blue-300/80 z-0" />
       </div>
 
-      <Loading aparecer={`${carregando ? "" : "hidden"}`} />
-      <ModalAviso
-        texto={erroMensagem}
-        className="bg-red-600"
-        aparecer={`${erro ? "" : "hidden"}`}
-        onClick={() => setErro(false)}
-      />
-      <ModalAviso
-        texto="Login realizado com sucesso!"
-        className="bg-green-600"
-        aparecer={`${logado ? "" : "hidden"}`}
-        botao={"hidden"}
-      />
+      {carregando && <Loading />}
+      {erro && (
+        <ModalAviso
+          texto={erroMensagem}
+          cor="vermelho"
+          onClick={() => setErro(false)}
+        />
+      )}
+      {logado && (
+        <ModalAviso
+          texto="Login realizado com sucesso!"
+          cor="verde"
+          botao={"hidden"}
+        />
+      )}
 
       <div className="relative z-10 bg-white/70 backdrop-blur-2xl w-full max-w-md rounded-3xl shadow-2xl flex flex-col gap-3 p-10 items-center border border-blue-200">
         <img
