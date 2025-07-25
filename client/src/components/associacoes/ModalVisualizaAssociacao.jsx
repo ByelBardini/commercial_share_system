@@ -163,7 +163,6 @@ function ModalVisualizaAssociacao({
           </button>
         </div>
       </div>
-      {/* Mini glass utility (opcional, caso queira ainda mais blur no card) */}
       <style>
         {`
         .glass {

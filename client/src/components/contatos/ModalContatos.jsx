@@ -29,7 +29,6 @@ function ModalContatos({ aparecer, setCarregando, setVendoContatos, contatos, se
           </button>
         </div>
       </div>
-      {/* Glass effect utility */}
       <style>
         {`
         .glass {
