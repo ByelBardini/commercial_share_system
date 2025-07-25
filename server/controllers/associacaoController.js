@@ -7,7 +7,7 @@ export const getAssociacoesPorCidade = (req, res) => {
     return res.status(400).json({ error: "ID da cidade é obrigatório." });
   }
 
-  const sql = `SELECT associacao_id, associacao_nome_fantasia, associacao_cliente FROM associacoes WHERE associacao_cidade_id = ? ORDER BY associacao_nome_fantasia`;
+  const sql = `SELECT associacao_id, associacao_nome_fantasia, associacao_cliente, associacao_favorito FROM associacoes WHERE associacao_cidade_id = ? ORDER BY associacao_favorito = 0, associacao_nome_fantasia`;
   db.query(sql, [id], (err, results) => {
     if (err) {
       console.error("Erro ao buscar associações por cidade:", err);
@@ -214,6 +214,35 @@ export const putAssociacao = (req, res) => {
   );
 };
 
+export const favoritarAssociacao = (req, res) => {
+  const { id } = req.params
+
+  if (!id) {
+    return res.status(400).json({ error: "ID da empresa é obrigatório." });
+  }
+
+  const sql = `UPDATE associacoes 
+                    SET associacao_favorito = 
+                        CASE
+                            WHEN associacao_favorito IS NULL OR associacao_favorito = 0 THEN 1
+                            WHEN associacao_favorito = 1 THEN 0
+                            ELSE associacao_favorito
+                        END
+                  WHERE associacao_id = ?`;
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error("Erro ao favoritar/desfavoritar empresa:", err);
+      return res
+        .status(500)
+        .json({
+          error: "Erro interno ao ao favoritar/desfavoritar empresa, tente mais tarde",
+        });
+    }
+    res.status(200).json({ message: "Empresa favoritada/desfavoritada com sucesso!" });
+  });
+};
+
+
 export const deleteAssociacao = (req, res) => {
   const { id } = req.params;
 
@@ -224,7 +253,7 @@ export const deleteAssociacao = (req, res) => {
   const sql = `DELETE FROM associacoes WHERE associacao_id = ?`;
   db.query(sql, [id], (err, results) => {
     if (err) {
-      console.error("Erro ao deletar associação:", err);
+      console.error("Erro ao deletar empresa:", err);
       return res
         .status(500)
         .json({

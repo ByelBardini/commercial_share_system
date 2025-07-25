@@ -146,6 +146,37 @@ export async function putAssociacao(
   }
 }
 
+export async function favoritarAssociacao(id){
+  try {
+    const response = await fetch(`${URL}/favorita/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonErr) {
+      console.warn("Erro ao converter resposta em JSON:", jsonErr);
+      data = {};
+    }
+
+    if (!response.ok) {
+      return { erro: true, mensagem: data?.error || "Falha ao favoritar/desfavoritar empresa" };
+    }
+
+    return {
+      erro: false,
+      mensagem: data?.message || "Empresa favoritada/desfavoritada com sucesso!",
+    };
+  } catch (err) {
+    console.error("Erro ao favoritar/desfavoritar associação:", err);
+    return { erro: true, mensagem: "Erro de conexão com o servidor" };
+  }
+}
+
 export async function deletaAssociacao(id) {
   try {
     const response = await fetch(`${URL}/${id}`, {

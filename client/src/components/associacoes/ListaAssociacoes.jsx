@@ -40,7 +40,7 @@ function ListaAssociacoes({ pesquisa, filtroAtivo, setCarregando, associacoesRoo
   }, [pesquisa, filtroAtivo]);
 
   return <div className="flex flex-col h-full w-full gap-2">
-    <CampoAssociacao associacoes={associacoes} navigate={navigate} setCarregando={setCarregando} setVisualiza={setVisualiza} setDadosAssociacao={setDadosAssociacao} />
+    <CampoAssociacao puxaAssociacoes={puxaAssociacoes} associacoes={associacoes} navigate={navigate} setCarregando={setCarregando} setVisualiza={setVisualiza} setDadosAssociacao={setDadosAssociacao} />
   </div>;
 }
 
