@@ -45,12 +45,12 @@ Associacao.init({
   },
   associacao_preco_placa: {
     type: DataTypes.DOUBLE, 
-    allowNull: true,
+    allowNull: false,
     defaultValue: null,
   },
   associacao_observacao: {
     type: DataTypes.TEXT, 
-    allowNull: true,
+    allowNull: false,
     defaultValue: null,
   },
   associacao_cliente: {
