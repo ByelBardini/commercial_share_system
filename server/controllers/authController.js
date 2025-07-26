@@ -10,7 +10,7 @@ export async function login(req, res) {
   const { usuario_login, usuario_senha } = req.body;
 
   if (!usuario_login || !usuario_senha) {
-    res
+    return res
       .status(400)
       .json({ error: "Login e senha são obrigatórios." });
   }
@@ -20,7 +20,7 @@ export async function login(req, res) {
     const usuario = await Usuario.findOne({where: {usuario_login:usuario_login}});
     
     if( usuario === null ){
-      res
+      return res
         .status(404)
         .json({error: "Login Incorreto"})
     }
@@ -47,7 +47,7 @@ export async function login(req, res) {
         const token = jwt.sign(payload, CHAVE, { expiresIn: "2h" });
 
         req.session.user = userSession;
-        res
+        return res
           .status(200)
           .cookie("token", token, {
             httpOnly: true,
@@ -58,12 +58,12 @@ export async function login(req, res) {
           })
           .json(resposta);
       } else {
-        res.status(401).json({ error: "Usuário ou senha inválidos." });
+        return res.status(401).json({ error: "Usuário ou senha inválidos." });
       }
     });
   }catch(err){
     console.error("Erro na consulta:", err);
-    res
+    return res
       .status(500)
       .json({ error: "Erro ao validar usuário" });
   }
@@ -77,5 +77,5 @@ export const logout = (req, res) => {
     }
   });
   res.clearCookie("token");
-  res.json({ mensagem: "Logout realizado com sucesso" });
+  return res.json({ mensagem: "Logout realizado com sucesso" });
 };

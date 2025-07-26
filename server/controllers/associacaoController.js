@@ -2,6 +2,11 @@ import { Associacao } from "../models/index.js";
 
 export async function getAssociacoesPorCidade(req, res) {
   const { id } = req.params;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
     return res.status(400).json({ error: "ID da empresa é obrigatório." });
@@ -67,6 +72,10 @@ export async function postAssociacao(req, res) {
     associacao_cliente,
   } = req.body;
   const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (
     !associacao_nome ||
@@ -145,8 +154,11 @@ export async function putAssociacao(req, res) {
     associacao_preco_instalacao = null,
     associacao_cliente,
   } = req.body;
-  console.log(req.body);
   const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
     return res.status(400).json({ error: "ID da empresa é obrigatório." });
@@ -187,7 +199,7 @@ export async function putAssociacao(req, res) {
   try {
     const empresa = await Associacao.findByPk(id);
     if (!empresa) {
-      return res.status(404).json({ error: "Empresa não encontrada." });
+      return res.status(404).json({ error: "Empresa não encontrada, fale com um administrador do sistema" });
     }
 
     await empresa.update(
@@ -225,6 +237,11 @@ export async function putAssociacao(req, res) {
 
 export async function favoritarAssociacao(req, res) {
   const { id } = req.params;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
     res.status(400).json({ error: "ID da empresa é obrigatório." });
@@ -260,6 +277,10 @@ export async function favoritarAssociacao(req, res) {
 export async function deleteAssociacao(req, res) {
   const { id } = req.params;
   const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
     return res.status(400).json({ error: "ID da empresa é obrigatório." });

@@ -1,6 +1,11 @@
 import { Cidade } from "../models/index.js"
 
 export async function getCidades(req, res){
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
   try{
 
     const cidades = await Cidade.findAll({
@@ -10,19 +15,24 @@ export async function getCidades(req, res){
       ]
     });
 
-    res.status(200).json(cidades);
+    return res.status(200).json(cidades);
 
   }catch(err){
     console.error("Erro ao buscar cidades:", err);
-    res.status(500).json({ error: "Erro ao buscar cidades, fale com um administrador" });
+    return res.status(500).json({ error: "Erro ao buscar cidades, fale com um administrador" });
   }
 }
 
 export async function postCidade(req, res){
   const { cidade_nome, cidade_uf } = req.body;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!cidade_nome || !cidade_uf) {
-    res
+    return res
       .status(400)
       .json({ error: "Nome e UF da cidade são obrigatórios." });
   }
@@ -34,24 +44,29 @@ export async function postCidade(req, res){
       cidade_uf:cidade_uf,
     })
 
-    res.status(201).json({ message: "Cidade cadastrada com sucesso!" });
+    return res.status(201).json({ message: "Cidade cadastrada com sucesso!" });
 
   }catch(err){
     console.error("Erro ao cadastrar cidade:", err);
-    res.status(500).json({ error: "Erro ao cadastrar cidade" });
+    return res.status(500).json({ error: "Erro ao cadastrar cidade" });
   }
 }
 
 export async function putCidade(req, res) {
   const { id } = req.params;
   const { cidade_nome, cidade_uf } = req.body;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
-    res.status(400).json({ error: "ID da cidade é obrigatório." });
+    return res.status(400).json({ error: "ID da cidade é obrigatório." });
   }
 
   if (!cidade_nome || !cidade_uf) {
-    res
+    return res
       .status(400)
       .json({ error: "Nome e UF da cidade são obrigatórios." });
   }
@@ -68,31 +83,36 @@ export async function putCidade(req, res) {
       }
     });
     
-    res.status(201).json({ message: "Cidade atualizada com sucesso!" });
+    return res.status(201).json({ message: "Cidade atualizada com sucesso!" });
 
   }catch(err){
     console.error("Erro ao atualizar cidade:", err);
-    res.status(500).json({ error: "Erro ao atualizar cidade" });
+    return res.status(500).json({ error: "Erro ao atualizar cidade" });
   }
 }
 
 export async function favoritaCidade(req, res) {
   const { id } = req.params;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
-    res.status(400).json({ error: "ID da cidade é obrigatório." });
+    return res.status(400).json({ error: "ID da cidade é obrigatório." });
   }
 
   try{
 
     const cidade = await Cidade.findByPk(id);
     if (!cidade) {
-      res.status(404).json({ error: "Cidade não encontrada, fale com um administrador do sistema" });
+      return res.status(404).json({ error: "Cidade não encontrada, fale com um administrador do sistema" });
     }
     cidade.cidade_favorito = (!cidade.cidade_favorito || cidade.cidade_favorito === 0) ? 1 : 0;
     await cidade.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: associacao.cidade_favorito
         ? "Cidade marcada como favorita."
         : "Cidade removida dos favoritos."
@@ -100,7 +120,7 @@ export async function favoritaCidade(req, res) {
 
   }catch(err){
     console.error("Erro ao favoritar/desfavoritar cidade:", err);
-      res
+      return res
         .status(500)
         .json({ error: "Erro ao favoritar/desfavoritar cidade" });
   }
@@ -108,9 +128,14 @@ export async function favoritaCidade(req, res) {
 
 export const deleteCidade = (req, res) => {
   const { id } = req.params;
+  const { usuario_id } = req.session.user;
+
+  if (!usuario_id){
+    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  }
 
   if (!id) {
-    res.status(400).json({ error: "ID da cidade é obrigatório." });
+    return res.status(400).json({ error: "ID da cidade é obrigatório." });
   }
 
   try{
@@ -122,16 +147,16 @@ export const deleteCidade = (req, res) => {
     });
 
     if (execucoes === 0) {
-      res.status(404).json({ error: "Cidade não encontrada para editar, fale com um administrador do sistema" });
+      return res.status(404).json({ error: "Cidade não encontrada para editar, fale com um administrador do sistema" });
     }
     
-    res
+    return res
       .status(202)
       .json({ message: "Cidade deletada com sucesso!" });
 
   }catch(err){
     console.error("Erro ao deletar cidade:", err);
-    res
+    return res
       .status(500)
       .json({ error: "Erro ao deletar cidade" });
   }
