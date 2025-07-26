@@ -5,7 +5,7 @@ dotenv.config();
 const CHAVE = process.env.SECRET_KEY_LOGIN;
 
 export function verificaToken(req, res, next) {
-  const token = req.cookies.token;
+  const token = req.cookies.accessToken;
 
   if (!token) {
     return res.status(401).json({ error: "Token não fornecido." });
@@ -14,7 +14,7 @@ export function verificaToken(req, res, next) {
   jwt.verify(token, CHAVE, (err, decoded) => {
     if (err) {
       console.log("Erro ao verificar token:", err);
-      return res.status(403).json({ error: "Token inválido." });
+      return res.status(403).json({ error: "Token inválido ou expirado." });
     }
     req.user = decoded;
     next();

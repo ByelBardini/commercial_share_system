@@ -15,7 +15,7 @@ Contato.init({
     allowNull: false,
   },
   contato_tipo: {
-    type: DataTypes.ENUM("telefone","email"),
+    type: DataTypes.ENUM("telefone", "email"),
     allowNull: false,
   },
   contato_nome: {

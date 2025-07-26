@@ -23,7 +23,7 @@ Usuario.init({
     allowNull: false,
   },
   usuario_role: {
-    type: DataTypes.ENUM("adm","usuario"),
+    type: DataTypes.ENUM("adm", "usuario"),
     allowNull: false,
   },
   usuario_troca_senha: {
@@ -35,6 +35,10 @@ Usuario.init({
     type: DataTypes.TINYINT,
     allowNull: false,
     defaultValue: 1,
+  },
+  usuario_refresh_token: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
   },
 }, {
   sequelize,

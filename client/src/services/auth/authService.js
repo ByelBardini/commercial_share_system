@@ -51,3 +51,35 @@ export async function logout() {
     console.error("Erro durante logout:", error);
   }
 }
+
+export async function getRefreshToken() {
+  try {
+    const response = await fetch(`${URL}/refresh`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    if (response.status === 401) {
+      throw new Error(
+        data.error || "Sessão inválida, realize o login novamente"
+      );
+    } else if (response.status === 403) {
+      throw new Error(
+        data.error || "Sessão expirada, realize o login novamente"
+      );
+    } else if (!response.ok) {
+      throw new Error(
+        data.error || "Erro desconhecido, tente novamente mais tarde"
+      );
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Erro ao conseguir refresh token:", error);
+  }
+}
