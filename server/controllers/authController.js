@@ -9,7 +9,7 @@ const CHAVE = process.env.SECRET_KEY_LOGIN;
 
 async function gerarTokens(res, usuario_id) {
   const accessToken = jwt.sign({ usuario_id: usuario_id }, CHAVE, {
-    expiresIn: "15m",
+    expiresIn: "10m",
   });
   const refreshToken = uuidv4();
 
@@ -49,9 +49,6 @@ export async function login(req, res) {
       }
 
       if (match) {
-        const payload = {
-          usuario_nome: usuario.usuario_nome,
-        };
         const userSession = {
           usuario_id: usuario.usuario_id,
           usuario_role: usuario.usuario_role,
@@ -105,10 +102,12 @@ export const logout = async (req, res) => {
   return res.json({ mensagem: "Logout realizado com sucesso" });
 };
 
-export async function refreshToken(req, res) {
+export async function comparaRefreshToken(req, res) {
+  console.log("Foi chamado")
   const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken)
-    return res.status(401).json({ error: "Sem refresh token" });
+  if (!refreshToken){
+    console.log("Sem refresh token")
+    return res.status(401).json({ error: "Sem refresh token" });}
 
   const usuario = await Usuario.findOne({
     where: { usuario_refresh_token: refreshToken },
@@ -117,7 +116,7 @@ export async function refreshToken(req, res) {
     return res.status(403).json({ error: "Refresh token inválido" });
 
   const accessToken = jwt.sign({ usuario_id: usuario.usuario_id }, CHAVE, {
-    expiresIn: "15m",
+    expiresIn: "10m",
   });
 
   res.cookie("accessToken", accessToken, {

@@ -13,7 +13,14 @@ export function verificaToken(req, res, next) {
 
   jwt.verify(token, CHAVE, (err, decoded) => {
     if (err) {
-      console.log("Erro ao verificar token:", err);
+      
+      if (err.name === "TokenExpiredError") {
+        console.log("Token expirado.");
+      } else if (err.name === "JsonWebTokenError") {
+        console.log("Token JWT inválido.");
+      } else {
+        console.error("Erro ao verificar token:", err);
+      }
       return res.status(403).json({ error: "Token inválido ou expirado." });
     }
     req.user = decoded;
