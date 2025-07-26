@@ -113,7 +113,7 @@ export async function favoritaCidade(req, res) {
     await cidade.save();
 
     return res.status(200).json({
-      message: associacao.cidade_favorito
+      message: cidade.cidade_favorito
         ? "Cidade marcada como favorita."
         : "Cidade removida dos favoritos."
     });
