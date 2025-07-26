@@ -1,23 +1,22 @@
-const URL = `http://localhost:3000/usuario`;
+import { api, refresh } from "../api.js";
 
 export async function trocaSenhaUsuario(nova_senha) {
   try {
-    const response = await fetch(`${URL}/trocasenha`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nova_senha }),
-      credentials: "include",
-    });
+    const response = await api.put(`/usuario/trocasenha`, {nova_senha });
 
-    if (!response.ok) {
-      throw new Error("Falha ao trocar a senha");
-    }
+    return response.data;
+  } catch (err) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          try {
+            await refresh();
+            const response = await api.put(`/usuario/trocasenha`, {nova_senha });
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Erro ao trocar senha:", error);
+            return response.data;
+          } catch (refreshErr) {
+            console.error("Erro ao buscar token:", refreshErr);
+            return { erro: true, mensagem: "Sessão inválida!" };
+          }
+        }
+    console.error("Erro ao trocar senha:", err);
   }
 }

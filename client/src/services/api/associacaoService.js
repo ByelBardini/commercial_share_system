@@ -1,22 +1,23 @@
-const URL = `http://localhost:3000/associacao`;
+import { api, refresh } from "../api.js";
 
 export async function getAssociacoesPorCidade(id_cidade) {
   try {
-    const response = await fetch(`${URL}/cidade/${id_cidade}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (!response.ok) {
-      throw new Error("Falha ao buscar associações");
-    }
+    const response = await api.get(`/associacao/cidade/${id_cidade}`);
 
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (err) {
-    console.error("Erro ao buscar associação:", err);
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await api.get(`/associacao/cidade/${id_cidade}`);
+        return response.data;
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
+    console.error("Erro ao buscar empresa:", err);
+    return { erro: true, mensagem: "Erro ao buscar empresas." };
   }
 }
 
@@ -31,13 +32,7 @@ export async function postAssociacao(
   associacao_cliente
 ) {
   try {
-    const response = await fetch(`${URL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
+    const response = await api.post(`/associacao`, {
         associacao_cidade_id,
         associacao_nome,
         associacao_nome_fantasia,
@@ -46,28 +41,39 @@ export async function postAssociacao(
         associacao_data_fechamento,
         associacao_observacao,
         associacao_cliente,
-      }),
-    });
-    let data = null;
-    try {
-      data = await response.json();
-    } catch (jsonErr) {
-      console.warn("Erro ao converter resposta em JSON:", jsonErr);
-      data = {};
-    }
-
-    if (!response.ok) {
+      });
+    
+    if(response){
       return {
-        erro: true,
-        mensagem: data?.error || "Falha ao cadastrar empresa",
+        erro: false,
+        mensagem: response.data?.message || "Empresa cadastrada com sucesso!",
       };
     }
-
-    return {
-      erro: false,
-      mensagem: data?.message || "Empresa cadastrada com sucesso!",
-    };
   } catch (err) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          try {
+            await refresh();
+            const response = await api.post(`/associacao`, {
+              associacao_cidade_id,
+              associacao_nome,
+              associacao_nome_fantasia,
+              associacao_cnpj,
+              associacao_data_contato,
+              associacao_data_fechamento,
+              associacao_observacao,
+              associacao_cliente,
+            });;
+            if(response){
+              return {
+                erro: false,
+                mensagem: response.data?.message || "Empresa cadastrada com sucesso!",
+              };
+            }
+          } catch (refreshErr) {
+            console.error("Erro ao buscar token:", refreshErr);
+            return { erro: true, mensagem: "Sessão inválida!" };
+          }
+        }
     console.error("Erro ao cadastrar associação:", err);
     return { erro: true, mensagem: "Erro de conexão com o servidor" };
   }
@@ -75,21 +81,22 @@ export async function postAssociacao(
 
 export async function getAssociacaoFull(associacao_id) {
   try {
-    const response = await fetch(`${URL}/${associacao_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (!response.ok) {
-      throw new Error("Falha ao buscar associação");
-    }
-
-    const dados = (await response).json();
-    return dados;
+    const response = await api.get(`/associacao/${associacao_id}`);
+    
+    return response.data;
   } catch (err) {
-    console.error("Erro ao buscar associação:", err);
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await api.get(`/associacao/${associacao_id}`);
+        return response.data;
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
+    console.error("Erro ao buscar empresa:", err);
+    return { erro: true, mensagem: "Erro ao buscar empresa" };
   }
 }
 
@@ -106,13 +113,7 @@ export async function putAssociacao(
   id
 ) {
   try {
-    const response = await fetch(`${URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
+    const response = await api.put(`/associacao/${id}`, {
         associacao_nome,
         associacao_nome_fantasia,
         associacao_cnpj,
@@ -122,25 +123,40 @@ export async function putAssociacao(
         associacao_cliente,
         associacao_preco_placa,
         associacao_preco_instalacao,
-      }),
     });
-    let data;
-    try {
-      data = await response.json();
-    } catch (jsonErr) {
-      console.warn("Erro ao converter resposta em JSON:", jsonErr);
-      data = {};
+    
+    if(response){
+      return {
+        erro: false,
+        mensagem: response.data?.message || "Empresa editada com sucesso!",
+      };
     }
-
-    if (!response.ok) {
-      return { erro: true, mensagem: data?.error || "Falha ao editar empresa" };
-    }
-
-    return {
-      erro: false,
-      mensagem: data?.message || "Empresa editada com sucesso!",
-    };
   } catch (err) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await await api.put(`/associacao/${id}`, {
+          associacao_nome,
+          associacao_nome_fantasia,
+          associacao_cnpj,
+          associacao_data_contato,
+          associacao_data_fechamento,
+          associacao_observacao,
+          associacao_cliente,
+          associacao_preco_placa,
+          associacao_preco_instalacao,
+      });
+        if(response){
+          return {
+            erro: false,
+            mensagem: response.data?.message || "Empresa editada com sucesso!",
+          };
+        }
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
     console.error("Erro ao editar associação:", err);
     return { erro: true, mensagem: "Erro de conexão com o servidor" };
   }
@@ -148,30 +164,30 @@ export async function putAssociacao(
 
 export async function favoritarAssociacao(id){
   try {
-    const response = await fetch(`${URL}/favorita/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    let data;
-    try {
-      data = await response.json();
-    } catch (jsonErr) {
-      console.warn("Erro ao converter resposta em JSON:", jsonErr);
-      data = {};
-    }
+    const response = await api.put(`/associacao/favorita/${id}`);
 
-    if (!response.ok) {
-      return { erro: true, mensagem: data?.error || "Falha ao favoritar/desfavoritar empresa" };
+    if(response){
+      return {
+        erro: false,
+        mensagem: response.data?.message || "Empresa favoritada/desfavoritada com sucesso!",
+      };
     }
-
-    return {
-      erro: false,
-      mensagem: data?.message || "Empresa favoritada/desfavoritada com sucesso!",
-    };
   } catch (err) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await api.put(`/associacao/favorita/${id}`);
+        if(response){
+          return {
+            erro: false,
+            mensagem: response.data?.message || "Empresa favoritada/desfavoritada com sucesso!",
+          };
+        }
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
     console.error("Erro ao favoritar/desfavoritar associação:", err);
     return { erro: true, mensagem: "Erro de conexão com o servidor" };
   }
@@ -179,19 +195,30 @@ export async function favoritarAssociacao(id){
 
 export async function deletaAssociacao(id) {
   try {
-    const response = await fetch(`${URL}/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (!response.ok) {
-      throw new Error("Falha ao deletar associação");
+    const response = await api.delete(`/associacao/${id}`);
+    
+    if(response){
+      return{
+        erro: false,
+        mensagem: response.data?.message || "Empresa deletada com sucesso!",
+      }
     }
-
-    await response;
   } catch (err) {
-    console.error("Erro ao buscar associação:", err);
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await api.delete(`/associacao/${id}`);
+        if(response){
+          return {
+            erro: false,
+            mensagem: response.data?.message || "Empresa deletada com sucesso!",
+          };
+        }
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
+    console.error("Erro ao deletar empresa:", err);
   }
 }

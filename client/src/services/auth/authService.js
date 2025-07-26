@@ -1,85 +1,34 @@
-const URL = `http://localhost:3000`;
+import { api } from "../api.js";
 
 export async function login(usuario_login, usuario_senha) {
   try {
-    const response = await fetch(`${URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usuario_login, usuario_senha }),
-      credentials: "include",
+    const response = await api.post(`/login`, {
+      usuario_login, 
+      usuario_senha 
     });
 
-    const data = await response.json();
-
-    if (response.status === 400) {
-      throw new Error(data.error || "Preencha login e senha.");
-    } else if (response.status === 401) {
-      throw new Error(data.error || "Usuário ou senha incorretos.");
-    } else if (response.status === 500) {
-      throw new Error(
-        data.error || "Erro interno. Tente novamente mais tarde."
-      );
-    } else if (!response.ok) {
-      throw new Error(data.error || "Erro desconhecido.");
+    return response.data;
+  } catch (err) {
+    if(err.response && err.response.status === 400){
+      throw new Error(err.response.data?.error || "Preencha login e senha.");
     }
-
-    return data;
-  } catch (error) {
-    console.error("Erro durante login:", error);
-    throw error;
+    else if(err.response && err.response.status === 401){
+      throw new Error(err.response.data?.error || "Usuário ou senha incorretos.");
+    }
+    else if(err.response && err.response.status === 500){
+      throw new Error(err.response.data?.error || "Erro interno. Tente novamente mais tarde.");
+    }
   }
 }
 
 export async function logout() {
   try {
-    const response = await fetch(`${URL}/logout`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const response = await api.get(`/logout`);
 
-    if (!response.ok) {
-      throw new Error("Falha no logout");
+    if(response){
+      localStorage.clear();
     }
-
-    localStorage.clear();
   } catch (error) {
     console.error("Erro durante logout:", error);
-  }
-}
-
-export async function getRefreshToken() {
-  try {
-    const response = await fetch(`${URL}/refresh`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    const data = await response.json();
-
-    if (response.status === 401) {
-      throw new Error(
-        data.error || "Sessão inválida, realize o login novamente"
-      );
-    } else if (response.status === 403) {
-      throw new Error(
-        data.error || "Sessão expirada, realize o login novamente"
-      );
-    } else if (!response.ok) {
-      throw new Error(
-        data.error || "Erro desconhecido, tente novamente mais tarde"
-      );
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Erro ao conseguir refresh token:", error);
   }
 }

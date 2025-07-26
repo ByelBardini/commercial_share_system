@@ -1,45 +1,9 @@
-const URL = "http://localhost:3000/contato";
+import { api, refresh } from "../api.js";
 
 function manterArray(valor) {
   if (Array.isArray(valor)) return valor;
   if (valor == null) return [];
   return [valor];
-}
-
-export async function buscaContatos(id) {
-  try {
-    const response = await fetch(`${URL}/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    let data = null;
-    try {
-      data = await response.json();
-    } catch (jsonErr) {
-      console.warn("Erro ao converter resposta em JSON:", jsonErr);
-      data = {};
-    }
-
-    if (!response.ok) {
-      if (
-        response.status === 404 &&
-        (data?.error === "Contatos não encontrados." ||
-          data?.error === "Contatos não encontrados")
-      ) {
-        return [];
-      }
-      throw new Error(data?.error || "Falha ao buscar contatos");
-    }
-
-    return data;
-  } catch (err) {
-    console.error("Erro ao buscar contatos:", err);
-    throw err;
-  }
 }
 
 function separaContatos(contatosAntigos, contatosNovos) {
@@ -64,49 +28,82 @@ function separaContatos(contatosAntigos, contatosNovos) {
   return { adicionados, removidos, editados };
 }
 
+export async function buscaContatos(id) {
+  try {
+    const response = await api.get(`/contato/${id}`);
+
+    return response.data;
+  } catch (err) {
+    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      try {
+        await refresh();
+        const response = await api.get(`/contato/${id}`);
+
+        return response.data;
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
+      }
+    }
+    if (
+      err.response &&
+      err.response.status === 404 &&
+      (
+        err.response.data?.error === "Contatos não encontrados." ||
+        err.response.data?.error === "Contatos não encontrados"
+      )
+    ) {
+      return [];
+    }
+    console.error("Erro ao buscar contatos:", err);
+    throw err;
+  }
+}
+
+
+
 async function postContatos(adicionados, associacao_id) {
   const contatos = manterArray(adicionados);
   const resultados = [];
   console.log("post: ", contatos);
   for (const contato of contatos) {
     try {
-      const response = await fetch(`${URL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
+      const response = await api.post(`/contato`, {
           contato_associacao_id: associacao_id,
           contato_tipo: contato.contato_tipo,
           contato_nome: contato.contato_nome,
           contato: contato.contato,
-        }),
       });
-      let data = {};
+
+      resultados.push({
+        erro: false,
+        mensagem: response.data?.message || "Contato adicionado com sucesso!",
+      });
+    } catch (err) {
       try {
-        data = await response.json();
-      } catch (jsonErr) {
-        console.warn("Erro ao converter resposta em JSON:", jsonErr);
-        data = {};
-      }
-      if (!response.ok) {
-        resultados.push({
-          erro: true,
-          mensagem: data?.error || "Erro ao adicionar contato",
+        await refresh();
+        const response = await api.post(`/contato`, {
+          contato_associacao_id: associacao_id,
+          contato_tipo: contato.contato_tipo,
+          contato_nome: contato.contato_nome,
+          contato: contato.contato,
         });
-      } else {
+
         resultados.push({
           erro: false,
-          mensagem: data?.message || "Contato adicionado com sucesso!",
+          mensagem: response.data?.message || "Contato adicionado com sucesso!",
         });
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
       }
-    } catch (err) {
       console.log("Erro ao adicionar contato: ", err);
       resultados.push({
         erro: true,
         mensagem: "Erro de conexão ao adicionar contato",
       });
     }
-  }
+  }    
   return resultados;
 }
 
@@ -116,36 +113,34 @@ async function putContatos(editados) {
   const resultados = [];
   for (const contato of contatos) {
     try {
-      const response = await fetch(`${URL}/${contato.contato_id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
+      const response = await api.put(`/contato/${contato.contato_id}`, {
           contato_tipo: contato.contato_tipo,
           contato_nome: contato.contato_nome,
           contato: contato.contato,
-        }),
       });
-      let data = {};
+
+      resultados.push({
+        erro: false,
+        mensagem: response.data?.message || "Contato editado com sucesso!",
+      });
+    } catch (err) {
       try {
-        data = await response.json();
-      } catch (jsonErr) {
-        console.warn("Erro ao converter resposta em JSON:", jsonErr);
-        data = {};
-      }
-      if (!response.ok) {
-        resultados.push({
-          erro: true,
-          mensagem: data?.error || "Erro ao editar contato",
+        await refresh();
+        const response = await api.put(`/contato/${contato.contato_id}`, {
+          contato_tipo: contato.contato_tipo,
+          contato_nome: contato.contato_nome,
+          contato: contato.contato,
         });
-      } else {
+
         resultados.push({
           erro: false,
-          mensagem: data?.message || "Contato editado com sucesso!",
+          mensagem: response.data?.message || "Contato editado com sucesso!",
         });
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
       }
-    } catch (err) {
-      console.log("Erro ao adicionar contato: ", err);
+      console.log("Erro ao editar contato: ", err);
       resultados.push({
         erro: true,
         mensagem: "Erro de conexão ao editar contato",
@@ -161,31 +156,26 @@ async function deleteContatos(deletados) {
   const resultados = [];
   for (const contato of contatos) {
     try {
-      const response = await fetch(`${URL}/${contato.contato_id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      const response = await api.delete(`/contato/${contato.contato_id}`);
+
+      resultados.push({
+        erro: false,
+        mensagem: response.data?.message || "Contato deletado com sucesso!",
       });
-      let data = {};
+    } catch (err) {
       try {
-        data = await response.json();
-      } catch (jsonErr) {
-        console.warn("Erro ao converter resposta em JSON:", jsonErr);
-        data = {};
-      }
-      if (!response.ok) {
-        resultados.push({
-          erro: true,
-          mensagem: data?.error || "Erro ao deletar contato",
-        });
-      } else {
+        await refresh();
+        const response = await api.delete(`/contato/${contato.contato_id}`);
+
         resultados.push({
           erro: false,
-          mensagem: data?.message || "Contato deletado com sucesso!",
+          mensagem: response.data?.message || "Contato deletado com sucesso!",
         });
+      } catch (refreshErr) {
+        console.error("Erro ao buscar token:", refreshErr);
+        return { erro: true, mensagem: "Sessão inválida!" };
       }
-    } catch (err) {
-      console.log("Erro ao adicionar contato: ", err);
+      console.log("Erro ao deletar contato: ", err);
       resultados.push({
         erro: true,
         mensagem: "Erro de conexão ao deletar contato",
