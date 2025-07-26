@@ -21,11 +21,11 @@ Log.init(
     },
     log_valor_antigo: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     log_valor_novo: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     log_data_alteracao: {
       type: DataTypes.DATE,
