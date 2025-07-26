@@ -47,6 +47,7 @@ Log.belongsTo(Usuario, {
   as: "usuario",
 });
 
+// Logs EMPRESA/ASSOCIAÇÃO
 Associacao.afterCreate(async (instance, options) => {
   const usuario_id = options.usuario_id || null;
 
@@ -95,6 +96,50 @@ Associacao.afterDestroy(async (instance, options) => {
   await Log.create({
     log_usuario_id: usuario_id || null,
     log_operacao_realizada: "Empresa deletada",
+    log_valor_antigo: JSON.stringify(instance.toJSON()),
+    log_valor_novo: "-",
+    log_data_alteracao: new Date(),
+  }).catch(console.error);
+});
+
+// Logs CONTATOS
+
+Contato.afterUpdate(async (instance, options) => {
+  const usuario_id = options.usuario_id || null;
+  if (!usuario_id) {
+    console.log("Update sem usuario_id, log ignorado.");
+    return;
+  }
+
+  const alterados = Array.from(instance._changed || []);
+  for (const key of Object.keys(instance._changed)) {
+    if (instance._changed[key]) alterados.push(key);
+  }
+
+  for (const campo of alterados) {
+    const antigo = instance._previousDataValues[campo];
+    const novo = instance.dataValues[campo];
+
+    if (transformaEmString(antigo) == transformaEmString(novo)) {
+      return;
+    }
+
+    await Log.create({
+      log_usuario_id: usuario_id,
+      log_operacao_realizada: `Alterado campo Contato - ${campo}`,
+      log_valor_antigo: transformaEmString(antigo),
+      log_valor_novo: transformaEmString(novo),
+      log_data_alteracao: new Date(),
+    }).catch(console.error);
+  }
+});
+
+Contato.afterDestroy(async (instance, options) => {
+  const usuario_id = options.usuario_id || null;
+
+  await Log.create({
+    log_usuario_id: usuario_id || null,
+    log_operacao_realizada: "Contato deletado",
     log_valor_antigo: JSON.stringify(instance.toJSON()),
     log_valor_novo: "-",
     log_data_alteracao: new Date(),
