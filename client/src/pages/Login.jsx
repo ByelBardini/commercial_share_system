@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth/authService.js";
 import ModalAviso from "../components/default/ModalAviso.jsx";
@@ -14,6 +14,10 @@ function Login() {
   const [erro, setErro] = useState(false);
   const [erroMensagem, setErroMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
+
+  useEffect(() => {
+    document.title = "Login - Share Comercial";
+  }, []);
 
   async function logar() {
     if (!usuario_login || !usuario_senha) {

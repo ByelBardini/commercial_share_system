@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Funnel, Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -26,10 +26,14 @@ function Cidade() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "Empresas - Share Comercial";
+  }, []);
+
   async function sair() {
     localStorage.setItem("id_cidade", null);
     localStorage.setItem("nome_cidade", null);
-    navigate("/home");
+    navigate("/home", { replace: true });
   }
 
   return (
@@ -110,8 +114,7 @@ function Cidade() {
             className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[90px]"
             onChange={(event) => setFiltro(event.target.value)}
           >
-            <option value="" disabled defaultValue={"Filtrar"} hidden>
-            </option>
+            <option value="" disabled defaultValue={"Filtrar"} hidden></option>
             <option value={1}>Clientes</option>
             <option value={0}>Outros</option>
             <option value={""}>Ambos</option>

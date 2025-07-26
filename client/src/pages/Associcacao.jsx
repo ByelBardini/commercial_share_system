@@ -185,12 +185,12 @@ function Associacao() {
     setTimeout(() => {
       setAviso(false);
       localStorage.setItem("associacao_id", null);
-      navigate("/cidade");
+      navigate("/cidade", { replace: true });
     }, 500);
   }
 
   async function sair() {
-    navigate("/cidade");
+    navigate("/cidade", { replace: true });
     localStorage.setItem("associacao_id", null);
   }
 
@@ -207,7 +207,7 @@ function Associacao() {
     setTimeout(() => {
       setAviso(false);
       localStorage.setItem("associacao_id", null);
-      navigate("/cidade");
+      navigate("/cidade", { replace: true });
     }, 500);
   }
 
@@ -245,6 +245,7 @@ function Associacao() {
   useEffect(() => {
     puxaDados();
     carregaContatosOriginais();
+    document.title = "Editar Empresa - Share Comercial";
   }, []);
 
   return (
@@ -373,13 +374,13 @@ function Associacao() {
 
         <div className="mt-4">
           <div className="place-content-between flex">
-              <label className="block text-sm font-semibold text-blue-800">
-                Observação
-              </label>
-              <label className="block text-sm font-semibold text-gray-400">
-                (Máximo de 200 Caracteres)
-              </label>
-            </div>
+            <label className="block text-sm font-semibold text-blue-800">
+              Observação
+            </label>
+            <label className="block text-sm font-semibold text-gray-400">
+              (Máximo de 200 Caracteres)
+            </label>
+          </div>
           <textarea
             className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
             placeholder="Observações"

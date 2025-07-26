@@ -16,6 +16,7 @@ function Main() {
 
   useEffect(() => {
     if (localStorage.getItem("usuario_troca_senha") == 1) setNovaSenha(true);
+    document.title = "Cidades - Share Comercial";
   }, []);
 
   async function sair() {
@@ -23,7 +24,7 @@ function Main() {
     await logout();
     setCarregando(false);
     localStorage.clear();
-    navigate("/");
+    navigate("/", { replace: true });
   }
 
   function navegaCidade(id_cidade, nome_cidade) {
