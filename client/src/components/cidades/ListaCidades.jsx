@@ -18,7 +18,6 @@ function ListaCidades({
     setCarregando(true);
     try {
       const cidades = await buscarCidades();
-      console.log("Cidades retornadas:", cidades);
       const cidadesFinal = cidades.filter((cidade) =>
         cidade.cidade_nome.toLowerCase().includes(pesquisa.toLowerCase())
       );

@@ -26,7 +26,6 @@ function ListaContatos({
         localStorage.getItem("associacao_id")
       );
       setContatos(contatos);
-      console.log(contatos);
     } catch (err) {
       if (err.message.includes("inválida")) {
         setModalAviso("Sessão inválida, realize o login");

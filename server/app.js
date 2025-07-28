@@ -34,10 +34,10 @@ app.use(
   })
 );
 
-app.use(authRoutes);
-app.use(cidadeRoutes);
-app.use(associacaoRoutes);
-app.use(usuarioRoutes);
-app.use(contatoRoutes);
+app.use("/", authRoutes);
+app.use("/", cidadeRoutes);
+app.use("/", associacaoRoutes);
+app.use("/", usuarioRoutes);
+app.use("/", contatoRoutes);
 
 export default app;

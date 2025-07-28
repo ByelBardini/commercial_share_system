@@ -44,7 +44,6 @@ function ModalVisualizaAssociacao({
           "Não foi possível carregar os contatos. Tente novamente mais tarde."
         );
         setContatos([]);
-        console.error("Erro ao carregar contatos:", err);
       }
     } finally {
       setCarregando(false);

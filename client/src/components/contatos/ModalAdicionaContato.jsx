@@ -76,7 +76,6 @@ export default function ModalAdicionaContato({
     setTipo("telefone");
     setContato("");
     setContatosModificados(contatos);
-    console.log(contatos);
     setEditando(false);
   }
 
