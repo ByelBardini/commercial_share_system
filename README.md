@@ -43,9 +43,9 @@ Sistema completo de gestão comercial interna, com foco em controle de empresas 
 
 # WIP (Em desenvolvimento)
 
-- [] Cadastro e exclusão de **cidades**
-- [] Cadastro, inativação e gerenciamento de **usuários**
-- [] Melhoria na organização para futura expansão
+- [ ] Cadastro e exclusão de **cidades**
+- [ ] Cadastro, inativação e gerenciamento de **usuários**
+- [ ] Melhoria na organização para futura expansão
 
 ---
 
