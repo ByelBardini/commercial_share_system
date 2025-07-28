@@ -27,16 +27,25 @@ function ModalVisualizaAssociacao({
       const contatos = await buscaContatos(
         localStorage.getItem("associacao_id")
       );
-      setContatos(contatos); 
-      console.log(contatos);
+      setContatos(contatos);
     } catch (err) {
-      setCarregando(false);
-      setErro(
-        "Não foi possível carregar os contatos. Tente novamente mais tarde."
-      );
-      setErroMensagem("Não foi possível carregar os contatos. Tente novamente mais tarde.");
-      setContatos([]);
-      console.error("Erro ao carregar contatos:", err);
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setErro(
+          "Não foi possível carregar os contatos. Tente novamente mais tarde."
+        );
+        setErroMensagem(
+          "Não foi possível carregar os contatos. Tente novamente mais tarde."
+        );
+        setContatos([]);
+        console.error("Erro ao carregar contatos:", err);
+      }
     } finally {
       setCarregando(false);
     }

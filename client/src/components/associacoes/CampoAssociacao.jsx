@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
 import { SquarePen, Eye, Star } from "lucide-react";
-import { getAssociacaoFull, favoritarAssociacao } from "../../services/api/associacaoService.js";
+import {
+  getAssociacaoFull,
+  favoritarAssociacao,
+} from "../../services/api/associacaoService.js";
 
 function CampoAssociacao({
   associacoes,
@@ -9,13 +12,34 @@ function CampoAssociacao({
   puxaAssociacoes,
   setVisualiza,
   setDadosAssociacao,
-  navigate
+  navigate,
+  setErro,
+  setErroMensagem,
 }) {
-  async function favoritar(id){
+  async function favoritar(id) {
     setCarregando(true);
-    await favoritarAssociacao(id);
-    await puxaAssociacoes();
-    setCarregando(false);
+    try {
+      await favoritarAssociacao(id);
+      await puxaAssociacoes();
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setCarregando(false);
+        setErroMensagem(err.message);
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
   }
 
   function modificaAssociacao(id) {
@@ -57,13 +81,18 @@ function CampoAssociacao({
               whileTap={{ scale: 0.98, rotate: -4 }}
               className="rounded-full p-2 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 shadow transition group"
               onClick={() => favoritar(associacao.associacao_id)}
-              title={associacao.associacao_favorito ? "Remover dos favoritos" : "Favoritar"}
+              title={
+                associacao.associacao_favorito
+                  ? "Remover dos favoritos"
+                  : "Favoritar"
+              }
             >
               <Star
                 size={26}
-                className={associacao.associacao_favorito
-                  ? "text-yellow-400 fill-yellow-300 drop-shadow"
-                  : "text-gray-300 group-hover:text-yellow-400"
+                className={
+                  associacao.associacao_favorito
+                    ? "text-yellow-400 fill-yellow-300 drop-shadow"
+                    : "text-gray-300 group-hover:text-yellow-400"
                 }
                 fill={associacao.associacao_favorito ? "#fde047" : "none"}
                 strokeWidth={2}

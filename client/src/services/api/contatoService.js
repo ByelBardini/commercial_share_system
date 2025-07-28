@@ -30,28 +30,21 @@ function separaContatos(contatosAntigos, contatosNovos) {
 
 export async function buscaContatos(id) {
   try {
+    const validouSessao = await refresh();
+
+    if (!validouSessao.ok) {
+      throw new Error("Sessão inválida");
+    }
+
     const response = await api.get(`/contato/${id}`);
 
     return response.data;
   } catch (err) {
-    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-      try {
-        await refresh();
-        const response = await api.get(`/contato/${id}`);
-
-        return response.data;
-      } catch (refreshErr) {
-        console.error("Erro ao buscar token:", refreshErr);
-        return { erro: true, mensagem: "Sessão inválida!" };
-      }
-    }
     if (
       err.response &&
       err.response.status === 404 &&
-      (
-        err.response.data?.error === "Contatos não encontrados." ||
-        err.response.data?.error === "Contatos não encontrados"
-      )
+      (err.response.data?.error === "Contatos não encontrados." ||
+        err.response.data?.error === "Contatos não encontrados")
     ) {
       return [];
     }
@@ -60,19 +53,23 @@ export async function buscaContatos(id) {
   }
 }
 
-
-
 async function postContatos(adicionados, associacao_id) {
   const contatos = manterArray(adicionados);
   const resultados = [];
   console.log("post: ", contatos);
   for (const contato of contatos) {
     try {
+      const validouSessao = await refresh();
+
+      if (!validouSessao.ok) {
+        throw new Error("Sessão inválida");
+      }
+
       const response = await api.post(`/contato`, {
-          contato_associacao_id: associacao_id,
-          contato_tipo: contato.contato_tipo,
-          contato_nome: contato.contato_nome,
-          contato: contato.contato,
+        contato_associacao_id: associacao_id,
+        contato_tipo: contato.contato_tipo,
+        contato_nome: contato.contato_nome,
+        contato: contato.contato,
       });
 
       resultados.push({
@@ -80,30 +77,13 @@ async function postContatos(adicionados, associacao_id) {
         mensagem: response.data?.message || "Contato adicionado com sucesso!",
       });
     } catch (err) {
-      try {
-        await refresh();
-        const response = await api.post(`/contato`, {
-          contato_associacao_id: associacao_id,
-          contato_tipo: contato.contato_tipo,
-          contato_nome: contato.contato_nome,
-          contato: contato.contato,
-        });
-
-        resultados.push({
-          erro: false,
-          mensagem: response.data?.message || "Contato adicionado com sucesso!",
-        });
-      } catch (refreshErr) {
-        console.error("Erro ao buscar token:", refreshErr);
-        return { erro: true, mensagem: "Sessão inválida!" };
-      }
       console.log("Erro ao adicionar contato: ", err);
       resultados.push({
         erro: true,
         mensagem: "Erro de conexão ao adicionar contato",
       });
     }
-  }    
+  }
   return resultados;
 }
 
@@ -113,10 +93,16 @@ async function putContatos(editados) {
   const resultados = [];
   for (const contato of contatos) {
     try {
+      const validouSessao = await refresh();
+
+      if (!validouSessao.ok) {
+        throw new Error("Sessão inválida");
+      }
+
       const response = await api.put(`/contato/${contato.contato_id}`, {
-          contato_tipo: contato.contato_tipo,
-          contato_nome: contato.contato_nome,
-          contato: contato.contato,
+        contato_tipo: contato.contato_tipo,
+        contato_nome: contato.contato_nome,
+        contato: contato.contato,
       });
 
       resultados.push({
@@ -124,22 +110,6 @@ async function putContatos(editados) {
         mensagem: response.data?.message || "Contato editado com sucesso!",
       });
     } catch (err) {
-      try {
-        await refresh();
-        const response = await api.put(`/contato/${contato.contato_id}`, {
-          contato_tipo: contato.contato_tipo,
-          contato_nome: contato.contato_nome,
-          contato: contato.contato,
-        });
-
-        resultados.push({
-          erro: false,
-          mensagem: response.data?.message || "Contato editado com sucesso!",
-        });
-      } catch (refreshErr) {
-        console.error("Erro ao buscar token:", refreshErr);
-        return { erro: true, mensagem: "Sessão inválida!" };
-      }
       console.log("Erro ao editar contato: ", err);
       resultados.push({
         erro: true,
@@ -156,6 +126,12 @@ async function deleteContatos(deletados) {
   const resultados = [];
   for (const contato of contatos) {
     try {
+      const validouSessao = await refresh();
+
+      if (!validouSessao.ok) {
+        throw new Error("Sessão inválida");
+      }
+
       const response = await api.delete(`/contato/${contato.contato_id}`);
 
       resultados.push({
@@ -163,18 +139,6 @@ async function deleteContatos(deletados) {
         mensagem: response.data?.message || "Contato deletado com sucesso!",
       });
     } catch (err) {
-      try {
-        await refresh();
-        const response = await api.delete(`/contato/${contato.contato_id}`);
-
-        resultados.push({
-          erro: false,
-          mensagem: response.data?.message || "Contato deletado com sucesso!",
-        });
-      } catch (refreshErr) {
-        console.error("Erro ao buscar token:", refreshErr);
-        return { erro: true, mensagem: "Sessão inválida!" };
-      }
       console.log("Erro ao deletar contato: ", err);
       resultados.push({
         erro: true,

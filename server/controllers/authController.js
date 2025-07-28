@@ -102,28 +102,49 @@ export const logout = async (req, res) => {
   return res.json({ mensagem: "Logout realizado com sucesso" });
 };
 
-export async function comparaRefreshToken(req, res) {
-  console.log("Foi chamado")
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken){
-    console.log("Sem refresh token")
-    return res.status(401).json({ error: "Sem refresh token" });}
+export async function validaSessao(req, res) {
+  const sessionUser = req.session?.user;
+  const { accessToken, refreshToken } = req.cookies;
 
-  const usuario = await Usuario.findOne({
-    where: { usuario_refresh_token: refreshToken },
-  });
-  if (!usuario)
-    return res.status(403).json({ error: "Refresh token inválido" });
+  if (!accessToken || !refreshToken) {
+    return res.status(401).json({ error: "Tokens não fornecidos." });
+  }
 
-  const accessToken = jwt.sign({ usuario_id: usuario.usuario_id }, CHAVE, {
-    expiresIn: "10m",
-  });
+  if (!sessionUser || !sessionUser.usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Sessão não encontrada ou inválida." });
+  }
 
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    sameSite: "Lax",
-    secure: false,
-    path: "/",
+  jwt.verify(accessToken, CHAVE, async (err, decoded) => {
+    if (err) {
+      try {
+        const usuario = await Usuario.findOne({
+          where: { usuario_refresh_token: refreshToken },
+        });
+        if (!usuario) {
+          return res.status(403).json({ error: "Sessão inválida" });
+        }
+        const accessToken = jwt.sign(
+          { usuario_id: usuario.usuario_id },
+          CHAVE,
+          {
+            expiresIn: "10m",
+          }
+        );
+
+        res.cookie("accessToken", accessToken, {
+          httpOnly: true,
+          sameSite: "Lax",
+          secure: false,
+          path: "/",
+        });
+        res.status(200).json({ mensagem: "Sessão válida" });
+      } catch (err) {
+        return res.status(403).json({ mensagem: "Sessão inválida" });
+      }
+    } else if (decoded) {
+      res.status(200).json({ mensagem: "Sessão válida" });
+    }
   });
-  res.json({ accessToken });
 }

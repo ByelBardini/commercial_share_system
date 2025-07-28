@@ -4,10 +4,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ModalAviso from "../default/ModalAviso";
 
-function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
-  const [erro, setErro] = useState(false);
-  const [erroMensagem, setErroMensagem] = useState("");
-
+function ModalRegistraAssociacoes({
+  setCadastro,
+  setCarregando,
+  setErro,
+  setErroMensagem,
+  navigate,
+}) {
   const [concluido, setConcluido] = useState(false);
 
   const [nome, setNome] = useState("");
@@ -18,17 +21,16 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
   const [dataContato, setDataContato] = useState("");
   const [dataFechamento, setDataFechamento] = useState("");
 
-  function verificaDataValida(data) {
+  function verificaDataValida(data, setData) {
     const hoje = new Date();
-    ("");
     const hojeStr = hoje.toISOString().slice(0, 10);
 
     if (data > hojeStr) {
       setErroMensagem("A data não pode ser no futuro!");
+      setData(hojeStr);
       setErro(true);
-      return false;
     } else {
-      return true;
+      setData(data);
     }
   }
 
@@ -40,34 +42,41 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
     }
 
     setCarregando(true);
-    await new Promise((r) => setTimeout(r, 50));
 
     const id_cidade = localStorage.getItem("id_cidade");
+    try {
+      await postAssociacao(
+        id_cidade,
+        nome,
+        fantasia !== "" ? fantasia : nome,
+        cnpj !== "" ? cnpj : null,
+        dataContato !== "" ? dataContato : null,
+        dataFechamento !== "" ? dataFechamento : null,
+        obs !== "" ? obs : null,
+        cliente
+      );
 
-    const resultado = await postAssociacao(
-      id_cidade,
-      nome,
-      fantasia !== "" ? fantasia : nome,
-      cnpj !== "" ? cnpj : null,
-      dataContato !== "" ? dataContato : null,
-      dataFechamento !== "" ? dataFechamento : null,
-      obs !== "" ? obs : null,
-      cliente
-    );
-
-    setCarregando(false);
-
-    if (resultado.erro) {
-      setErro(true);
-      setErroMensagem(resultado.mensagem);
-      return;
-    } else {
       setConcluido(true);
       setTimeout(() => {
         setConcluido(false);
         setCadastro(false);
         window.location.reload();
       }, 500);
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setErroMensagem(err.message);
+        setErro(true);
+        return;
+      }
+    }finally {
+      setCarregando(false);
     }
   }
 
@@ -83,15 +92,6 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
         className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <AnimatePresence>
-          {erro && (
-            <ModalAviso
-              texto={erroMensagem}
-              cor="vermelho"
-              onClick={() => setErro(false)}
-            />
-          )}
-        </AnimatePresence>
         <AnimatePresence>
           {concluido && (
             <ModalAviso
@@ -206,12 +206,11 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
               </label>
               <input
                 type="date"
+                value={dataContato}
                 className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
-                onChange={(event) => {
-                  if (verificaDataValida(event.target.value)) {
-                    setDataContato(event.target.value);
-                  }
-                }}
+                onChange={(event) =>
+                  verificaDataValida(event.target.value, setDataContato)
+                }
               />
             </div>
             <div className="flex-1">
@@ -220,12 +219,11 @@ function ModalRegistraAssociacoes({ setCadastro, setCarregando }) {
               </label>
               <input
                 type="date"
+                value={dataFechamento}
                 className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
-                onChange={(event) => {
-                  if (verificaDataValida(event.target.value)) {
-                    setDataFechamento(event.target.value);
-                  }
-                }}
+                onChange={(event) =>
+                  verificaDataValida(event.target.value, setDataFechamento)
+                }
               />
             </div>
           </div>

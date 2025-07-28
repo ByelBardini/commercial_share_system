@@ -28,9 +28,7 @@ function ModalContatos({
         </div>
         <div className="mb-2">
           <ListaSimplesContatos
-            setCarregando={setCarregando}
             contatos={contatos}
-            setContatos={setContatos}
           />
         </div>
         <div className="flex justify-center mt-6">

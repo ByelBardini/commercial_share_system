@@ -4,6 +4,7 @@ import { buscaContatos } from "../../services/api/contatoService.js";
 import CampoContato from "./CampoContato.jsx";
 
 function ListaContatos({
+  navigate,
   contatos = [],
   deletando = false,
   editando = false,
@@ -19,22 +20,36 @@ function ListaContatos({
   setModalAviso = () => {},
 }) {
   async function carregaContatos() {
-  setCarregando(true);
-  try {
-    const contatos = await buscaContatos(localStorage.getItem("associacao_id"));
-    setContatos(contatos);
-    console.log(contatos);
-  } catch (err) {
-    setCarregando(false);
-    setAviso(true);
-    setModalAviso("Não foi possível carregar os contatos. Tente novamente mais tarde.");
-    setCorModal("red");
-    setContatos([]);
-    console.error("Erro ao carregar contatos:", err);
-  } finally {
-    setCarregando(false);
+    setCarregando(true);
+    try {
+      const contatos = await buscaContatos(
+        localStorage.getItem("associacao_id")
+      );
+      setContatos(contatos);
+      console.log(contatos);
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setModalAviso("Sessão inválida, realize o login");
+        setCorModal("red");
+        setContatos([]);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setModalAviso(err.message);
+        setCorModal("red");
+        setContatos([]);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
   }
-}
 
   useEffect(() => {
     carregaContatos();

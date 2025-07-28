@@ -2,21 +2,17 @@ import { api, refresh } from "../api.js";
 
 export async function trocaSenhaUsuario(nova_senha) {
   try {
-    const response = await api.put(`/usuario/trocasenha`, {nova_senha });
+    const validouSessao = await refresh();
+
+    if (!validouSessao.ok) {
+      throw new Error("Sessão inválida");
+    }
+
+    const response = await api.put(`/usuario/trocasenha`, { nova_senha });
 
     return response.data;
   } catch (err) {
-    if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-          try {
-            await refresh();
-            const response = await api.put(`/usuario/trocasenha`, {nova_senha });
-
-            return response.data;
-          } catch (refreshErr) {
-            console.error("Erro ao buscar token:", refreshErr);
-            return { erro: true, mensagem: "Sessão inválida!" };
-          }
-        }
     console.error("Erro ao trocar senha:", err);
+    throw new Error("Erro ao trocar senha");
   }
 }

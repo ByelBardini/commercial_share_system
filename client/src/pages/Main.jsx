@@ -1,23 +1,53 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../services/auth/authService.js";
+import { logout, validarSessao } from "../services/auth/authService.js";
 import { Search, Funnel, LogOut } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
+import ModalAviso from "../components/default/ModalAviso.jsx";
 import ModalTrocaSenha from "../components/usuarios/modalTrocaSenha.jsx";
 import ListaCidades from "../components/cidades/ListaCidades.jsx";
 import Loading from "../components/default/Loading.jsx";
-import { AnimatePresence } from "framer-motion";
 
 function Main() {
   const navigate = useNavigate();
   const [novaSenha, setNovaSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState("");
+
   const [pesquisa, setPesquisa] = useState("");
   const [ufs, setUfs] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem("usuario_troca_senha") == 1) setNovaSenha(true);
     document.title = "Cidades - Share Comercial";
+    sessaoValida();
   }, []);
+
+  async function sessaoValida() {
+    setCarregando(true);
+    try {
+      await validarSessao();
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setErroMensagem(err.message);
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+        }, 1000);
+      }
+    }finally {
+      setCarregando(false);
+    }
+  }
 
   async function sair() {
     setCarregando(true);
@@ -30,20 +60,27 @@ function Main() {
   function navegaCidade(id_cidade, nome_cidade) {
     localStorage.setItem("id_cidade", id_cidade);
     localStorage.setItem("nome_cidade", nome_cidade);
-    navigate("/cidade");
+    navigate("/cidade", { replace: true });
   }
 
   return (
     <div className="relative min-h-screen w-screen flex flex-col justify-center items-center p-6 overflow-x-hidden">
       <div className="animated-gradient" />
-
       {carregando && <Loading />}
       <AnimatePresence>
         {novaSenha && (
           <ModalTrocaSenha
             setNovaSenha={setNovaSenha}
             setCarregando={setCarregando}
+            setErro={setErro}
+            setErroMensagem={setErroMensagem}
+            navigate={navigate}
           />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {erro && (
+          <ModalAviso cor="vermelho" botao="hidden" texto={erroMensagem} />
         )}
       </AnimatePresence>
 
@@ -101,6 +138,9 @@ function Main() {
           setUfs={setUfs}
           navegaCidade={navegaCidade}
           setCarregando={setCarregando}
+          setErro={setErro}
+          navigate={navigate}
+          setErroMensagem={setErroMensagem}
         />
       </div>
     </div>

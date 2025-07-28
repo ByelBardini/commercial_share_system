@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Search, Funnel, Plus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { getAssociacoesPorCidade } from "../services/api/associacaoService.js";
+import { validarSessao } from "../services/auth/authService.js";
 import Loading from "../components/default/Loading.jsx";
 import ModalRegistraAssociacoes from "../components/associacoes/ModalRegistraAssociacoes.jsx";
 import ListaAssociacoes from "../components/associacoes/ListaAssociacoes.jsx";
@@ -28,7 +30,32 @@ function Cidade() {
 
   useEffect(() => {
     document.title = "Empresas - Share Comercial";
+    sessaoValida()
   }, []);
+
+  async function sessaoValida() {
+    setCarregando(true);
+    try {
+      await validarSessao();
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setErroMensagem(err.message);
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+        }, 1000);
+      }
+    }finally {
+      setCarregando(false);
+    }
+  }
 
   async function sair() {
     localStorage.setItem("id_cidade", null);
@@ -53,6 +80,9 @@ function Cidade() {
             setCadastro={setCadastro}
             getAssociacoesPorCidade={getAssociacoesPorCidade}
             setCarregando={setCarregando}
+            setErro={setErro}
+            setErroMensagem={setErroMensagem}
+            navigate={navigate}
           />
         )}
       </AnimatePresence>
@@ -131,6 +161,8 @@ function Cidade() {
           setAssociacoesRoot={setAssociacoesRoot}
           setDadosAssociacao={setDadosAssociacao}
           setVisualiza={setVisualiza}
+          setErro={setErro}
+          setErroMensagem={setErroMensagem}
           navigate={navigate}
         />
       </div>

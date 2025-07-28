@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -54,10 +55,10 @@ function Associacao() {
   const [editando, setEditando] = useState(false);
   const [adicionando, setAdicionando] = useState(false);
 
-  const [modalAviso, setModalAviso] = useState("");
-  const [corModal, setCorModal] = useState("");
+  const [modalOpcoes, setModalOpcoes] = useState("");
+  const [corOpcoes, setCorOpcoes] = useState("");
   const [onSim, setOnSim] = useState();
-  const [avisoOpcoes, setAvisoOpcoes] = useState(false);
+  const [opcoesMensagem, setOpcoesMensagem] = useState(false);
 
   const [aviso, setAviso] = useState(false);
   const [avisoCor, setAvisoCor] = useState("");
@@ -80,113 +81,147 @@ function Associacao() {
 
   const navigate = useNavigate();
 
-  function verificaDataValida(data) {
+  function verificaDataValida(data, setData) {
     const hoje = new Date();
     const hojeStr = hoje.toISOString().slice(0, 10);
 
     if (data > hojeStr) {
       setAvisoMensagem("A data não pode ser no futuro!");
-      setBotaoAviso("");
       setAvisoCor("vermelho");
+      setData(hojeStr);
       setAviso(true);
-      return false;
     } else {
-      return true;
+      setData(data);
     }
   }
 
   function clicaExcluir() {
-    setCorModal("amarela");
-    setModalAviso(true);
-    setAvisoOpcoes("Você tem certeza que deseja excluir esta empresa?");
+    setCorOpcoes("amarela");
+    setModalOpcoes(true);
+    setOpcoesMensagem("Você tem certeza que deseja excluir esta empresa?");
     setOnSim(() => onConfirmaExclusao);
   }
 
   async function onConfirmaExclusao() {
-    setModalAviso(false);
+    setModalOpcoes(false);
     setCarregando(true);
     setTimeout(() => {
       setCarregando(false);
       setTimeout(() => {
-        setCorModal("vermelha");
-        setAvisoOpcoes("Você realmente tem certeza? Essa ação é IRREVERSÍVEL");
-        setModalAviso(true);
+        setCorOpcoes("vermelha");
+        setOpcoesMensagem(
+          "Você realmente tem certeza? Essa ação é IRREVERSÍVEL"
+        );
+        setModalOpcoes(true);
       }, 400);
     }, 1000);
     setOnSim(() => deletarAssociacao);
   }
 
   async function confirmaSaida() {
-    setModalAviso(true);
-    setAvisoOpcoes("Você tem certeza que quer sair sem salvar?");
-    setCorModal("amarela");
+    setModalOpcoes(true);
+    setOpcoesMensagem("Você tem certeza que quer sair sem salvar?");
+    setCorOpcoes("amarela");
     setOnSim(() => sair);
   }
 
   async function confirmaSalvar() {
-    setModalAviso(true);
-    setAvisoOpcoes("Deseja manter as alterações?");
-    setCorModal("verde");
+    setModalOpcoes(true);
+    setOpcoesMensagem("Deseja manter as alterações?");
+    setCorOpcoes("verde");
     setOnSim(() => salvar);
   }
 
   async function salvar() {
-    setModalAviso(false);
+    setModalOpcoes(false);
     setCarregando(true);
     const associacao_id = localStorage.getItem("associacao_id");
     const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
     const dataFechamentoFormatada =
       formatarDataParaInput(dataFechamento) || null;
 
-    const errosContatos = await salvaContatos(
-      contatosOriginais,
-      contatosModificados,
-      associacao_id
-    );
-
-    if (errosContatos && errosContatos.length > 0) {
-      setCarregando(false);
-      setAviso(true);
-      setAvisoCor("vermelho");
-      setBotaoAviso("");
-      setAvisoMensagem(
-        "Erro ao salvar contatos: \n" +
-          errosContatos.map((e) => e.mensagem).join("\n")
+    try {
+      const errosContatos = await salvaContatos(
+        contatosOriginais,
+        contatosModificados,
+        associacao_id
       );
-      return;
-    }
 
-    const resultado = await putAssociacao(
-      nome,
-      fantasia,
-      cnpj,
-      dataContatoFormatada,
-      dataFechamentoFormatada,
-      obs,
-      limparRealParaDouble(precoPorPlaca),
-      limparRealParaDouble(precoInstalacao),
-      cliente,
-      associacao_id
-    );
-    if (resultado.erro) {
+      if (errosContatos && errosContatos.length > 0) {
+        setCarregando(false);
+        setAviso(true);
+        setAvisoCor("vermelho");
+        setBotaoAviso("");
+        setAvisoMensagem(
+          "Erro ao salvar contatos: \n" +
+            errosContatos.map((e) => e.mensagem).join("\n")
+        );
+        return;
+      }
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setCarregando(false);
+        setAvisoCor("vermelho");
+        setAvisoMensagem("Sessão inválida, realize o login");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setCarregando(false);
+        setAvisoCor("vermelho");
+        setAvisoMensagem(err.message);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    }
+    try {
+      await putAssociacao(
+        nome,
+        fantasia,
+        cnpj,
+        dataContatoFormatada,
+        dataFechamentoFormatada,
+        obs,
+        limparRealParaDouble(precoPorPlaca),
+        limparRealParaDouble(precoInstalacao),
+        cliente,
+        associacao_id
+      );
       setCarregando(false);
-      setAviso(true);
-      setAvisoCor("vermelho");
-      setBotaoAviso("");
-      setAvisoMensagem(resultado.mensagem);
-      return;
-    }
-    setCarregando(false);
 
-    setAviso(true);
-    setAvisoMensagem("Empresa alterada com sucesso!");
-    setAvisoCor("verde");
-    setBotaoAviso("hidden");
-    setTimeout(() => {
-      setAviso(false);
-      localStorage.setItem("associacao_id", null);
-      navigate("/cidade", { replace: true });
-    }, 500);
+      setAviso(true);
+      setAvisoMensagem("Empresa alterada com sucesso!");
+      setAvisoCor("verde");
+      setBotaoAviso("hidden");
+      setTimeout(() => {
+        setAviso(false);
+        localStorage.setItem("associacao_id", null);
+        navigate("/cidade", { replace: true });
+      }, 500);
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setCarregando(false);
+        setAvisoCor("vermelho");
+        setAvisoMensagem("Sessão inválida, realize o login");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setCarregando(false);
+        setAvisoCor("vermelho");
+        setAvisoMensagem(err.message);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    }
   }
 
   async function sair() {
@@ -195,10 +230,30 @@ function Associacao() {
   }
 
   async function deletarAssociacao() {
-    setModalAviso(false);
+    setModalOpcoes(false);
     setCarregando(true);
-    await deletaAssociacao(localStorage.getItem("associacao_id"));
-    setCarregando(false);
+    try {
+      await deletaAssociacao(localStorage.getItem("associacao_id"));
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setAvisoCor("vermelho");
+        setAvisoMensagem("Sessão inválida, realize o login");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setAvisoCor("vermelho");
+        setAvisoMensagem(err.message);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
 
     setAviso(true);
     setAvisoMensagem("Empresa Excluída com sucesso!");
@@ -213,33 +268,76 @@ function Associacao() {
 
   async function carregaContatosOriginais() {
     setCarregando(true);
-    const contatos = await buscaContatos(localStorage.getItem("associacao_id"));
-    setContatosOriginais(contatos);
+    try {
+      const contatos = await buscaContatos(
+        localStorage.getItem("associacao_id")
+      );
+      setContatosOriginais(contatos);
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setAvisoCor("vermelho");
+        setAvisoMensagem("Sessão inválida, realize o login");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setAvisoCor("vermelho");
+        setAvisoMensagem(err.message);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
   }
 
   async function puxaDados() {
     setCarregando(true);
-    const associacao = await getAssociacaoFull(
-      localStorage.getItem("associacao_id")
-    );
-    setNome(associacao.associacao_nome);
-    setFantasia(associacao.associacao_nome_fantasia);
-    setCnpj(associacao.associacao_cnpj);
-    setCliente(associacao.associacao_cliente);
-    setObs(associacao.associacao_observacao);
-    setDataContato(associacao.associacao_data_contato);
-    setDataFechamento(associacao.associacao_data_fechamento);
-    setPrecoInstalacao(
-      formatarRealDinamico(
-        formatarValorBancoParaInput(associacao.associacao_preco_instalacao)
-      )
-    );
-    setPrecoPorPlaca(
-      formatarRealDinamico(
-        formatarValorBancoParaInput(associacao.associacao_preco_placa)
-      )
-    );
-    setCarregando(false);
+    try {
+      const associacao = await getAssociacaoFull(
+        localStorage.getItem("associacao_id")
+      );
+      setNome(associacao.associacao_nome);
+      setFantasia(associacao.associacao_nome_fantasia);
+      setCnpj(associacao.associacao_cnpj);
+      setCliente(associacao.associacao_cliente);
+      setObs(associacao.associacao_observacao);
+      setDataContato(associacao.associacao_data_contato);
+      setDataFechamento(associacao.associacao_data_fechamento);
+      setPrecoInstalacao(
+        formatarRealDinamico(
+          formatarValorBancoParaInput(associacao.associacao_preco_instalacao)
+        )
+      );
+      setPrecoPorPlaca(
+        formatarRealDinamico(
+          formatarValorBancoParaInput(associacao.associacao_preco_placa)
+        )
+      );
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setAvisoCor("vermelho");
+        setAvisoMensagem("Sessão inválida, realize o login");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/");
+        }, 1000);
+      } else {
+        setAvisoCor("vermelho");
+        setAvisoMensagem(err.message);
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
   }
 
   useEffect(() => {
@@ -263,12 +361,12 @@ function Associacao() {
       </AnimatePresence>
       {carregando && <Loading />}
       <AnimatePresence>
-        {modalAviso && (
+        {modalOpcoes && (
           <ModalConfirmacao
-            texto={avisoOpcoes}
+            texto={opcoesMensagem}
             onSim={onSim}
-            onNao={() => setModalAviso(false)}
-            cor={corModal}
+            onNao={() => setModalOpcoes(false)}
+            cor={corOpcoes}
           />
         )}
       </AnimatePresence>
@@ -398,11 +496,9 @@ function Associacao() {
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               value={formatarDataParaInput(dataContato)}
-              onChange={(event) => {
-                if (verificaDataValida(event.target.value)) {
-                  setDataContato(event.target.value);
-                }
-              }}
+              onChange={(event) =>
+                verificaDataValida(event.target.value, setDataContato)
+              }
             />
           </div>
           <div className="w-1/3">
@@ -413,11 +509,9 @@ function Associacao() {
               type="date"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               value={formatarDataParaInput(dataFechamento)}
-              onChange={(event) => {
-                if (verificaDataValida(event.target.value)) {
-                  setDataFechamento(event.target.value);
-                }
-              }}
+              onChange={(event) =>
+                verificaDataValida(event.target.value, setDataFechamento)
+              }
             />
           </div>
         </div>
@@ -474,10 +568,11 @@ function Associacao() {
               setContatoModificado={setContatoModificado}
               setEditando={setEditando}
               setDeletando={setDeletando}
-              setCorModal={setCorModal}
-              setAviso={setAvisoOpcoes}
+              setCorModal={setCorOpcoes}
+              setAviso={setOpcoesMensagem}
               setOnSim={setOnSim}
-              setModalAviso={setModalAviso}
+              setModalAviso={setModalOpcoes}
+              navigate={navigate}
             />
             <div className="flex w-full justify-center gap-5 mt-6">
               <button

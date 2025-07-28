@@ -32,3 +32,11 @@ export async function logout() {
     console.error("Erro durante logout:", error);
   }
 }
+
+export async function validarSessao(){
+  try{
+    await api.get("/valida");
+  }catch(err){
+    console.error("Erro ao validar sessão: ", err);
+  }
+}

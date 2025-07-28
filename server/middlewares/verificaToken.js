@@ -5,13 +5,13 @@ dotenv.config();
 const CHAVE = process.env.SECRET_KEY_LOGIN;
 
 export function verificaToken(req, res, next) {
-  const token = req.cookies.accessToken;
+  const accessToken = req.cookies.accessToken;
 
-  if (!token) {
+  if (!accessToken) {
     return res.status(401).json({ error: "Token não fornecido." });
   }
 
-  jwt.verify(token, CHAVE, (err, decoded) => {
+  jwt.verify(accessToken, CHAVE, (err, decoded) => {
     if (err) {
       
       if (err.name === "TokenExpiredError") {

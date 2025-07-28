@@ -4,28 +4,54 @@ import { useState } from "react";
 import { trocaSenhaUsuario } from "../../services/api/usuarioService.js";
 import ModalAviso from "../default/ModalAviso.jsx";
 
-function ModalTrocaSenha({ setNovaSenha, setCarregando }) {
+function ModalTrocaSenha({
+  setNovaSenha,
+  setCarregando,
+  setErroMensagem,
+  setErro,
+  navigate,
+}) {
   const [senha, setSenha] = useState("");
   const [confirmaSenha, setConfirmaSenha] = useState("");
-  const [erro, setErro] = useState(false);
   const [sucesso, setSucesso] = useState(false);
 
   async function confirmaTroca() {
     if (senha != confirmaSenha) {
-      setErro(true);
+      setTimeout(() => {
+        setErro(true);
+        setErroMensagem("As duas senhas devem ser iguais.");
+      }, 1000);
     } else {
-      setCarregando(true);
-      const data = await trocaSenhaUsuario(senha);
-      if (data) {
+      try {
+        setCarregando(true);
+        const data = await trocaSenhaUsuario(senha);
+        if (data) {
+          setCarregando(false);
+          setSucesso(true);
+          setTimeout(() => {
+            setSucesso(false);
+            setNovaSenha(false);
+            localStorage.setItem("usuario_troca_senha", 0);
+          }, 500);
+        }
+      } catch (err) {
+        if (err.message.includes("inválida")) {
+          setErroMensagem("Sessão inválida, realize o login");
+          setErro(true);
+          setTimeout(() => {
+            setErro(false);
+            navigate("/");
+          }, 1000);
+        } else {
+          setErroMensagem(err.message);
+          setErro(true);
+          setTimeout(() => {
+            setErro(false);
+          }, 1000);
+        }
+      } finally {
         setCarregando(false);
-        setSucesso(true);
-        setTimeout(() => {
-          setSucesso(false);
-          setNovaSenha(false);
-          localStorage.setItem("usuario_troca_senha", 0);
-        }, 500);
       }
-      setCarregando(false);
     }
   }
 
@@ -36,15 +62,6 @@ function ModalTrocaSenha({ setNovaSenha, setCarregando }) {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-100 flex items-center justify-center bg-black/70"
     >
-      <AnimatePresence>
-        {erro && (
-          <ModalAviso
-            texto="As duas senhas devem ser iguais!"
-            cor="vermelho"
-            onClick={() => setErro(false)}
-          />
-        )}
-      </AnimatePresence>
       <AnimatePresence>
         {sucesso && (
           <ModalAviso
@@ -57,7 +74,9 @@ function ModalTrocaSenha({ setNovaSenha, setCarregando }) {
       <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 relative animate-fade-in">
         <h1 className="text-3xl font-bold text-blue-800 mb-4">Nova senha</h1>
         <div className="w-full flex flex-col gap-2">
-          <label className="text-lg font-semibold text-blue-800 mb-1">Senha</label>
+          <label className="text-lg font-semibold text-blue-800 mb-1">
+            Senha
+          </label>
           <input
             type="password"
             placeholder="Nova senha"
@@ -66,7 +85,9 @@ function ModalTrocaSenha({ setNovaSenha, setCarregando }) {
           />
         </div>
         <div className="w-full flex flex-col gap-2 mt-2">
-          <label className="text-lg font-semibold text-blue-800 mb-1">Confirme a senha</label>
+          <label className="text-lg font-semibold text-blue-800 mb-1">
+            Confirme a senha
+          </label>
           <input
             type="password"
             placeholder="Confirme a nova senha"
