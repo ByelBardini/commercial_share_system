@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,7 +49,7 @@ function limparRealParaDouble(valor) {
   return parseFloat(valor.replace(/\D/g, "").replace(/^0+/, "") || "0") / 100;
 }
 
-export function formatarCNPJ(cnpj) {
+function formatarCNPJ(cnpj) {
   const numeros = cnpj.replace(/\D/g, '');
   return numeros.replace(
     /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,
@@ -151,7 +150,7 @@ function Associacao() {
         "Todos os campos marcados como obrigatórios devem ser preenchidos"
       );
       return;
-    } else if (!fantasia) {
+    } if (!fantasia) {
       setFantasia(nome);
     }
     setCarregando(true);

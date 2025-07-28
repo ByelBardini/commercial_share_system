@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logar } from "../services/auth/authService.js";
+import logo from "../assets/empresa-logo.png";
 import ModalAviso from "../components/default/ModalAviso.jsx";
 import Loading from "../components/default/Loading.jsx";
 
@@ -87,7 +88,7 @@ function Login() {
 
       <div className="relative z-10 bg-white/70 backdrop-blur-2xl w-full max-w-md rounded-3xl shadow-2xl flex flex-col gap-3 p-10 items-center border border-blue-200">
         <img
-          src="./src/assets/empresa-logo.png"
+          src={logo}
           alt="Logo"
           className="w-42 h-26 object-contain mx-auto mt-2 rounded-full shadow-lg"
         />

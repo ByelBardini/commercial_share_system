@@ -4,6 +4,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import ModalAviso from "../default/ModalAviso";
 
+function formatarCNPJ(cnpj) {
+  const numeros = cnpj.replace(/\D/g, "");
+  return numeros.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,
+    "$1.$2.$3/$4-$5"
+  );
+}
+
 function ModalRegistraAssociacoes({
   setCadastro,
   setCarregando,
@@ -75,7 +83,7 @@ function ModalRegistraAssociacoes({
         setErro(true);
         return;
       }
-    }finally {
+    } finally {
       setCarregando(false);
     }
   }
@@ -162,7 +170,7 @@ function ModalRegistraAssociacoes({
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
               placeholder="00.000.000/0000-00"
-              onChange={(event) => setCnpj(event.target.value)}
+              onChange={(event) => setCnpj(formatarCNPJ(event.target.value))}
             />
           </div>
 

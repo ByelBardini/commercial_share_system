@@ -1,11 +1,11 @@
-FROM node:20-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY ../dist ./dist
 
-RUN npm install -g http-server
+RUN npm install -g serve
 
 EXPOSE 4173
 
-CMD ["http-server", "/app", "-p", "4173"]
+CMD ["serve", "-s", "dist", "-l", "4173"]
