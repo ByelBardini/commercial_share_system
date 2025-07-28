@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/auth/authService.js";
+import { logar } from "../services/auth/authService.js";
 import ModalAviso from "../components/default/ModalAviso.jsx";
 import Loading from "../components/default/Loading.jsx";
 
@@ -19,7 +19,7 @@ function Login() {
     document.title = "Login - Share Comercial";
   }, []);
 
-  async function logar() {
+  async function logarSistema() {
     if (!usuario_login || !usuario_senha) {
       setErroMensagem("Login e senha obrigatórios!");
       setErro(true);
@@ -27,7 +27,7 @@ function Login() {
     }
     setCarregando(true);
     try {
-      const data = await login(usuario_login, usuario_senha);
+      const data = await logar(usuario_login, usuario_senha);
 
       const { usuario_nome, usuario_troca_senha } = data;
       localStorage.setItem("usuario_nome", usuario_nome);
@@ -113,7 +113,7 @@ function Login() {
         </div>
         <button
           className="w-full cursor-pointer bg-blue-700 text-white font-extrabold px-6 py-3 rounded-xl text-xl shadow-lg hover:bg-blue-900 active:scale-95 transition duration-200"
-          onClick={logar}
+          onClick={logarSistema}
         >
           Entrar
         </button>

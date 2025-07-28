@@ -38,51 +38,47 @@ export async function login(req, res) {
       where: { usuario_login: usuario_login },
     });
 
-    if (usuario === null) {
-      return res.status(404).json({ error: "Login Incorreto" });
+    if (!usuario) {
+      return res.status(401).json({ error: "Login Incorreto" });
     }
+    const match = await bcrypt.compare(usuario_senha, usuario.usuario_senha);
 
-    bcrypt.compare(usuario_senha, usuario.usuario_senha, async (err, match) => {
-      if (err) {
-        console.error("Erro ao comparar senhas:", err);
-        return res.status(500).json({ error: "Erro ao validar senha" });
-      }
+    if (!match) {
+      return res.status(401).json({ error: "Usuário ou senha inválidos." });
+    }
+    const userSession = {
+      usuario_id: usuario.usuario_id,
+      usuario_role: usuario.usuario_role,
+    };
 
-      if (match) {
-        const userSession = {
-          usuario_id: usuario.usuario_id,
-          usuario_role: usuario.usuario_role,
-        };
-        const resposta = {
-          usuario_nome: usuario.usuario_nome,
-          usuario_troca_senha: usuario.usuario_troca_senha,
-          usuario_role: usuario.usuario_role,
-        };
+    const resposta = {
+      usuario_nome: usuario.usuario_nome,
+      usuario_troca_senha: usuario.usuario_troca_senha,
+      usuario_role: usuario.usuario_role,
+    };
 
-        const { accessToken, refreshToken } = await gerarTokens(
-          res,
-          usuario.usuario_id
-        );
+    const { accessToken, refreshToken } = await gerarTokens(
+      res,
+      usuario.usuario_id
+    );
 
-        req.session.user = userSession;
-        return res
-          .cookie("accessToken", accessToken, {
-            httpOnly: true,
-            sameSite: "Lax",
-            secure: false,
-            path: "/",
-          })
-          .cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: "Lax",
-            secure: false,
-            path: "/",
-          })
-          .json(resposta);
-      } else {
-        return res.status(401).json({ error: "Usuário ou senha inválidos." });
-      }
-    });
+    req.session.user = userSession;
+
+    return res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        sameSite: "Lax",
+        secure: false,
+        path: "/",
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: "Lax",
+        secure: false,
+        path: "/",
+      })
+      .status(200)
+      .json(resposta);
   } catch (err) {
     console.error("Erro na consulta:", err);
     return res.status(500).json({ error: "Erro ao validar usuário" });
