@@ -68,7 +68,7 @@ function ModalRegistraAssociacoes({
         setErro(true);
         setTimeout(() => {
           setErro(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setErroMensagem(err.message);

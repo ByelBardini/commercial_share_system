@@ -11,9 +11,12 @@ export async function buscarCidades() {
     const response = await api.get(`/cidade`);
 
     return response.data;
-  } catch (err) {
-    console.error("Erro ao buscar cidades:", err);
-    throw new Error("Erro ao buscar cidades");
+  }  catch (err) {
+    console.error("Erro ao buscar cidade:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
+    throw new Error("Erro ao buscar cidade");
   }
 }
 
@@ -35,8 +38,11 @@ export async function favoritarCidade(cidade_id) {
           "cidade favoritada/desfavoritada com sucesso!",
       };
     }
-  } catch (err) {
+  }  catch (err) {
     console.error("Erro ao favoritar cidade:", err);
-    throw new Error("Erro ao favoritar ciades");
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
+    throw new Error("Erro ao favoritar cidade");
   }
 }

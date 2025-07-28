@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,6 +48,14 @@ function formatarRealDinamico(valor) {
 function limparRealParaDouble(valor) {
   if (!valor) return 0;
   return parseFloat(valor.replace(/\D/g, "").replace(/^0+/, "") || "0") / 100;
+}
+
+export function formatarCNPJ(cnpj) {
+  const numeros = cnpj.replace(/\D/g, '');
+  return numeros.replace(
+    /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,
+    '$1.$2.$3/$4-$5'
+  );
 }
 
 function Associacao() {
@@ -134,6 +143,17 @@ function Associacao() {
 
   async function salvar() {
     setModalOpcoes(false);
+    if (!nome || !cliente) {
+      setAviso(true);
+      setAvisoCor("vermelho");
+      setBotaoAviso("");
+      setAvisoMensagem(
+        "Todos os campos marcados como obrigatórios devem ser preenchidos"
+      );
+      return;
+    } else if (!fantasia) {
+      setFantasia(nome);
+    }
     setCarregando(true);
     const associacao_id = localStorage.getItem("associacao_id");
     const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
@@ -166,7 +186,7 @@ function Associacao() {
         setAviso(true);
         setTimeout(() => {
           setAviso(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setCarregando(false);
@@ -210,7 +230,7 @@ function Associacao() {
         setAviso(true);
         setTimeout(() => {
           setAviso(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setCarregando(false);
@@ -241,7 +261,7 @@ function Associacao() {
         setAviso(true);
         setTimeout(() => {
           setAviso(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setAvisoCor("vermelho");
@@ -280,7 +300,7 @@ function Associacao() {
         setAviso(true);
         setTimeout(() => {
           setAviso(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setAvisoCor("vermelho");
@@ -325,7 +345,7 @@ function Associacao() {
         setAviso(true);
         setTimeout(() => {
           setAviso(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setAvisoCor("vermelho");
@@ -450,7 +470,7 @@ function Associacao() {
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               placeholder="00.000.000/0000-00"
               value={cnpj}
-              onChange={(event) => setCnpj(event.target.value)}
+              onChange={(event) => setCnpj(formatarCNPJ(event.target.value))}
             />
           </div>
           <div className="w-2/6">

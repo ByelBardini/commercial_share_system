@@ -38,7 +38,7 @@ function Login() {
       setLogado(true);
       setTimeout(() => {
         setLogado(false);
-        navigate("/home");
+        navigate("/home", { replace: true });
       }, 500);
     } catch (error) {
       if (error.message.includes("obrigatórios")) {

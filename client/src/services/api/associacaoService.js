@@ -11,8 +11,11 @@ export async function getAssociacoesPorCidade(id_cidade) {
     const response = await api.get(`/associacao/cidade/${id_cidade}`);
 
     return response.data;
-  } catch (err) {
+  }  catch (err) {
     console.error("Erro ao buscar empresa:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
     throw new Error("Erro ao buscar empresa");
   }
 }
@@ -51,9 +54,12 @@ export async function postAssociacao(
         mensagem: response.data?.message || "Empresa cadastrada com sucesso!",
       };
     }
-  } catch (err) {
-    console.error("Erro ao cadastrar associação:", err);
-    throw new Error("Erro de conexão com o servidor");
+  }  catch (err) {
+    console.error("Erro ao cadastrar empresa:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
+    throw new Error("Erro ao cadastrar empresa");
   }
 }
 
@@ -68,8 +74,11 @@ export async function getAssociacaoFull(associacao_id) {
     const response = await api.get(`/associacao/${associacao_id}`);
 
     return response.data;
-  } catch (err) {
+  }  catch (err) {
     console.error("Erro ao buscar empresa:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
     throw new Error("Erro ao buscar empresa");
   }
 }
@@ -112,8 +121,11 @@ export async function putAssociacao(
       };
     }
   } catch (err) {
-    console.error("Erro ao editar associação:", err);
-    throw new Error("Erro de conexão com o servidor");
+    console.error("Erro ao editar empresa:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
+    throw new Error("Erro ao editar empresa");
   }
 }
 
@@ -135,9 +147,12 @@ export async function favoritarAssociacao(id) {
           "Empresa favoritada/desfavoritada com sucesso!",
       };
     }
-  } catch (err) {
-    console.error("Erro ao favoritar/desfavoritar associação:", err);
-    throw new Error("Erro de conexão com o servidor");
+  }  catch (err) {
+    console.error("Erro ao favoritar empresa:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
+    throw new Error("Erro ao favoritar empresa");
   }
 }
 
@@ -157,8 +172,11 @@ export async function deletaAssociacao(id) {
         mensagem: response.data?.message || "Empresa deletada com sucesso!",
       };
     }
-  } catch (err) {
-    console.error("Erro ao deletar empresa:", err);
+  }  catch (err) {
+    console.error("Erro ao deletar associação:", err);
+    if (err.response && err.response.data && err.response.data.error) {
+      throw new Error(err.response.data.error);
+    }
     throw new Error("Erro ao deletar empresa");
   }
 }

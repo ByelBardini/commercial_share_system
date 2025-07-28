@@ -3,13 +3,32 @@ import { ExternalLink, Star } from "lucide-react";
 import { favoritarCidade } from "../../services/api/cidadeService.js";
 import { motion } from "framer-motion";
 
-function CampoCidade({ cidades, navegaCidade, setCarregando, puxaCidades }) {
-
-  async function favoritar(id){
+function CampoCidade({ cidades, navegaCidade, setCarregando, puxaCidades, setErro, setErroMensagem, navigate }) {
+  async function favoritar(id) {
     setCarregando(true);
-    await favoritarCidade(id);
-    await puxaCidades();
-    setCarregando(false);
+    try {
+      await favoritarCidade(id);
+      await puxaCidades();
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setCarregando(false);
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/", { replace: true });
+        }, 1000);
+      } else {
+        setCarregando(false);
+        setErroMensagem(err.message);
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
   }
 
   return (
@@ -33,13 +52,16 @@ function CampoCidade({ cidades, navegaCidade, setCarregando, puxaCidades }) {
               whileTap={{ scale: 0.98, rotate: -4 }}
               className="rounded-full p-2 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 shadow transition group"
               onClick={() => favoritar(cidade.cidade_id)}
-              title={cidade.cidade_favorito ? "Remover dos favoritos" : "Favoritar"}
+              title={
+                cidade.cidade_favorito ? "Remover dos favoritos" : "Favoritar"
+              }
             >
               <Star
                 size={26}
-                className={cidade.cidade_favorito
-                  ? "text-yellow-400 fill-yellow-300 drop-shadow"
-                  : "text-gray-300 group-hover:text-yellow-400"
+                className={
+                  cidade.cidade_favorito
+                    ? "text-yellow-400 fill-yellow-300 drop-shadow"
+                    : "text-gray-300 group-hover:text-yellow-400"
                 }
                 fill={cidade.cidade_favorito ? "#fde047" : "none"}
                 strokeWidth={2}

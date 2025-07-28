@@ -31,7 +31,7 @@ function ListaAssociacoes({
         setErro(true);
         setTimeout(() => {
           setErro(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setCarregando(false);

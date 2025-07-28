@@ -31,7 +31,7 @@ function ListaCidades({
         setErro(true);
         setTimeout(() => {
           setErro(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setErroMensagem(err.message);
@@ -56,6 +56,8 @@ function ListaCidades({
         navegaCidade={navegaCidade}
         setCarregando={setCarregando}
         puxaCidades={puxaCidades}
+        setErro={setErro}
+        setErroMensagem={setErroMensagem}
       />
     </div>
   );

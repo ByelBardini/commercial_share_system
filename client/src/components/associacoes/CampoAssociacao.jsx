@@ -27,7 +27,7 @@ function CampoAssociacao({
         setErro(true);
         setTimeout(() => {
           setErro(false);
-          navigate("/");
+          navigate("/", { replace: true });
         }, 1000);
       } else {
         setCarregando(false);
@@ -44,7 +44,7 @@ function CampoAssociacao({
 
   function modificaAssociacao(id) {
     localStorage.setItem("associacao_id", id);
-    navigate("/empresa");
+    navigate("/empresa", { replace: true });
   }
 
   async function visualizaAssociacao(id) {

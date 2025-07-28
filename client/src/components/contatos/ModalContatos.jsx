@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import ListaSimplesContatos from "./ListaContatos.jsx";
 
 function ModalContatos({
-  setCarregando,
   setVendoContatos,
   contatos,
   setContatos,
