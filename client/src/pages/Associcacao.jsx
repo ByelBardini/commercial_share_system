@@ -50,10 +50,10 @@ function limparRealParaDouble(valor) {
 }
 
 function formatarCNPJ(cnpj) {
-  const numeros = cnpj.replace(/\D/g, '');
+  const numeros = cnpj.replace(/\D/g, "");
   return numeros.replace(
     /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,
-    '$1.$2.$3/$4-$5'
+    "$1.$2.$3/$4-$5"
   );
 }
 
@@ -142,7 +142,7 @@ function Associacao() {
 
   async function salvar() {
     setModalOpcoes(false);
-    if (!nome || !cliente) {
+    if (!nome || cliente === "") {
       setAviso(true);
       setAvisoCor("vermelho");
       setBotaoAviso("");
@@ -150,10 +150,9 @@ function Associacao() {
         "Todos os campos marcados como obrigatórios devem ser preenchidos"
       );
       return;
-    } if (!fantasia) {
-      setFantasia(nome);
     }
     setCarregando(true);
+    const fantasiaFinal = fantasia || nome
     const associacao_id = localStorage.getItem("associacao_id");
     const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
     const dataFechamentoFormatada =
@@ -200,7 +199,7 @@ function Associacao() {
     try {
       await putAssociacao(
         nome,
-        fantasia,
+        fantasiaFinal,
         cnpj,
         dataContatoFormatada,
         dataFechamentoFormatada,
@@ -480,9 +479,6 @@ function Associacao() {
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               onChange={(event) => setCliente(event.target.value)}
             >
-              <option value={cliente} disabled hidden selected>
-                {cliente == 1 ? "Sim" : "Não"}
-              </option>
               <option value="1">Sim</option>
               <option value="0">Não</option>
             </select>

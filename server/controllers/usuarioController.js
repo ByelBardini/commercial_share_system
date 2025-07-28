@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 
 export async function registrarUsuario(req, res) {
   const { usuario_nome, usuario_login, usuario_senha, usuario_role } = req.body;
-  const { usuario_id } = req.session.user;
+  /*const { usuario_id } = req.session.user;
 
   if (!usuario_id) {
     return res
       .status(401)
       .json({ error: "Necessário estar logado para realizar operações." });
-  }
+  }*/
 
   if (!usuario_nome || !usuario_login || !usuario_senha || !usuario_role) {
     res.status(400).json({ error: "Todos os campos são obrigatórios." });

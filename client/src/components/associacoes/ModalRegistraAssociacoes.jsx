@@ -169,6 +169,7 @@ function ModalRegistraAssociacoes({
             <input
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
+              value={cnpj}
               placeholder="00.000.000/0000-00"
               onChange={(event) => setCnpj(formatarCNPJ(event.target.value))}
             />
