@@ -3,20 +3,27 @@ import { api } from "../api.js";
 export async function logar(usuario_login, usuario_senha) {
   try {
     const response = await api.post(`/login`, {
-      usuario_login, 
-      usuario_senha 
+      usuario_login,
+      usuario_senha,
     });
 
     return response.data;
   } catch (err) {
-    if(err.response && err.response.status === 400){
+    if (err.response && err.response.status === 400) {
       throw new Error(err.response.data?.error || "Preencha login e senha.");
-    }
-    else if(err.response && err.response.status === 401){
-      throw new Error(err.response.data?.error || "Usuário ou senha incorretos.");
-    }
-    else if(err.response && err.response.status === 500){
-      throw new Error(err.response.data?.error || "Erro interno. Tente novamente mais tarde.");
+    } else if (err.response && err.response.status === 401) {
+      throw new Error(
+        err.response.data?.error || "Usuário ou senha incorretos."
+      );
+    } else if (err.response && err.response.status === 403) {
+      throw new Error(
+        err.response.data?.error ||
+          "Usuário inativo ou sem permissão para acessar o sistema."
+      );
+    } else if (err.response && err.response.status === 500) {
+      throw new Error(
+        err.response.data?.error || "Erro interno. Tente novamente mais tarde."
+      );
     }
   }
 }
@@ -25,7 +32,7 @@ export async function logout() {
   try {
     const response = await api.get(`/logout`);
 
-    if(response){
+    if (response) {
       localStorage.clear();
     }
   } catch (error) {
@@ -33,10 +40,20 @@ export async function logout() {
   }
 }
 
-export async function validarSessao(){
-  try{
+export async function validarSessao() {
+  try {
     await api.get("/valida");
-  }catch(err){
-    console.error("Erro ao validar sessão: ", err);
+  } catch (err) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
+      throw new Error(err.response.data.error);
+    }
   }
 }

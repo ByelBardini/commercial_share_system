@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { Search, Funnel, LogOut, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/default/Loading";
 import ListaUsuarios from "../components/usuarios/ListaUsuarios.jsx";
@@ -23,6 +24,19 @@ function CidadeConfig() {
   const [aviso, setAviso] = useState(false);
   const [avisoCor, setAvisoCor] = useState("");
   const [avisoTexto, setAvisoTexto] = useState("");
+
+    useEffect(() => {
+      document.title = "Usuários - Share Comercial";
+      if(localStorage.getItem("usuario_role") != "adm"){
+        setAvisoTexto("Página dedicada somente à usuários administradores");
+        setAvisoCor("vermelho");
+        setAviso(true);
+        setTimeout(() => {
+          setAviso(false);
+          navigate("/", { replace: true });
+        }, 1000);
+      }
+    }, []);
 
   function cadastrar(){
     setEditar("cadastro");

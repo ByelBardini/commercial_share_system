@@ -13,9 +13,18 @@ export async function trocaSenhaUsuario(nova_senha) {
     return response.data;
   } catch (err) {
     console.error("Erro ao trocar senha:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+    
     throw new Error("Erro ao trocar senha");
   }
 }
@@ -33,9 +42,18 @@ export async function buscaUsuarios() {
     return response.data;
   } catch (err) {
     console.error("Erro ao buscar usuários:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao buscar usuários");
   }
 }
@@ -66,9 +84,18 @@ export async function cadastraUsuario(
     }
   } catch (err) {
     console.error("Erro ao cadastrar usuário:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao cadastrar usuário");
   }
 }
@@ -91,9 +118,18 @@ export async function resetaSenha(id) {
     }
   } catch (err) {
     console.error("Erro ao resetar senha do usuário:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao resetar senha do usuário");
   }
 }
@@ -116,9 +152,18 @@ export async function inativaUsuario(id) {
     }
   } catch (err) {
     console.error("Erro ao ativar/inativar usuário:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao ativar/inativar usuário");
   }
 }

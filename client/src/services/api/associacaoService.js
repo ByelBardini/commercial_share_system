@@ -56,9 +56,18 @@ export async function postAssociacao(
     }
   }  catch (err) {
     console.error("Erro ao cadastrar empresa:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao cadastrar empresa");
   }
 }
@@ -76,9 +85,18 @@ export async function getAssociacaoFull(associacao_id) {
     return response.data;
   }  catch (err) {
     console.error("Erro ao buscar empresa:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao buscar empresa");
   }
 }
@@ -122,9 +140,18 @@ export async function putAssociacao(
     }
   } catch (err) {
     console.error("Erro ao editar empresa:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao editar empresa");
   }
 }
@@ -149,9 +176,18 @@ export async function favoritarAssociacao(id) {
     }
   }  catch (err) {
     console.error("Erro ao favoritar empresa:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+
     throw new Error("Erro ao favoritar empresa");
   }
 }
@@ -174,9 +210,18 @@ export async function deletaAssociacao(id) {
     }
   }  catch (err) {
     console.error("Erro ao deletar associação:", err);
-    if (err.response && err.response.data && err.response.data.error) {
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
       throw new Error(err.response.data.error);
     }
+    
     throw new Error("Erro ao deletar empresa");
   }
 }
