@@ -2,26 +2,35 @@ import { Usuario } from "../models/index.js";
 import bcrypt from "bcrypt";
 
 export async function registrarUsuario(req, res) {
-  const { usuario_nome, usuario_login, usuario_senha, usuario_role } = req.body;
-  /*const { usuario_id } = req.session.user;
+  const { usuario_nome, usuario_login, usuario_cadastrado_role } = req.body;
+  const { usuario_role } = req.session.user;
 
-  if (!usuario_id) {
+  if (!usuario_role) {
     return res
       .status(401)
       .json({ error: "Necessário estar logado para realizar operações." });
-  }*/
+  }
 
-  if (!usuario_nome || !usuario_login || !usuario_senha || !usuario_role) {
+  if (usuario_role != "adm") {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Necessário ser um usuário administrador para realizar essa ação.",
+      });
+  }
+
+  if (!usuario_nome || !usuario_login || !usuario_cadastrado_role) {
     res.status(400).json({ error: "Todos os campos são obrigatórios." });
   }
-  const senhaHash = bcrypt.hashSync(usuario_senha, 10);
+  const senhaHash = bcrypt.hashSync("12345", 10);
 
   try {
     await Usuario.create({
       usuario_nome: usuario_nome,
       usuario_login: usuario_login,
       usuario_senha: senhaHash,
-      usuario_role: usuario_role,
+      usuario_role: usuario_cadastrado_role,
     });
 
     res.status(201).json({ message: "Usuário registrado com sucesso!" });
@@ -33,12 +42,21 @@ export async function registrarUsuario(req, res) {
 
 export async function resetaSenhaUsuario(req, res) {
   const { id } = req.params;
-  const { usuario_id } = req.session.user;
+  const { usuario_role } = req.session.user;
 
-  if (!usuario_id) {
+  if (!usuario_role) {
     return res
       .status(401)
       .json({ error: "Necessário estar logado para realizar operações." });
+  }
+
+  if (usuario_role != "adm") {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Necessário ser um usuário administrador para realizar essa ação.",
+      });
   }
   const nova_senha = bcrypt.hashSync("12345", 10);
 
@@ -101,12 +119,21 @@ export async function trocaSenhaUsuario(req, res) {
 }
 
 export async function getUsuarios(req, res) {
-  const { usuario_id } = req.session.user;
+  const { usuario_role } = req.session.user;
 
-  if (!usuario_id) {
+  if (!usuario_role) {
     return res
       .status(401)
       .json({ error: "Necessário estar logado para realizar operações." });
+  }
+
+  if (usuario_role != "adm") {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Necessário ser um usuário administrador para realizar essa ação.",
+      });
   }
   try {
     const usuarios = await Usuario.findAll();
@@ -126,27 +153,37 @@ export async function getUsuarios(req, res) {
 
 export async function inativaUsuario(req, res) {
   const { id } = req.params;
-  const { usuario_id } = req.session.user;
+  const { usuario_role } = req.session.user;
 
-  if (!usuario_id) {
+  if (!usuario_role) {
     return res
       .status(401)
       .json({ error: "Necessário estar logado para realizar operações." });
   }
 
-  try {
-    await Usuario.update(
-      {
-        usuario_ativo: 0,
-      },
-      {
-        where: {
-          usuario_id: id,
-        },
-      }
-    );
+  if (usuario_role != "adm") {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Necessário ser um usuário administrador para realizar essa ação.",
+      });
+  }
 
-    res.status(200).json({ message: "Usuário inativado com sucesso!" });
+  try {
+    const usuario = await Usuario.findByPk(id);
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+    usuario.usuario_ativo =
+      !usuario.usuario_ativo || usuario.usuario_ativo === 0 ? 1 : 0;
+    await usuario.save();
+
+    return res.status(200).json({
+      message: usuario.usuario_ativo
+        ? "Usuário Ativado."
+        : "Usuário Inativado.",
+    });
   } catch (err) {
     console.error("Erro ao inativar usuário:", err);
     res.status(500).json({ error: "Erro ao inativar usuário" });

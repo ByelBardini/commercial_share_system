@@ -41,6 +41,11 @@ export async function login(req, res) {
     if (!usuario) {
       return res.status(401).json({ error: "Login Incorreto" });
     }
+
+    if (usuario.usuario_ativo == 0) {
+      return res.status(403).json({ error: "Usuário inativo" });
+    }
+
     const match = await bcrypt.compare(usuario_senha, usuario.usuario_senha);
 
     if (!match) {

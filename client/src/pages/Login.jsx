@@ -30,8 +30,9 @@ function Login() {
     try {
       const data = await logar(usuario_login, usuario_senha);
 
-      const { usuario_nome, usuario_troca_senha } = data;
+      const { usuario_nome, usuario_troca_senha, usuario_role } = data;
       localStorage.setItem("usuario_nome", usuario_nome);
+      localStorage.setItem("usuario_role", usuario_role);
       if (usuario_troca_senha != 0) {
         localStorage.setItem("usuario_troca_senha", usuario_troca_senha);
       }

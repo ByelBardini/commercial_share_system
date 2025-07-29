@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout, validarSessao } from "../services/auth/authService.js";
-import { Search, Funnel, LogOut } from "lucide-react";
+import { Search, Funnel, LogOut, UsersRound } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import ModalAviso from "../components/default/ModalAviso.jsx";
 import ModalTrocaSenha from "../components/usuarios/modalTrocaSenha.jsx";
@@ -10,9 +10,12 @@ import ListaCidades from "../components/cidades/ListaCidades.jsx";
 import Loading from "../components/default/Loading.jsx";
 
 function Main() {
+  const role = localStorage.getItem("usuario_role");
+
   const navigate = useNavigate();
   const [novaSenha, setNovaSenha] = useState(false);
   const [carregando, setCarregando] = useState(false);
+
   const [erro, setErro] = useState(false);
   const [erroMensagem, setErroMensagem] = useState("");
 
@@ -44,7 +47,7 @@ function Main() {
           setErro(false);
         }, 1000);
       }
-    }finally {
+    } finally {
       setCarregando(false);
     }
   }
@@ -78,14 +81,17 @@ function Main() {
           />
         )}
       </AnimatePresence>
-      <AnimatePresence>
-        {erro && (
-          <ModalAviso cor="vermelho" botao="hidden" texto={erroMensagem} />
-        )}
-      </AnimatePresence>
-
+      {erro && (
+        <ModalAviso cor="vermelho" botao="hidden" texto={erroMensagem} />
+      )}
       <div className="bg-blue-600/65  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <div />
+        {role == "adm" && (
+          <button className="text-white p-2 rounded-full hover:bg-blue-200 transition hover:text-blue-500"
+          onClick={()=>navigate("/usuario", { replace: true })}>
+            <UsersRound size={30} />
+          </button>
+        )}
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
           Bem-vindo(a),{" "}
           <span className="text-blue-300">

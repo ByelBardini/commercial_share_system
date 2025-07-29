@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx'
 import Main from './pages/Main.jsx'
 import Cidade from './pages/Cidade.jsx'
 import Associacao from './pages/Associcacao.jsx'; 
+import Usuario from "./pages/Usuario.jsx";
 import './style.css'
 
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path:"/empresa",
     element: <Associacao />
+  },
+  {
+    path:"/usuario",
+    element: <Usuario />
   }
 ]);
 
