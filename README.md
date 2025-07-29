@@ -35,17 +35,12 @@ Sistema completo de gestão comercial interna, com foco em controle de empresas 
 - [x] Cadastro, edição e remoção de **empresas (associações)**
 - [x] Gerenciamento de **cidades**
 - [x] Controle de **usuários** com autenticação via sessão
+- [x] Cadastro, inativação e gerenciamento de **usuários**
 - [x] Registro e organização de **contatos** relacionados às empresas
 - [x] Sistema de login com validação de token
 - [x] Sistema de refresh token para sessão alongada
 - [x] Interface simples, funcional e responsiva
 - [x] Backend com rotas protegidas
-
-# WIP (Em desenvolvimento)
-
-- [ ] Cadastro e exclusão de **cidades**
-- [ ] Cadastro, inativação e gerenciamento de **usuários**
-- [ ] Melhoria na organização para futura expansão
 
 ---
 
