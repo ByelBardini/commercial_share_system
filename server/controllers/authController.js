@@ -81,7 +81,7 @@ export async function login(req, res) {
         sameSite: "Lax",
         secure: false,
         path: "/",
-        expiresIn: 60*60*27*7
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
       })
       .status(200)
       .json(resposta);

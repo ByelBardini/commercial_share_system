@@ -21,6 +21,7 @@ function Main() {
 
   const [pesquisa, setPesquisa] = useState("");
   const [ufs, setUfs] = useState([]);
+  const [ufSelecionada, setUfSelecionada] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("usuario_troca_senha") == 1) setNovaSenha(true);
@@ -87,8 +88,10 @@ function Main() {
       <div className="bg-blue-600/65  w-full h-20 fixed top-0 left-0 z-50 flex items-center justify-between px-8 glass shadow-lg backdrop-blur-md">
         <div />
         {role == "adm" && (
-          <button className="text-white p-2 rounded-full hover:bg-blue-200 transition hover:text-blue-500"
-          onClick={()=>navigate("/usuario", { replace: true })}>
+          <button
+            className="text-white p-2 rounded-full hover:bg-blue-200 transition hover:text-blue-500"
+            onClick={() => navigate("/usuario", { replace: true })}
+          >
             <UsersRound size={30} />
           </button>
         )}
@@ -123,8 +126,8 @@ function Main() {
           <Funnel size={20} className="text-blue-400 mr-2" />
           <select
             className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[70px]"
-            value={ufs}
-            onChange={(e) => setUfs(e.target.value)}
+            value={ufSelecionada}
+            onChange={(e) => setUfSelecionada(e.target.value)}
           >
             <option value="" disabled defaultValue={"Filtrar"} hidden>
               UF
@@ -142,6 +145,7 @@ function Main() {
         <ListaCidades
           pesquisa={pesquisa}
           setUfs={setUfs}
+          ufSelecionada={ufSelecionada}
           navegaCidade={navegaCidade}
           setCarregando={setCarregando}
           setErro={setErro}

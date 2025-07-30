@@ -22,11 +22,15 @@ function ListaUsuarios({
     try {
       console.log(filtro);
       const usuarios = await buscaUsuarios();
-      const usuariosFinal = usuarios.filter(
-        (usuario) =>
-          usuario.usuario_nome.toLowerCase().includes(pesquisa.toLowerCase()) &&
-          (filtro ? String(usuario.usuario_ativo) === filtro : true)
-      );
+      const usuariosFinal = Array.isArray(usuarios)
+        ? usuarios.filter(
+            (usuario) =>
+              usuario.usuario_nome
+                .toLowerCase()
+                .includes(pesquisa.toLowerCase()) &&
+              (filtro ? String(usuario.usuario_ativo) === filtro : true)
+          )
+        : [];
       setUsuarios(usuariosFinal);
     } catch (err) {
       if (err.message.includes("inválida")) {

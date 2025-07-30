@@ -11,6 +11,7 @@ function ListaCidades({
   setErro,
   navigate,
   setErroMensagem,
+  ufSelecionada,
 }) {
   const [cidades, setCidades] = useState([]);
 
@@ -18,8 +19,11 @@ function ListaCidades({
     setCarregando(true);
     try {
       const cidades = await buscarCidades();
-      const cidadesFinal = cidades.filter((cidade) =>
-        cidade.cidade_nome.toLowerCase().includes(pesquisa.toLowerCase())
+      console.log(cidades);
+      const cidadesFinal = cidades.filter(
+        (cidade) =>
+          cidade.cidade_nome.toLowerCase().includes(pesquisa.toLowerCase()) &&
+          cidade.cidade_uf.includes(ufSelecionada)
       );
       const ufs = [...new Set(cidades.map((cidade) => cidade.cidade_uf))];
       setUfs(ufs);
@@ -39,14 +43,14 @@ function ListaCidades({
           setErro(false);
         }, 1000);
       }
-    }finally {
+    } finally {
       setCarregando(false);
     }
   };
 
   useEffect(() => {
     puxaCidades();
-  }, [pesquisa]);
+  }, [pesquisa, ufSelecionada]);
 
   return (
     <div className="flex flex-col h-full w-full gap-2">
