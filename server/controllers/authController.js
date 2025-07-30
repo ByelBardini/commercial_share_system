@@ -104,6 +104,8 @@ export const logout = async (req, res) => {
   return res.json({ mensagem: "Logout realizado com sucesso" });
 };
 
+// Endpoint que é chamado antes de todas as operações
+// Ele checa se o acces token é válido, se não for, checa se o refres token é, se for gera o acces token novamente, se não for, barra a entrada
 export async function validaSessao(req, res) {
   const sessionUser = req.session?.user;
   const { accessToken, refreshToken } = req.cookies;

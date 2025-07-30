@@ -6,6 +6,9 @@ function manterArray(valor) {
   return [valor];
 }
 
+// Aqui ele faz a separação de todos os contatos da empresa
+// Contatos que não existiam antes, mesmo modificadod são colocados todos para serem adicionados
+// Contatos que não existiam antes mas já foram excluídos são ignorados
 function separaContatos(contatosAntigos, contatosNovos) {
   const idsOriginais = new Set(contatosAntigos.map((c) => c.contato_id));
 
@@ -53,6 +56,7 @@ export async function buscaContatos(id) {
   }
 }
 
+// Adiciona os contatos que foram separados, e guarda os erros
 async function postContatos(adicionados, associacao_id) {
   const contatos = manterArray(adicionados);
   const resultados = [];
@@ -87,6 +91,7 @@ async function postContatos(adicionados, associacao_id) {
   return resultados;
 }
 
+// Ediata os contatos que foram separados, e guarda os erros
 async function putContatos(editados) {
   const contatos = manterArray(editados);
   console.log("put: ", contatos);
@@ -120,6 +125,7 @@ async function putContatos(editados) {
   return resultados;
 }
 
+// Deleta os contatos que foram separados, e guarda os erros
 async function deleteContatos(deletados) {
   const contatos = manterArray(deletados);
   console.log("delete: ", contatos);
@@ -149,6 +155,7 @@ async function deleteContatos(deletados) {
   return resultados;
 }
 
+// Função que centraliza tudo, separa os contatos e envia cada um pras devidas funções
 export async function salvaContatos(
   contatosAntigos = [],
   contatosNovos = [],
