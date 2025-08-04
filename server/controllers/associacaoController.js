@@ -4,8 +4,10 @@ export async function getAssociacoesPorCidade(req, res) {
   const { id } = req.params;
   const { usuario_id } = req.session.user;
 
-  if (!usuario_id){
-    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  if (!usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Necessário estar logado para realizar operações." });
   }
 
   if (!id) {
@@ -18,6 +20,7 @@ export async function getAssociacoesPorCidade(req, res) {
       attributes: [
         "associacao_id",
         "associacao_nome_fantasia",
+        "associacao_tipo",
         "associacao_cliente",
         "associacao_favorito",
       ],
@@ -64,6 +67,7 @@ export async function postAssociacao(req, res) {
   const {
     associacao_cidade_id,
     associacao_nome,
+    associacao_tipo,
     associacao_nome_fantasia,
     associacao_cnpj,
     associacao_data_contato,
@@ -73,15 +77,18 @@ export async function postAssociacao(req, res) {
   } = req.body;
   const { usuario_id } = req.session.user;
 
-  if (!usuario_id){
-    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  if (!usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Necessário estar logado para realizar operações." });
   }
 
   if (
     !associacao_nome ||
     !associacao_nome_fantasia ||
     !associacao_cidade_id ||
-    !associacao_cliente
+    !associacao_cliente ||
+    !associacao_tipo
   ) {
     return res
       .status(400)
@@ -115,6 +122,7 @@ export async function postAssociacao(req, res) {
       {
         associacao_cidade_id: associacao_cidade_id,
         associacao_nome: associacao_nome,
+        associacao_tipo: associacao_tipo,
         associacao_nome_fantasia: associacao_nome_fantasia,
         associacao_cnpj: associacao_cnpj,
         associacao_data_contato: associacao_data_contato,
@@ -146,6 +154,7 @@ export async function putAssociacao(req, res) {
   const {
     associacao_nome,
     associacao_nome_fantasia,
+    associacao_tipo,
     associacao_cnpj = null,
     associacao_data_contato = null,
     associacao_data_fechamento = null,
@@ -156,8 +165,10 @@ export async function putAssociacao(req, res) {
   } = req.body;
   const { usuario_id } = req.session.user;
 
-  if (!usuario_id){
-    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  if (!usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Necessário estar logado para realizar operações." });
   }
 
   if (!id) {
@@ -167,6 +178,7 @@ export async function putAssociacao(req, res) {
   if (
     !associacao_nome ||
     !associacao_nome_fantasia ||
+    !associacao_tipo ||
     (associacao_cliente != 0 && associacao_cliente != 1)
   ) {
     return res
@@ -199,13 +211,18 @@ export async function putAssociacao(req, res) {
   try {
     const empresa = await Associacao.findByPk(id);
     if (!empresa) {
-      return res.status(404).json({ error: "Empresa não encontrada, fale com um administrador do sistema" });
+      return res
+        .status(404)
+        .json({
+          error: "Empresa não encontrada, fale com um administrador do sistema",
+        });
     }
 
     await empresa.update(
       {
         associacao_nome: associacao_nome,
         associacao_nome_fantasia: associacao_nome_fantasia,
+        associacao_tipo: associacao_tipo,
         associacao_cnpj: associacao_cnpj,
         associacao_data_contato: associacao_data_contato,
         associacao_data_fechamento: associacao_data_fechamento,
@@ -239,8 +256,10 @@ export async function favoritarAssociacao(req, res) {
   const { id } = req.params;
   const { usuario_id } = req.session.user;
 
-  if (!usuario_id){
-    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  if (!usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Necessário estar logado para realizar operações." });
   }
 
   if (!id) {
@@ -278,8 +297,10 @@ export async function deleteAssociacao(req, res) {
   const { id } = req.params;
   const { usuario_id } = req.session.user;
 
-  if (!usuario_id){
-    return res.status(401).json({error: "Necessário estar logado para realizar operações."})
+  if (!usuario_id) {
+    return res
+      .status(401)
+      .json({ error: "Necessário estar logado para realizar operações." });
   }
 
   if (!id) {

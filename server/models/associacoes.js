@@ -23,6 +23,10 @@ Associacao.init({
     allowNull: true,
     defaultValue: null,
   },
+  associacao_tipo: {
+    type: DataTypes.ENUM('empresa', 'pf', 'associacao'),
+    allowNull: false,
+  },
   associacao_cnpj: {
     type: DataTypes.STRING(50), 
     allowNull: true,
