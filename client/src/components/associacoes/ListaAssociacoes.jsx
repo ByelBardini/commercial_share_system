@@ -6,6 +6,7 @@ import CampoAssociacao from "./CampoAssociacao.jsx";
 function ListaAssociacoes({
   pesquisa,
   filtroAtivo,
+  filtroTipo,
   setCarregando,
   associacoesRoot,
   setAssociacoesRoot,
@@ -54,7 +55,8 @@ function ListaAssociacoes({
         cidade.associacao_nome_fantasia
           .toLowerCase()
           .includes(pesquisa.toLowerCase()) &&
-        (filtroAtivo ? String(cidade.associacao_cliente) === filtroAtivo : true)
+        (filtroAtivo ? String(cidade.associacao_cliente) === filtroAtivo : true) &&
+        (filtroTipo ? String(cidade.associacao_tipo) === filtroTipo : true)
     );
     setAssociacoes(associacoesFinal);
   }
@@ -65,7 +67,7 @@ function ListaAssociacoes({
 
   useEffect(() => {
     aplicaPesquisa();
-  }, [pesquisa, filtroAtivo]);
+  }, [pesquisa, filtroAtivo, filtroTipo]);
 
   return (
     <div className="flex flex-col h-full w-full gap-2">

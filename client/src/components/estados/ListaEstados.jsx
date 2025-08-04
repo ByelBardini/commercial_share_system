@@ -1,26 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { buscarCidades } from "../../services/api/cidadeService.js";
-import CampoCidade from "./CampoCidade.jsx";
+import { buscarEstados } from "../../services/api/cidadeService.js";
+import CampoEstado from "./CampoEstado.jsx";
 
-function ListaCidades({
+function ListaEstados({
   pesquisa,
-  pesquisar,
-  setPesquisar,
-  navegaCidade,
   setCarregando,
   setErro,
   navigate,
+  navegaEstado,
   setErroMensagem,
-  ufSelecionada,
 }) {
-  const [cidades, setCidades] = useState([]);
+  const [estados, setEstados] = useState([]);
 
-  const puxaCidades = async () => {
+  const puxaEstados = async () => {
     setCarregando(true);
     try {
-      const cidades = await buscarCidades(pesquisa, ufSelecionada);
-      setCidades(cidades);
+      const estados = await buscarEstados();
+      const estadosFinal = estados.filter(
+        (estado) =>
+          estado.cidade_nome.toLowerCase().includes(pesquisa.toLowerCase())
+      );
+      setEstados(estadosFinal);
     } catch (err) {
       if (err.message.includes("inválida")) {
         setErroMensagem("Sessão inválida, realize o login");
@@ -38,28 +39,25 @@ function ListaCidades({
       }
     } finally {
       setCarregando(false);
-      setPesquisar(0);
     }
   };
 
   useEffect(() => {
-    if (pesquisar !== 0) {
-      puxaCidades();
-    }
-  }, [pesquisar]);
+    puxaEstados();
+  }, [pesquisa]);
 
   return (
     <div className="flex flex-col h-full w-full gap-2">
-      <CampoCidade
-        cidades={cidades}
-        navegaCidade={navegaCidade}
+      <CampoEstado
+        estados={estados}
         setCarregando={setCarregando}
-        puxaCidades={puxaCidades}
+        puxaEstados={puxaEstados}
         setErro={setErro}
+        navegaEstado={navegaEstado}
         setErroMensagem={setErroMensagem}
       />
     </div>
   );
 }
 
-export default ListaCidades;
+export default ListaEstados;

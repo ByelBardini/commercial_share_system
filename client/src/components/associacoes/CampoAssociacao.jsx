@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion } from "framer-motion";
-import { SquarePen, Eye, Star } from "lucide-react";
+import { SquarePen, Eye, Star, Building2, User } from "lucide-react";
 import {
   getAssociacaoFull,
   favoritarAssociacao,
@@ -65,12 +65,15 @@ function CampoAssociacao({
           key={associacao.associacao_id}
           className="bg-white/90 border border-blue-100 rounded-2xl px-6 py-4 my-3 flex justify-between items-center shadow-lg hover:shadow-xl transition group"
         >
-          <div>
+          <div className="flex gap-2 items-center">
             <span className="text-xl font-bold text-blue-700 tracking-tight drop-shadow-sm select-none">
               {associacao.associacao_nome_fantasia}
             </span>
+            <div className="text-blue-700">
+              {associacao.associacao_tipo == "pf" ? <User /> : <Building2 />}
+            </div>
             {associacao.associacao_cliente ? (
-              <span className="ml-4 inline-block bg-green-100 border border-green-300 text-green-700 text-xs font-bold px-3 py-1 rounded-full align-middle shadow-sm tracking-wide">
+              <span className="ml-2 inline-block bg-green-100 border border-green-300 text-green-700 text-xs font-bold px-3 py-1 rounded-full align-middle shadow-sm tracking-wide">
                 CLIENTE
               </span>
             ) : null}

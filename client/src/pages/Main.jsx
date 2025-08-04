@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout, validarSessao } from "../services/auth/authService.js";
-import { Search, Funnel, LogOut, UsersRound } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { Search, Funnel, LogOut, UsersRound, Building } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { buscarUfs } from "../services/api/cidadeService.js";
 import ModalAviso from "../components/default/ModalAviso.jsx";
 import ModalTrocaSenha from "../components/usuarios/modalTrocaSenha.jsx";
 import ListaCidades from "../components/cidades/ListaCidades.jsx";
@@ -23,9 +25,12 @@ function Main() {
   const [ufs, setUfs] = useState([]);
   const [ufSelecionada, setUfSelecionada] = useState("");
 
+  const [pesquisar, setPesquisar] = useState(0);
+
   useEffect(() => {
     if (localStorage.getItem("usuario_troca_senha") == 1) setNovaSenha(true);
     document.title = "Cidades - Share Comercial";
+    puxaUfs();
     sessaoValida();
   }, []);
 
@@ -33,6 +38,33 @@ function Main() {
     setCarregando(true);
     try {
       await validarSessao();
+    } catch (err) {
+      if (err.message.includes("inválida")) {
+        setErroMensagem("Sessão inválida, realize o login");
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+          navigate("/", { replace: true });
+        }, 1000);
+      } else {
+        setErroMensagem(err.message);
+        setErro(true);
+        setTimeout(() => {
+          setErro(false);
+        }, 1000);
+      }
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  async function puxaUfs(){
+    
+    setCarregando(true);
+    try {
+      const ufs = await buscarUfs();
+
+      setUfs(ufs);
     } catch (err) {
       if (err.message.includes("inválida")) {
         setErroMensagem("Sessão inválida, realize o login");
@@ -64,6 +96,7 @@ function Main() {
   function navegaCidade(id_cidade, nome_cidade) {
     localStorage.setItem("id_cidade", id_cidade);
     localStorage.setItem("nome_cidade", nome_cidade);
+    localStorage.setItem("estado_lista", "empresas");
     navigate("/cidade", { replace: true });
   }
 
@@ -111,7 +144,16 @@ function Main() {
         </button>
       </div>
 
-      <div className="w-full max-w-2xl mt-32 p-2 rounded-2xl bg-white/80 shadow-lg border flex items-center gap-3 glass">
+      <motion.button
+        className="bg-green-500 p-3 h-16 rounded-2xl mt-32 shadow-xl text-white font-bold text-lg flex items-center gap-2 hover:bg-green-600 transition border-2 border-white"
+        layout
+        whileHover={{ scale: 1.06, y: -2 }}
+        onClick={() => navigate("/estado", { replace: true })}
+      >
+        <Building size={24} /> ASSOCIAÇÕES POR ESTADO
+      </motion.button>
+
+      <div className="w-full max-w-4xl mt-10 p-4 rounded-2xl bg-white/80 shadow-xl border flex items-center gap-3 glass">
         <div className="flex items-center bg-white/90 rounded-xl flex-1 px-4 shadow-inner border mr-1">
           <Search size={22} className="text-blue-400 mr-2" />
           <input
@@ -122,16 +164,18 @@ function Main() {
             onChange={(event) => setPesquisa(event.target.value)}
           />
         </div>
-        <div className="flex items-center bg-white/90 rounded-xl px-4 shadow-inner border ml-1">
+
+        <div className="flex items-center bg-white rounded-xl px-3 h-12 shadow-inner border min-w-[100px] transition focus-within:ring-2 focus-within:ring-blue-400">
           <Funnel size={20} className="text-blue-400 mr-2" />
           <select
-            className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[70px]"
+            className="bg-transparent text-base outline-none w-full"
             value={ufSelecionada}
             onChange={(e) => setUfSelecionada(e.target.value)}
           >
-            <option value="" disabled defaultValue={"Filtrar"} hidden>
+            <option value="" disabled hidden>
               UF
             </option>
+            <option value="">Todos</option>
             {ufs.map((uf) => (
               <option key={uf} value={uf}>
                 {uf}
@@ -139,12 +183,20 @@ function Main() {
             ))}
           </select>
         </div>
+
+        <button
+          className="h-12 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold shadow-md transition"
+          onClick={() => setPesquisar(1)}
+        >
+          Pesquisar
+        </button>
       </div>
 
       <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
         <ListaCidades
           pesquisa={pesquisa}
-          setUfs={setUfs}
+          pesquisar={pesquisar}
+          setPesquisar={setPesquisar}
           ufSelecionada={ufSelecionada}
           navegaCidade={navegaCidade}
           setCarregando={setCarregando}

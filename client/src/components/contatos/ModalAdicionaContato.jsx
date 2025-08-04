@@ -92,7 +92,7 @@ export default function ModalAdicionaContato({
           animate={{ scale: 1, y: 0, opacity: 1 }}
           exit={{ scale: 0.95, y: 30, opacity: 0 }}
           transition={{ type: "spring", stiffness: 250, damping: 20 }}
-          className="bg-white w-2/6 p-8 rounded-2xl shadow-2xl flex flex-col gap-4 relative"
+          className="bg-white w-2/6 p-8 rounded-2xl shadow-2xl flex flex-col gap-4 relative max-h-[90vh] overflow-y-auto pr-4 custom-modal-scroll"
         >
           <button
             className="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-2xl"

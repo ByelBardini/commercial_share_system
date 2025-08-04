@@ -72,7 +72,7 @@ function ModalVisualizaAssociacao({
       )}
 
       <div
-        className="relative w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 bg-white/90 glass shadow-2xl border border-blue-200"
+        className="relative w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 bg-white/90 glass shadow-2xl border border-blue-200 max-h-[90vh] overflow-y-auto pr-4 custom-modal-scroll"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -84,13 +84,36 @@ function ModalVisualizaAssociacao({
         </button>
 
         <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center drop-shadow-sm select-none">
-          Visualizar Empresa
+          Visualizar{" "}
+          {localStorage.getItem("estado_lista") == "associacoes"
+            ? "Associação"
+            : "Empresa"}
         </h2>
 
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Nome da Empresa
+              Tipo
+            </label>
+            <input
+              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
+              value={
+                localStorage.getItem("estado_lista") === "associacoes"
+                  ? "Associação"
+                  : dadosAssociacao.associacao_tipo === "empresa"
+                  ? "Empresa"
+                  : "Pessoa Física"
+              }
+              readOnly
+            />
+          </div>
+          <div></div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Nome da{" "}
+              {localStorage.getItem("estado_lista") == "associacoes"
+                ? "Associação"
+                : "Empresa"}
             </label>
             <input
               className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
@@ -131,27 +154,29 @@ function ModalVisualizaAssociacao({
               value={dadosAssociacao.associacao_cliente === 1 ? "Sim" : "Não"}
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Preço Instalação
-            </label>
-            <input
-              type="text"
-              readOnly
-              className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
-              value={`R$ ${
-                dadosAssociacao.associacao_preco_instalacao !== undefined &&
-                dadosAssociacao.associacao_preco_instalacao !== null
-                  ? Number(
-                      dadosAssociacao.associacao_preco_instalacao
-                    ).toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })
-                  : "0,00"
-              }`}
-            />
-          </div>
+          {localStorage.getItem("estado_lista") != "associacoes" && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Preço Instalação
+              </label>
+              <input
+                type="text"
+                readOnly
+                className="cursor-default w-full bg-white/95 rounded-lg p-3 border border-blue-100 font-semibold text-lg text-gray-800 shadow-inner"
+                value={`R$ ${
+                  dadosAssociacao.associacao_preco_instalacao !== undefined &&
+                  dadosAssociacao.associacao_preco_instalacao !== null
+                    ? Number(
+                        dadosAssociacao.associacao_preco_instalacao
+                      ).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    : "0,00"
+                }`}
+              />
+            </div>
+          )}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Preço por Placa

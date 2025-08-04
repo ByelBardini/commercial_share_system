@@ -1,6 +1,6 @@
 import { api, refresh } from "../api.js";
 
-export async function buscarCidades() {
+export async function buscarCidades(pesquisa = "", uf = "") {
   try {
     const validouSessao = await refresh();
 
@@ -8,7 +8,7 @@ export async function buscarCidades() {
       throw new Error("Sessão inválida");
     }
 
-    const response = await api.get(`/cidade`);
+    const response = await api.get(`/cidade?pesquisa=${pesquisa}&uf=${uf}`);
 
     return response.data;
   } catch (err) {
@@ -27,6 +27,66 @@ export async function buscarCidades() {
     }
 
     throw new Error("Erro ao buscar cidade");
+  }
+}
+
+export async function buscarEstados() {
+  try {
+    const validouSessao = await refresh();
+
+    if (!validouSessao.ok) {
+      throw new Error("Sessão inválida");
+    }
+
+    const response = await api.get(`/estado`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro ao buscar estado:", err);
+
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
+      throw new Error(err.response.data.error);
+    }
+
+    throw new Error("Erro ao buscar estado");
+  }
+}
+
+export async function buscarUfs() {
+  try {
+    const validouSessao = await refresh();
+
+    if (!validouSessao.ok) {
+      throw new Error("Sessão inválida");
+    }
+
+    const response = await api.get(`/uf`);
+
+    return response.data;
+  } catch (err) {
+    console.error("Erro ao buscar ufs:", err);
+
+    if (err.message.includes("Sessão inválida")) {
+      throw err;
+    }
+
+    if (err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error("Sessão inválida");
+    }
+
+    if (err.response?.data?.error) {
+      throw new Error(err.response.data.error);
+    }
+
+    throw new Error("Erro ao buscar ufs");
   }
 }
 

@@ -6,6 +6,7 @@ import Main from './pages/Main.jsx'
 import Cidade from './pages/Cidade.jsx'
 import Associacao from './pages/Associcacao.jsx'; 
 import Usuario from "./pages/Usuario.jsx";
+import Estado from "./pages/Estado.jsx";
 import './style.css'
 
 const router = createBrowserRouter([
@@ -28,7 +29,11 @@ const router = createBrowserRouter([
   {
     path:"/usuario",
     element: <Usuario />
-  }
+  },
+  {
+    path: "/estado",
+    element: <Estado />
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(

@@ -19,7 +19,7 @@ function ModalContatos({
       className={`fixed top-0 left-0 w-full h-full bg-black/70 z-[110] flex items-center justify-center`}
       style={{ overflowY: "auto" }}
     >
-      <div className="bg-white/90 glass w-full max-w-lg rounded-2xl border border-blue-200 shadow-2xl p-8">
+      <div className="bg-white/90 glass w-full max-w-lg rounded-2xl border border-blue-200 shadow-2xl p-8 max-h-[90vh] overflow-y-auto pr-4 custom-modal-scroll">
         <div className="flex justify-center mb-2">
           <h2 className="text-2xl font-bold text-blue-800 text-center drop-shadow-sm select-none">
             Contatos

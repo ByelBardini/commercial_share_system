@@ -13,6 +13,8 @@ import ModalVisualizaAssociacao from "../components/associacoes/ModalVisualizaAs
 import ModalAviso from "../components/default/ModalAviso.jsx";
 
 function Cidade() {
+  const estadoLista = localStorage.getItem("estado_lista");
+
   const [cadastro, setCadastro] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [visualiza, setVisualiza] = useState(false);
@@ -25,12 +27,17 @@ function Cidade() {
 
   const [pesquisa, setPesquisa] = useState("");
   const [filtro, setFiltro] = useState("");
+  const [filtroTipo, setFiltroTipo] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "Empresas - Share Comercial";
-    sessaoValida()
+    if (estadoLista == "associacoes") {
+      document.title = "Associações - Share Comercial";
+    } else {
+      document.title = "Empresas - Share Comercial";
+    }
+    sessaoValida();
   }, []);
 
   async function sessaoValida() {
@@ -52,7 +59,7 @@ function Cidade() {
           setErro(false);
         }, 1000);
       }
-    }finally {
+    } finally {
       setCarregando(false);
     }
   }
@@ -60,7 +67,11 @@ function Cidade() {
   async function sair() {
     localStorage.setItem("id_cidade", null);
     localStorage.setItem("nome_cidade", null);
-    navigate("/home", { replace: true });
+    if (localStorage.getItem("estado_lista") == "associacoes") {
+      navigate("/estado", { replace: true });
+    } else {
+      navigate("/home", { replace: true });
+    }
   }
 
   return (
@@ -110,7 +121,7 @@ function Cidade() {
           <span className="text-base font-bold">Voltar</span>
         </button>
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
-          Empresas de{" "}
+          {estadoLista == "associacoes" ? "Associações" : "Empresas"} de{" "}
           <span className="text-blue-300">
             {localStorage.getItem("nome_cidade")}
           </span>
@@ -124,21 +135,24 @@ function Cidade() {
         whileHover={{ scale: 1.06, y: -2 }}
         onClick={() => setCadastro(true)}
       >
-        <Plus size={24} /> ADICIONAR EMPRESA
+        <Plus size={24} /> ADICIONAR{" "}
+        {estadoLista == "associacoes"
+          ? "ASSOCIAÇÃO"
+          : "EMPRESA"}
       </motion.button>
 
-      <div className="w-full max-w-2xl mt-10 p-2 rounded-2xl bg-white/80 shadow-lg border flex items-center gap-3 glass">
-        <div className="flex items-center bg-white/90 rounded-xl flex-1 px-4 shadow-inner border mr-1">
+      <div className="w-full max-w-4xl mt-10 p-4 rounded-2xl bg-white/80 shadow-xl border flex items-center gap-3 glass">
+        <div className="flex items-center bg-white rounded-xl px-4 h-12 shadow-inner border flex-[3] transition focus-within:ring-2 focus-within:ring-blue-400">
           <Search size={22} className="text-blue-400 mr-2" />
           <input
             type="text"
-            placeholder="Pesquisar empresa..."
+            placeholder={estadoLista == "associacoes" ? "Pesquisar Associações..." : "Pesquisar Empresas..."}
             id="pesquisa-associacao"
             className="w-full bg-transparent p-3 rounded-md text-lg outline-none border-none placeholder-gray-400"
             onChange={(event) => setPesquisa(event.target.value)}
           />
         </div>
-        <div className="flex items-center bg-white/90 rounded-xl px-4 shadow-inner border ml-1">
+        <div className="flex items-center bg-white rounded-xl px-4 h-12 shadow-inner border flex-[1] transition focus-within:ring-2 focus-within:ring-blue-400 min-w-[140px]">
           <Funnel size={20} className="text-blue-400 mr-2" />
           <select
             className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[90px]"
@@ -150,12 +164,32 @@ function Cidade() {
             <option value={""}>Ambos</option>
           </select>
         </div>
+        {estadoLista != "associacoes" && (
+          <div className="flex items-center bg-white rounded-xl px-4 h-12 shadow-inner border flex-[1] transition focus-within:ring-2 focus-within:ring-blue-400 min-w-[140px]">
+            <Funnel size={20} className="text-blue-400 mr-2" />
+            <select
+              className="bg-transparent p-2 rounded-md text-lg outline-none border-none placeholder-gray-400 min-w-[90px]"
+              onChange={(event) => setFiltroTipo(event.target.value)}
+            >
+              <option
+                value=""
+                disabled
+                defaultValue={"Filtrar"}
+                hidden
+              ></option>
+              <option value={"empresa"}>Empresas</option>
+              <option value={"pf"}>Pessoas Físicas</option>
+              <option value={""}>Ambos</option>
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="w-full max-w-2xl mt-10 rounded-2xl p-5 shadow-xl glass bg-white/70 border">
         <ListaAssociacoes
           pesquisa={pesquisa}
           filtroAtivo={filtro}
+          filtroTipo={filtroTipo}
           setCarregando={setCarregando}
           associacoesRoot={associacoesRoot}
           setAssociacoesRoot={setAssociacoesRoot}

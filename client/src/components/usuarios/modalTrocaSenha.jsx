@@ -71,7 +71,7 @@ function ModalTrocaSenha({
           />
         )}
       </AnimatePresence>
-      <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 relative animate-fade-in">
+      <div className="w-full max-w-lg mx-auto bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 relative animate-fade-in max-h-[90vh] overflow-y-auto pr-4 custom-modal-scroll">
         <h1 className="text-3xl font-bold text-blue-800 mb-4">Nova senha</h1>
         <div className="w-full flex flex-col gap-2">
           <label className="text-lg font-semibold text-blue-800 mb-1">

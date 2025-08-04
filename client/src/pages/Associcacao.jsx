@@ -57,7 +57,14 @@ function formatarCNPJ(cnpj) {
   );
 }
 
+function formatarCPF(cnpj) {
+  const numeros = cnpj.replace(/\D/g, "");
+  return numeros.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, "$1.$2.$3-$4");
+}
+
 function Associacao() {
+  const estadoLista = localStorage.getItem("estado_lista");
+
   const [carregando, setCarregando] = useState(false);
   const [deletando, setDeletando] = useState(false);
   const [editando, setEditando] = useState(false);
@@ -77,6 +84,7 @@ function Associacao() {
   const [contatoModificado, setContatoModificado] = useState([]);
   const [contatosModificados, setContatosModificados] = useState();
 
+  const [tipo, setTipo] = useState("");
   const [nome, setNome] = useState("");
   const [fantasia, setFantasia] = useState("");
   const [cnpj, setCnpj] = useState("");
@@ -152,7 +160,7 @@ function Associacao() {
       return;
     }
     setCarregando(true);
-    const fantasiaFinal = fantasia || nome
+    const fantasiaFinal = fantasia || nome;
     const associacao_id = localStorage.getItem("associacao_id");
     const dataContatoFormatada = formatarDataParaInput(dataContato) || null;
     const dataFechamentoFormatada =
@@ -199,6 +207,7 @@ function Associacao() {
     try {
       await putAssociacao(
         nome,
+        tipo,
         fantasiaFinal,
         cnpj,
         dataContatoFormatada,
@@ -320,6 +329,7 @@ function Associacao() {
         localStorage.getItem("associacao_id")
       );
       setNome(associacao.associacao_nome);
+      setTipo(associacao.associacao_tipo);
       setFantasia(associacao.associacao_nome_fantasia);
       setCnpj(associacao.associacao_cnpj);
       setCliente(associacao.associacao_cliente);
@@ -361,7 +371,11 @@ function Associacao() {
   useEffect(() => {
     puxaDados();
     carregaContatosOriginais();
-    document.title = "Editar Empresa - Share Comercial";
+    if (estadoLista == "associacoes") {
+      document.title = "Editar Associação - Share Comercial";
+    } else {
+      document.title = "Editar Empresa - Share Comercial";
+    }
   }, []);
 
   return (
@@ -409,17 +423,39 @@ function Associacao() {
           <span className="text-base font-bold">Voltar</span>
         </button>
         <h1 className="text-gray-200 text-2xl font-bold text-center w-full tracking-tight select-none">
-          Editando Empresa
+          Editando {estadoLista == "associacoes" ? "Associação" : "Empresa"}
         </h1>
         <div />
       </div>
 
       <div className="relative w-full max-w-3xl mt-32 rounded-2xl p-7 shadow-2xl border bg-white/90 glass">
-        <div className="flex gap-4">
+        <div className="flex justify-center">
+          <div className="w-1/4">
+            <label className="block text-sm font-semibold text-blue-800">
+              Tipo
+            </label>
+            <select
+              value={tipo}
+              className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+              onChange={(event) => setTipo(event.target.value)}
+            >
+              {estadoLista === "associacoes" ? (
+                <option value="associacao">Associação</option>
+              ) : (
+                <>
+                  <option value="pf">Pessoa Física</option>
+                  <option value="empresa">Empresa</option>
+                </>
+              )}
+            </select>
+          </div>
+        </div>
+        <div className="flex gap-4 mt-4">
           <div className="w-1/2">
             <div className="place-content-between flex">
               <label className="block text-sm font-semibold text-blue-800">
-                Nome da Empresa
+                Nome da{" "}
+                {estadoLista == "associacoes" ? "Associação" : "Empresa"}
                 <span className="text-red-600 ml-1">*</span>
               </label>
               <label className="block text-sm font-semibold text-gray-400">
@@ -457,18 +493,21 @@ function Associacao() {
           <div className="w-4/6">
             <div className="place-content-between flex">
               <label className="block text-sm font-semibold text-blue-800">
-                CNPJ
-              </label>
-              <label className="block text-sm font-semibold text-gray-400">
-                (Máximo de 30 Caracteres)
+                {tipo == "pf" ? "CPF" : "CNPJ"}
               </label>
             </div>
             <input
               type="text"
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
-              placeholder="00.000.000/0000-00"
+              placeholder={
+                tipo == "pf" ? "000.000.000-00" : "00.000.000/0000-00"
+              }
               value={cnpj}
-              onChange={(event) => setCnpj(formatarCNPJ(event.target.value))}
+              onChange={
+                tipo == "pf"
+                  ? (event) => setCnpj(formatarCPF(event.target.value))
+                  : (event) => setCnpj(formatarCNPJ(event.target.value))
+              }
             />
           </div>
           <div className="w-2/6">
@@ -476,6 +515,7 @@ function Associacao() {
               Cliente
             </label>
             <select
+              value={cliente}
               className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
               onChange={(event) => setCliente(event.target.value)}
             >
@@ -531,24 +571,26 @@ function Associacao() {
           </div>
         </div>
 
-        <div className="flex gap-4 mt-4">
-          <div className="w-1/2">
-            <label className="block text-sm font-semibold text-blue-800 mb-1">
-              Preço Instalação
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
-              placeholder="R$ 0,00"
-              value={precoInstalacao}
-              onChange={(e) => {
-                setPrecoInstalacao(formatarRealDinamico(e.target.value));
-              }}
-              maxLength={16}
-            />
-          </div>
+        <div className="flex gap-4 mt-4 justify-center">
+          {localStorage.getItem("estado_lista") != "associacoes" && (
+            <div className="w-1/2">
+              <label className="block text-sm font-semibold text-blue-800 mb-1">
+                Preço Instalação
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                className="w-full bg-blue-50/50 rounded-lg p-3 border text-lg text-blue-900 focus:outline-blue-400"
+                placeholder="R$ 0,00"
+                value={precoInstalacao}
+                onChange={(e) => {
+                  setPrecoInstalacao(formatarRealDinamico(e.target.value));
+                }}
+                maxLength={16}
+              />
+            </div>
+          )}
           <div className="w-1/2">
             <label className="block text-sm font-semibold text-blue-800 mb-1">
               Preço por Placa

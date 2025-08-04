@@ -12,6 +12,11 @@ function formatarCNPJ(cnpj) {
   );
 }
 
+function formatarCPF(cnpj) {
+  const numeros = cnpj.replace(/\D/g, "");
+  return numeros.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, "$1.$2.$3-$4");
+}
+
 function ModalRegistraAssociacoes({
   setCadastro,
   setCarregando,
@@ -19,8 +24,11 @@ function ModalRegistraAssociacoes({
   setErroMensagem,
   navigate,
 }) {
+  const estadoLista = localStorage.getItem("estado_lista");
+
   const [concluido, setConcluido] = useState(false);
 
+  const [tipo, setTipo] = useState("");
   const [nome, setNome] = useState("");
   const [fantasia, setFantasia] = useState("");
   const [cnpj, setCnpj] = useState("");
@@ -43,7 +51,7 @@ function ModalRegistraAssociacoes({
   }
 
   async function cadastra() {
-    if (!nome.trim() || !cliente.trim()) {
+    if (!nome.trim() || !cliente.trim() || !tipo.trim()) {
       setErro(true);
       setErroMensagem("Insira os dados obrigatórios!");
       return;
@@ -56,6 +64,7 @@ function ModalRegistraAssociacoes({
       await postAssociacao(
         id_cidade,
         nome,
+        tipo,
         fantasia !== "" ? fantasia : nome,
         cnpj !== "" ? cnpj : null,
         dataContato !== "" ? dataContato : null,
@@ -97,7 +106,7 @@ function ModalRegistraAssociacoes({
       className={`fixed top-0 left-0 w-full h-full bg-black/80 z-[100] flex items-center justify-center`}
     >
       <div
-        className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative"
+        className="bg-white w-full max-w-xl rounded-2xl flex flex-col gap-4 p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto pr-4 custom-modal-scroll"
         onClick={(e) => e.stopPropagation()}
       >
         <AnimatePresence>
@@ -118,14 +127,45 @@ function ModalRegistraAssociacoes({
         </button>
 
         <h2 className="text-2xl font-bold text-blue-800 mb-4 text-center">
-          Registrar Empresa
+          Registrar{" "}
+          {localStorage.getItem("estado_lista") == "associacoes"
+            ? "Associação"
+            : "Empresa"}
         </h2>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700">
+            Tipo
+            <span className="text-red-600 ml-1">*</span>
+          </label>
+          <select
+            className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
+            onChange={(event) => setTipo(event.target.value)}
+            defaultValue=""
+          >
+            <option value="" disabled hidden>
+              Selecione
+            </option>
+
+            {estadoLista === "associacoes" ? (
+              <option value="associacao">Associação</option>
+            ) : (
+              <>
+                <option value="pf">Pessoa Física</option>
+                <option value="empresa">Empresa</option>
+              </>
+            )}
+          </select>
+        </div>
 
         <div className="flex flex-col gap-3">
           <div>
             <div className="place-content-between flex">
               <label className="block text-sm font-semibold text-gray-700">
-                Nome da Empresa
+                Nome da{" "}
+                {localStorage.getItem("estado_lista") == "associacoes"
+                  ? "Associação"
+                  : "Empresa"}
                 <span className="text-red-600 ml-1">*</span>
               </label>
               <label className="block text-sm font-semibold text-gray-400">
@@ -160,18 +200,15 @@ function ModalRegistraAssociacoes({
           <div>
             <div className="place-content-between flex">
               <label className="block text-sm font-semibold text-gray-700">
-                CNPJ
-              </label>
-              <label className="block text-sm font-semibold text-gray-400">
-                (Máximo de 30 Caracteres)
+                {tipo == "pf" ? "CPF" : "CNPJ"}
               </label>
             </div>
             <input
               type="text"
               className="w-full bg-gray-100 rounded-lg p-2 mt-1 border focus:outline-blue-500"
               value={cnpj}
-              placeholder="00.000.000/0000-00"
-              onChange={(event) => setCnpj(formatarCNPJ(event.target.value))}
+              placeholder={tipo == "pf" ? "000.000.000-00" : "00.000.000/0000-00"}
+              onChange={tipo == "pf" ? (event) => setCnpj(formatarCPF(event.target.value)) : (event) => setCnpj(formatarCNPJ(event.target.value))}
             />
           </div>
 

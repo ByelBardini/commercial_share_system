@@ -23,6 +23,7 @@ export async function getAssociacoesPorCidade(id_cidade) {
 export async function postAssociacao(
   associacao_cidade_id,
   associacao_nome,
+  associacao_tipo,
   associacao_nome_fantasia,
   associacao_cnpj,
   associacao_data_contato,
@@ -40,6 +41,7 @@ export async function postAssociacao(
     const response = await api.post(`/associacao`, {
       associacao_cidade_id,
       associacao_nome,
+      associacao_tipo,
       associacao_nome_fantasia,
       associacao_cnpj,
       associacao_data_contato,
@@ -103,6 +105,7 @@ export async function getAssociacaoFull(associacao_id) {
 
 export async function putAssociacao(
   associacao_nome,
+  associacao_tipo,
   associacao_nome_fantasia,
   associacao_cnpj,
   associacao_data_contato = null,
@@ -122,6 +125,7 @@ export async function putAssociacao(
 
     const response = await api.put(`/associacao/${id}`, {
       associacao_nome,
+      associacao_tipo,
       associacao_nome_fantasia,
       associacao_cnpj,
       associacao_data_contato,

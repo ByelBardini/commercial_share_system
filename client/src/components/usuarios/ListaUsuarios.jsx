@@ -20,7 +20,6 @@ function ListaUsuarios({
   const puxaUsuarios = async () => {
     setCarregando(true);
     try {
-      console.log(filtro);
       const usuarios = await buscaUsuarios();
       const usuariosFinal = Array.isArray(usuarios)
         ? usuarios.filter(
@@ -55,7 +54,6 @@ function ListaUsuarios({
   };
 
   useEffect(() => {
-    console.log(usuarios);
     puxaUsuarios();
   }, [pesquisa, filtro]);
 

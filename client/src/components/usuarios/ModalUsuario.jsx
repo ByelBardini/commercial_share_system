@@ -32,7 +32,6 @@ function ModalCriaUsuario({
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    console.log(modo);
     setNome(nomeAntigo);
     setLogin(loginAntigo);
     setRole(roleAntigo);
